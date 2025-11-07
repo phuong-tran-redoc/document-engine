@@ -1,0 +1,110 @@
+@use '@angular/material' as mat;
+
+.notum-toast {
+  border-radius: 0.5rem;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border-left: 4px solid transparent;
+
+  .mat-mdc-snack-bar-label {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .mat-mdc-snackbar-surface {
+    padding-right: 0;
+  }
+}
+
+.success-toast {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: var(--toast-success-background),
+      supporting-text-color: var(--toast-success-color),
+    )
+  );
+
+  @include mat.icon-button-overrides(
+    (
+      icon-color: var(--toast-success-color),
+    )
+  );
+
+  @include mat.button-overrides(
+    (
+      text-label-text-color: var(--toast-success-color),
+    )
+  );
+
+  border-left-color: var(--toast-success-border);
+}
+
+.error-toast {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: var(--toast-error-background),
+      supporting-text-color: var(--toast-error-color),
+    )
+  );
+
+  @include mat.icon-button-overrides(
+    (
+      icon-color: var(--toast-error-color),
+    )
+  );
+
+  @include mat.button-overrides(
+    (
+      text-label-text-color: var(--toast-error-color),
+    )
+  );
+
+  border-left-color: var(--toast-error-border);
+}
+
+.warning-toast {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: var(--toast-warning-background),
+      supporting-text-color: var(--toast-warning-color),
+    )
+  );
+
+  @include mat.icon-button-overrides(
+    (
+      icon-color: var(--toast-warning-color),
+    )
+  );
+
+  @include mat.button-overrides(
+    (
+      text-label-text-color: var(--toast-warning-color),
+    )
+  );
+
+  border-left-color: var(--toast-warning-border);
+}
+
+.normal-toast {
+  @include mat.snack-bar-overrides(
+    (
+      container-color: var(--toast-normal-background),
+      supporting-text-color: var(--toast-normal-color),
+    )
+  );
+
+  @include mat.icon-button-overrides(
+    (
+      icon-color: var(--toast-normal-color),
+    )
+  );
+
+  @include mat.button-overrides(
+    (
+      text-label-text-color: var(--toast-normal-color),
+    )
+  );
+
+  border-left-color: var(--toast-normal-border);
+}

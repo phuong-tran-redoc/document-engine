@@ -1,0 +1,370 @@
+tiptap-editor {
+  position: relative;
+
+  .ProseMirror {
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  .ProseMirror-selectednode {
+    outline: 3px solid var(--primary);
+  }
+
+  /* Editable Region */
+  .editable-region {
+    background-color: var(--light-blue);
+    color: var(--light-blue-foreground);
+    border-bottom: 1px dashed var(--blue);
+    padding: 0 4px;
+  }
+
+  /* Placeholder (at the top) */
+  p.is-editor-empty:first-child::before {
+    color: var(--secondary);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* Placeholder (on every new line) */
+  .is-empty::before {
+    color: var(--secondary);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  p:first-of-type {
+    margin-top: 0;
+  }
+
+  p:last-of-type {
+    margin-bottom: 0;
+  }
+
+  // Widget wrapper (NodeView figure)
+  .widget {
+    @apply relative my-4 mx-0;
+    transition: opacity 0.2s ease-in-out;
+
+    // Show outline on hover
+    &:hover {
+      outline: 3px solid var(--blue);
+    }
+
+    // Stronger outline when selected
+    &.ProseMirror-selectednode {
+      outline: 2px solid rgb(var(--accent));
+      outline-offset: 2px;
+    }
+
+    // Show handle on hover
+    &:hover .widget__selection-handle {
+      opacity: 1;
+    }
+
+    // // Dragging state
+    // &.widget-dragging {
+    //   opacity: 0.4;
+    //   cursor: grabbing;
+    // }
+
+    // // Drop target indicators
+    // &.widget-drop-target-before::before,
+    // &.widget-drop-target-after::after {
+    //   content: '';
+    //   position: absolute;
+    //   left: 0;
+    //   right: 0;
+    //   height: 3px;
+    //   background: rgb(var(--accent));
+    //   z-index: 30;
+    //   animation: pulse-drop 1s ease-in-out infinite;
+    // }
+
+    // &.widget-drop-target-before::before {
+    //   top: -1.5px;
+    // }
+
+    // &.widget-drop-target-after::after {
+    //   bottom: -1.5px;
+    // }
+  }
+
+  @keyframes pulse-drop {
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  // Selection handle button
+  .widget__selection-handle {
+    @apply absolute z-20 flex items-center justify-center cursor-grab;
+    @apply w-6 h-6 rounded border bg-card text-muted-foreground border-border;
+    @apply shadow-elevation-1;
+
+    left: -32px;
+    top: 0;
+    opacity: 0;
+    transition:
+      opacity 0.15s ease-in-out,
+      background-color 0.15s ease-in-out;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      opacity: 1 !important;
+      @apply bg-accent text-accent-foreground;
+    }
+
+    &:active {
+      @apply cursor-grabbing;
+    }
+  }
+
+  // Widget content area
+  .widget-content {
+    @apply relative;
+  }
+
+  // Type around buttons (insert paragraph before/after)
+  .type-around {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+    height: auto;
+    width: auto;
+    position: static;
+  }
+
+  .widget:hover .type-around {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .widget__type-around__button {
+    @apply relative flex items-center justify-center cursor-pointer;
+    @apply w-6 h-6 rounded-full bg-card text-muted-foreground;
+    @apply border-2 border-border shadow-elevation-2;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
+
+    &:hover {
+      @apply bg-accent text-accent-foreground border-accent;
+      // transform: scale(1.15);
+    }
+
+    &:active {
+      transform: scale(1.05);
+    }
+
+    &_before {
+      @apply absolute;
+      top: -0.75rem;
+      left: 10%;
+      transform: translateX(-50%);
+    }
+
+    &_after {
+      @apply absolute;
+      bottom: -0.75rem;
+      left: 90%;
+      transform: translateX(-50%);
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover svg {
+      transform: scale(1.1);
+    }
+  }
+
+  // Table wrapper inside widget
+  .table-wrapper {
+    @apply relative;
+  }
+
+  // Table
+  table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    position: relative;
+
+    th,
+    td {
+      padding: 8px;
+      position: relative;
+    }
+
+    // Ô đang được chọn (Tiptap/ProseMirror gắn .selectedCell)
+    .selectedCell {
+      position: relative;
+
+      &::after {
+        @apply absolute inset-0 z-10 bg-blue-100/50 pointer-events-none;
+        content: '';
+      }
+    }
+
+    // Thanh resize cột (ColumnResizing)
+    .column-resize-handle {
+      @apply absolute w-1 top-0 bottom-0 -right-0.5 bg-blue-300 pointer-events-none;
+    }
+  }
+
+  .resize-cursor {
+    @apply cursor-col-resize;
+  }
+
+  /* Kiểu dáng cho handle */
+  .pm-col-resizer {
+    position: absolute;
+    top: 0;
+    z-index: 10; /* Đảm bảo nằm trên nội dung table */
+    display: block;
+    width: 4px;
+    background-color: var(--blue); /* Màu của handle */
+    opacity: 0; /* Ẩn đi mặc định */
+    transition: opacity 0.2s;
+    cursor: col-resize;
+    height: 100%;
+  }
+
+  /* Hiển thị handle khi hover vào table */
+  .ProseMirror table:hover .pm-col-resizer {
+    opacity: 0.3;
+  }
+
+  /* Làm handle rõ hơn khi hover vào chính nó */
+  .pm-col-resizer:hover {
+    opacity: 1 !important;
+  }
+
+  /* Components */
+  blockquote {
+    @apply border-l-4 border-border pl-4;
+    border-left-style: solid;
+  }
+
+  hr {
+    @apply border-t border-foreground;
+  }
+
+  img {
+    display: block;
+    height: auto;
+    margin: 1rem 0;
+    max-width: 100%;
+    width: 100%;
+
+    &.ProseMirror-selectednode {
+      outline: 3px solid var(--primary);
+    }
+  }
+
+  code {
+    background-color: var(--secondary);
+    border-radius: 0.4rem;
+    color: var(--secondary-foreground);
+    font-size: 0.85rem;
+    padding: 0.25em 0.3em;
+  }
+
+  .dynamic-field {
+    border: 1px solid var(--green);
+    cursor: default; /* Make it feel non-editable */
+    user-select: none; /* Prevent text selection inside */
+    white-space: nowrap;
+
+    /* Add a visual indicator when the node is selected */
+    &.ProseMirror-selectednode {
+      outline: 1px solid var(--blue);
+    }
+  }
+
+  /* Custom Ordered List Styles using CSS Counters */
+  ol[data-list-style-type] {
+    margin: 0;
+    counter-reset: list-counter;
+    list-style: none;
+    padding-left: 3rem;
+    margin-top: 0.5rem;
+  }
+
+  ol[data-list-style-type] > li {
+    position: relative;
+    display: block;
+
+    &:not(:first-child) {
+      margin-top: 0.25rem;
+    }
+  }
+
+  ol[data-list-style-type] > li::before {
+    position: absolute;
+    left: -2rem;
+    width: 2rem;
+    display: inline-block;
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+    font-weight: normal;
+  }
+
+  ol p {
+    margin: 0;
+  }
+
+  /* Default decimal style (1., 2., 3.) */
+  ol[data-list-style-type='decimal'] > li::before {
+    counter-increment: list-counter;
+    content: counter(list-counter) '.';
+  }
+
+  /* Lower alpha with dot style (a., b., c.) */
+  ol[data-list-style-type='lower-alpha-dot'] > li::before {
+    content: counter(list-counter, lower-alpha) '.';
+    counter-increment: list-counter;
+  }
+
+  /* Lower alpha with parentheses style ((a), (b), (c)) */
+  ol[data-list-style-type='lower-alpha-parens'] > li::before {
+    counter-increment: list-counter;
+    content: '(' counter(list-counter, lower-alpha) ')';
+  }
+
+  /* Lower roman with parentheses style ((i), (ii), (iii)) */
+  ol[data-list-style-type='lower-roman-parens'] > li::before {
+    counter-increment: list-counter;
+    content: '(' counter(list-counter, lower-roman) ')';
+  }
+
+  /* Nested list support */
+  ol[data-list-style-type] ol {
+    counter-reset: list-counter;
+  }
+}
+
+.active {
+  background-color: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+}
+
+.divider {
+  @apply self-center w-px h-5 mx-2 bg-muted-foreground;
+}

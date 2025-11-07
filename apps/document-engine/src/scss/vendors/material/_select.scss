@@ -1,0 +1,21 @@
+@use '@angular/material' as mat;
+
+:root {
+  @include mat.select-overrides(
+    (
+      panel-background-color: var(--popover),
+      // item-label-text-color: var(--popover-foreground),
+       // item-icon-color: var(--popover-foreground),
+    )
+  );
+}
+
+.notum-select {
+  &.mat-mdc-select-panel {
+    padding: 0;
+  }
+
+  .mat-mdc-option {
+    min-height: 36px;
+  }
+}

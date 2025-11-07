@@ -1,0 +1,67 @@
+@use '@angular/material' as mat;
+
+@use './primary' as primary-colors;
+
+// Include the common styles for Angular Material
+@include mat.core();
+
+// Create a helper function for theme generation
+@function create-theme($type: light, $primary-palette: null, $tertiary-palette: null, $density: 0) {
+  @return (
+    color: (
+      theme-type: $type,
+      primary: $primary-palette or mat.$azure-palette,
+      tertiary: $tertiary-palette or mat.$blue-palette,
+      use-system-variables: true,
+      system-variables-prefix: mat-sys,
+    ),
+    typography: (
+      use-system-variables: true,
+      system-variables-prefix: mat-sys,
+    ),
+    density: $density
+  );
+}
+
+// Default light theme using the new mat.theme() mixin
+:root {
+  @include mat.theme(
+    create-theme(
+      $type: light,
+      $primary-palette: primary-colors.$primary-palette,
+      $tertiary-palette: primary-colors.$tertiary-palette
+    )
+  );
+}
+
+// Dark theme - leverages system variables
+.dark {
+  color-scheme: dark;
+  @include mat.theme(
+    create-theme(
+      $type: dark,
+      $primary-palette: primary-colors.$primary-palette,
+      $tertiary-palette: primary-colors.$tertiary-palette
+    )
+  );
+}
+
+// Custom theme overrides using system variables
+// These will automatically work with all themes due to CSS custom properties
+:root {
+  // Map Angular Material system variables to our custom theme variables
+  --color-theme-primary: var(--mat-sys-primary);
+  --color-theme-primary-contrast: var(--mat-sys-on-primary);
+  --color-theme-accent: var(--mat-sys-secondary);
+  --color-theme-accent-contrast: var(--mat-sys-on-secondary);
+  --color-theme-warn: var(--mat-sys-error);
+  --color-theme-warn-contrast: var(--mat-sys-on-error);
+
+  --color-theme-background: var(--mat-sys-surface);
+  --color-theme-surface: var(--mat-sys-surface-container);
+  --color-theme-surface-variant: var(--mat-sys-surface-container-high);
+  --color-theme-text-primary: var(--mat-sys-on-surface);
+  --color-theme-text-secondary: var(--mat-sys-on-surface-variant);
+  --color-theme-text-disabled: var(--mat-sys-outline);
+  --color-theme-divider: var(--mat-sys-outline-variant);
+}

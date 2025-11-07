@@ -1,0 +1,43 @@
+:root {
+  /* Success - Green */
+  --toast-success-background: #d1fae5;
+  --toast-success-color: #064e3b;
+  --toast-success-border: #10b981;
+
+  /* Error - Red */
+  --toast-error-background: #fee2e2;
+  --toast-error-color: #7f1d1d;
+  --toast-error-border: #ef4444;
+
+  /* Warning - Amber */
+  --toast-warning-background: #fef3c7;
+  --toast-warning-color: #78350f;
+  --toast-warning-border: #f59e0b;
+
+  /* Normal/Info - Blue */
+  --toast-normal-background: #dbeafe;
+  --toast-normal-color: #1e3a8a;
+  --toast-normal-border: #3b82f6;
+}
+
+.dark {
+  /* Success - Green (Dark) */
+  --toast-success-background: #064e3b;
+  --toast-success-color: #a7f3d0;
+  --toast-success-border: #34d399;
+
+  /* Error - Red (Dark) */
+  --toast-error-background: #7f1d1d;
+  --toast-error-color: #fecaca;
+  --toast-error-border: #f87171;
+
+  /* Warning - Amber (Dark) */
+  --toast-warning-background: #78350f;
+  --toast-warning-color: #fde68a;
+  --toast-warning-border: #fbbf24;
+
+  /* Normal/Info - Blue (Dark) */
+  --toast-normal-background: #1e3a8a;
+  --toast-normal-color: #bfdbfe;
+  --toast-normal-border: #60a5fa;
+}

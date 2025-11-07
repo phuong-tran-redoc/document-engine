@@ -1,0 +1,31 @@
+@use '@angular/material' as mat;
+
+.notum-card {
+  @include mat.card-overrides(
+    (
+      elevated-container-color: var(--card),
+      title-text-weight: 500,
+      title-text-size: 20px,
+
+      subtitle-text-weight: 400,
+      subtitle-text-size: 14px,
+      subtitle-text-color: var(--muted-foreground),
+    )
+  );
+
+  &.mat-mdc-card {
+    @apply py-6 bg-card;
+  }
+
+  .mat-mdc-card-header {
+    @apply pt-0;
+  }
+
+  .mat-mdc-card-content {
+    @apply px-6;
+  }
+
+  .mat-mdc-card-actions {
+    @apply min-h-0;
+  }
+}

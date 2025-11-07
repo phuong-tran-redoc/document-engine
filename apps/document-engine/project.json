@@ -21,7 +21,7 @@
             "input": "apps/document-engine/public"
           }
         ],
-        "styles": ["apps/document-engine/src/styles.scss"]
+        "styles": ["apps/document-engine/src/styles.scss", "apps/document-engine/src/scss/index.scss"]
       },
       "configurations": {
         "production": {
@@ -37,12 +37,27 @@
               "maximumError": "8kb"
             }
           ],
+          "fileReplacements": [
+            {
+              "replace": "apps/document-engine/src/environments/environment.ts",
+              "with": "apps/document-engine/src/environments/environment.prod.ts"
+            }
+          ],
+          "sourceMap": false,
+          "extractLicenses": true,
+          "optimization": true,
           "outputHashing": "all"
         },
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/dashboard/src/environments/environment.ts",
+              "with": "apps/dashboard/src/environments/environment.local.ts"
+            }
+          ]
         }
       },
       "defaultConfiguration": "production"

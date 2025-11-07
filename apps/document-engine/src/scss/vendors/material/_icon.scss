@@ -1,0 +1,24 @@
+@mixin notum-icon-size($size) {
+  font-size: $size;
+  width: $size !important;
+  height: $size !important;
+  line-height: 1;
+}
+
+.notum-icon {
+  &--sm {
+    @include notum-icon-size(16px);
+  }
+
+  &--base {
+    @include notum-icon-size(20px);
+  }
+
+  &--md {
+    @include notum-icon-size(24px);
+  }
+
+  &--lg {
+    @include notum-icon-size(30px);
+  }
+}

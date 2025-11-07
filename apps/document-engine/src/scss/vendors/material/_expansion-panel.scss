@@ -1,0 +1,9 @@
+@use '@angular/material' as mat;
+
+:root {
+  @include mat.expansion-overrides(
+    (
+      container-text-size: var(--font-size),
+    )
+  );
+}

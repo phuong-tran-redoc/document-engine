@@ -1,0 +1,15 @@
+:root {
+  --font-size: 0.875rem;
+
+  --font-size-h1: 2rem;
+  --font-size-h2: 1.5rem;
+  --font-size-h3: 1.25rem;
+}
+
+$format: 'h1', 'h2', 'h3';
+
+@each $format in $format {
+  .#{$format} {
+    font-size: var(--font-size-#{$format});
+  }
+}

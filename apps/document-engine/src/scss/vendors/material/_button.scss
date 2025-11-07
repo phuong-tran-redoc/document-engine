@@ -1,0 +1,56 @@
+@use '@angular/material' as mat;
+
+.notum-button {
+  $notum-icon-button-sizes: 14, 16, 18, 20, 24;
+
+  // List of button types: each item is a tuple [bg-color, text-color]
+  $notum-button-type: (('primary', 'primary-foreground'), ('secondary', 'secondary-foreground'));
+
+  @include mat.button-overrides(
+    (
+      text-label-text-color: var(--foreground),
+      text-horizontal-padding: 16px,
+      text-container-height: 32px,
+      text-state-layer-color: var(--mat-sys-on-surface-variant),
+      filled-container-height: 32px,
+      filled-horizontal-padding: 16px,
+
+      text-with-icon-horizontal-padding: 8px,
+    )
+  );
+
+  display: inline-flex !important;
+
+  @each $size in $notum-icon-button-sizes {
+    &--icon-#{$size} {
+      @include mat.icon-button-overrides(
+        (
+          icon-size: #{$size}px,
+          state-layer-size: 32px,
+        )
+      );
+
+      .mat-icon {
+        font-size: #{$size}px;
+        width: #{$size}px;
+        height: #{$size}px;
+        line-height: 1;
+      }
+    }
+  }
+
+  @each $bg-color, $text-color in $notum-button-type {
+    &--#{$bg-color} {
+      @include mat.button-overrides(
+        (
+          'filled-container-color': var(--#{$bg-color}),
+          'filled-label-text-color': var(--#{$text-color}),
+        )
+      );
+    }
+  }
+
+  &.double-icon {
+    width: auto;
+  }
+}
