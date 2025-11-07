@@ -1,0 +1,482 @@
+<div class="notum-document-editor__toolbar">
+  <div class="notum-document-editor__toolbar-content">
+    <div class="notum-document-editor__toolbar-left">
+      <!-- History: Undo/Redo -->
+      <div *ngIf="hasHistory()" class="notum-document-editor__toolbar-group">
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().undo().run()"
+          (click)="editor.chain().focus().undo().run()"
+          title="Undo (Ctrl+Z)"
+        >
+          <notum-icon name="undo"></notum-icon>
+        </button>
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().redo().run()"
+          (click)="editor.chain().focus().redo().run()"
+          title="Redo"
+        >
+          <notum-icon name="redo"></notum-icon>
+        </button>
+      </div>
+
+      <div *ngIf="hasHistory() && hasFormatting()" class="notum-document-editor__toolbar-divider"></div>
+
+      <!-- Text Formatting: Font Size, Line Height, Text Case, Heading -->
+      <div *ngIf="hasFormatting()" class="notum-document-editor__toolbar-group">
+        <!-- Font Size -->
+        <notum-select [value]="activeFontSize" placeholder="Font Size" labelMode="static">
+          <notum-icon notumSelectLabel name="format_size"></notum-icon>
+
+          <button notumSelectOption [value]="null">Default</button>
+
+          @for (option of fontSizeOptions; track option.value) {
+            <button notumSelectOption [value]="option.value" (click)="setFontSize(option.value)">
+              {{ option.label }}
+            </button>
+          }
+        </notum-select>
+
+        <!-- Line Height -->
+        <notum-select [value]="activeLineHeight" placeholder="Line Height" labelMode="static">
+          <notum-icon notumSelectLabel name="format_line_spacing"></notum-icon>
+
+          @for (option of lineHeightOptions; track option.value) {
+            <button notumSelectOption [value]="option.value" (click)="setLineHeight(option.value)">
+              {{ option.label }}
+            </button>
+          }
+        </notum-select>
+
+        <!-- Text Case -->
+        <notum-select *ngIf="hasTextCase()" placeholder="Text Case" labelMode="static">
+          <notum-icon notumSelectLabel name="match_case"></notum-icon>
+
+          @for (option of textCaseOptions; track option.value) {
+            <button
+              notumSelectOption
+              [value]="option.value"
+              (click)="editor.chain().focus().textCase(option.value).run()"
+            >
+              {{ option.label }}
+            </button>
+          }
+        </notum-select>
+
+        <!-- Heading -->
+        <notum-select *ngIf="hasHeading()" [value]="activeHeading?.toString() || null" placeholder="Normal text">
+          @for (option of headingOptions; track option.value) {
+            <button
+              notumSelectOption
+              [value]="option.value?.toString() || null"
+              [class]="option.class"
+              (click)="setHeading(option.value?.toString() || null)"
+            >
+              {{ option.label }}
+            </button>
+          }
+        </notum-select>
+      </div>
+
+      <div *ngIf="hasFormatting()" class="notum-document-editor__toolbar-divider"></div>
+
+      <!-- Reset Formatting -->
+      <div *ngIf="hasFormatting()" class="notum-document-editor__toolbar-group">
+        <button
+          notumButton
+          size="icon"
+          (click)="editor.chain().focus().resetFormat().run()"
+          [disabled]="!editor.can().chain().focus().resetFormat().run()"
+          title="Clear Formatting"
+        >
+          <notum-icon name="format_clear"></notum-icon>
+        </button>
+      </div>
+
+      <div *ngIf="hasFormatting() && hasColors()" class="notum-document-editor__toolbar-divider"></div>
+
+      <!-- Colors: Text/Background -->
+      <div *ngIf="hasColors()" class="notum-document-editor__toolbar-group">
+        <button notumButton size="icon" title="Text Color" (click)="openColorBubble($event, 'text')">
+          <notum-icon name="format_color_text"></notum-icon>
+        </button>
+
+        <button notumButton size="icon" title="Background Color" (click)="openColorBubble($event, 'fill')">
+          <notum-icon name="format_color_fill"></notum-icon>
+        </button>
+      </div>
+
+      <div *ngIf="hasColors() && hasFormatting()" class="notum-document-editor__toolbar-divider"></div>
+
+      <!-- Text Styles: Bold/Italic/Underline/Strike -->
+      <div *ngIf="hasFormatting()" class="notum-document-editor__toolbar-group">
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleBold().run()"
+          (click)="editor.chain().focus().toggleBold().run()"
+          [class.active]="editor.isActive('bold')"
+          title="Bold"
+        >
+          <notum-icon name="format_bold"></notum-icon>
+        </button>
+
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleItalic().run()"
+          (click)="editor.chain().focus().toggleItalic().run()"
+          [class.active]="editor.isActive('italic')"
+          title="Italic"
+        >
+          <notum-icon name="format_italic"></notum-icon>
+        </button>
+
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleUnderline().run()"
+          (click)="editor.chain().focus().toggleUnderline().run()"
+          [class.active]="editor.isActive('underline')"
+          title="Underline"
+        >
+          <notum-icon name="format_underline"></notum-icon>
+        </button>
+
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleStrike().run()"
+          (click)="editor.chain().focus().toggleStrike().run()"
+          [class.active]="editor.isActive('strike')"
+          title="Strikethrough"
+        >
+          <notum-icon name="format_strikethrough"></notum-icon>
+        </button>
+      </div>
+
+      <div *ngIf="hasFormatting()" class="notum-document-editor__toolbar-divider"></div>
+
+      <!-- Text Styles: Sub/Super/Code -->
+      <div *ngIf="hasFormatting()" class="notum-document-editor__toolbar-group">
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleSubscript().run()"
+          (click)="editor.chain().focus().toggleSubscript().run()"
+          [class.active]="editor.isActive('subscript')"
+          title="Subscript"
+        >
+          <notum-icon name="subscript"></notum-icon>
+        </button>
+
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleSuperscript().run()"
+          (click)="editor.chain().focus().toggleSuperscript().run()"
+          [class.active]="editor.isActive('superscript')"
+          title="Superscript"
+        >
+          <notum-icon name="superscript"></notum-icon>
+        </button>
+
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleCode().run()"
+          (click)="editor.chain().focus().toggleCode().run()"
+          [class.active]="editor.isActive('code')"
+          title="Code"
+        >
+          <notum-icon name="code"></notum-icon>
+        </button>
+      </div>
+
+      <div *ngIf="hasFormatting()" class="notum-document-editor__toolbar-divider"></div>
+
+      <!-- Text Alignment -->
+      <div *ngIf="hasFormatting()" class="notum-document-editor__toolbar-group">
+        <notum-select
+          [value]="activeTextAlign"
+          (valueChange)="setTextAlign($event)"
+          placeholder="Text Align"
+          labelMode="static"
+        >
+          <notum-icon notumSelectLabel [name]="activeTextAlignIcon"></notum-icon>
+
+          @for (option of textAlignOptions; track option.value) {
+            <button notumSelectOption [value]="option.value">
+              <notum-icon [name]="option.icon"></notum-icon>
+              <span>{{ option.label }}</span>
+            </button>
+          }
+        </notum-select>
+
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleBlockquote().run()"
+          (click)="editor.chain().focus().toggleBlockquote().run()"
+          [class.active]="editor.isActive('blockquote')"
+          title="Quote"
+        >
+          <notum-icon name="format_quote"></notum-icon>
+        </button>
+      </div>
+
+      <div *ngIf="hasFormatting() && hasIndent()" class="notum-document-editor__toolbar-divider"></div>
+
+      <!-- Indent -->
+      <div *ngIf="hasIndent()" class="notum-document-editor__toolbar-group">
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().decreaseIndent().run()"
+          (click)="editor.chain().focus().decreaseIndent().run()"
+          title="Decrease Indent"
+        >
+          <notum-icon name="format_indent_decrease"></notum-icon>
+        </button>
+
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().increaseIndent().run()"
+          (click)="editor.chain().focus().increaseIndent().run()"
+          title="Increase Indent"
+        >
+          <notum-icon name="format_indent_increase"></notum-icon>
+        </button>
+      </div>
+
+      <div *ngIf="hasIndent() && hasLists()" class="notum-document-editor__toolbar-divider"></div>
+
+      <!-- Lists: Bullet, Numbered (with style) -->
+      <div *ngIf="hasLists()" class="notum-document-editor__toolbar-group">
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleBulletList().run()"
+          (click)="editor.chain().focus().toggleBulletList().run()"
+          [class.active]="editor.isActive('bulletList')"
+          title="Bullet List"
+        >
+          <notum-icon name="format_list_bulleted"></notum-icon>
+        </button>
+
+        <!-- Numbered List with Style -->
+        <notum-select
+          placeholder="Numbered List"
+          labelMode="static"
+          [value]="
+            editor.isActive('customOrderedList')
+              ? editor.getAttributes('customOrderedList')['data-list-style-type'] || 'decimal'
+              : null
+          "
+        >
+          <notum-icon notumSelectLabel name="format_list_numbered"></notum-icon>
+
+          @for (option of listStyleOptions; track option.value) {
+            <button
+              notumSelectOption
+              [value]="option.value"
+              (click)="setListStyle(option.value)"
+              [class.active]="
+                editor.isActive('customOrderedList') &&
+                editor.getAttributes('customOrderedList')['data-list-style-type'] === option.value
+              "
+            >
+              <span>{{ option.example }}</span>
+              <span>{{ option.label }}</span>
+            </button>
+          }
+        </notum-select>
+      </div>
+
+      <div *ngIf="hasLists() && (hasTable() || hasAdvanced())" class="notum-document-editor__toolbar-divider"></div>
+
+      <!-- Advanced: Table, Links, Images, Special Chars, Dynamic Fields -->
+      <div *ngIf="hasTable() || hasAdvanced()" class="notum-document-editor__toolbar-group">
+        <button
+          *ngIf="hasTable()"
+          notumButton
+          size="icon"
+          (click)="openCreateTableBubble($event)"
+          [class.active]="editor.isActive('table')"
+          title="Table"
+        >
+          <notum-icon name="table_rows"></notum-icon>
+        </button>
+        <button
+          *ngIf="hasLinks()"
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleLink().run()"
+          (click)="toggleLink()"
+          [class.active]="editor.isActive('link')"
+          [title]="editor.isActive('link') ? 'Unlink' : 'Link'"
+        >
+          <notum-icon [name]="editor.isActive('link') ? 'link_off' : 'link'"></notum-icon>
+        </button>
+
+        <button *ngIf="hasImages()" notumButton size="icon" title="Insert Image" (click)="insertImage($event)">
+          <notum-icon name="photo"></notum-icon>
+        </button>
+
+        <button
+          *ngIf="hasSpecialChars()"
+          notumButton
+          size="icon"
+          title="Special Character"
+          (click)="openSpecialCharsBubble($event)"
+        >
+          <notum-icon name="special_character"></notum-icon>
+        </button>
+
+        <button
+          *ngIf="hasDynamicFields()"
+          notumButton
+          size="icon"
+          title="Dynamic Field"
+          (click)="openDynamicFieldsBubble($event)"
+        >
+          <notum-icon name="dynamic_form"></notum-icon>
+        </button>
+
+        <button *ngIf="hasTemplates()" notumButton size="icon" title="Template" (click)="openTemplateBubble($event)">
+          <notum-icon name="description"></notum-icon>
+        </button>
+      </div>
+
+      <div
+        *ngIf="(hasTable() || hasAdvanced()) && (hasEditableRegion() || hasClearContent() || hasPageBreak())"
+        class="notum-document-editor__toolbar-divider"
+      ></div>
+
+      <!-- Utilities: Editable Region, Clear Content, Markdown -->
+      <div class="notum-document-editor__toolbar-group">
+        <button
+          *ngIf="hasEditableRegion()"
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().toggleEditableRegion().run()"
+          (click)="editor.chain().focus().toggleEditableRegion().run()"
+          [class.active]="editor.isActive('editableRegion')"
+          title="Toggle editable region"
+        >
+          <notum-icon name="restrict_edit"></notum-icon>
+        </button>
+
+        <button
+          *ngIf="hasClearContent()"
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().clear().run()"
+          (click)="editor.chain().focus().clear().run()"
+          title="Clear all content"
+        >
+          <notum-icon name="clear_all"></notum-icon>
+        </button>
+
+        <!-- <button
+          *ngIf="hasMarkdown()"
+          notumButton
+          size="icon"
+          (click)="downloadAsMarkdown()"
+          title="Download as Markdown"
+        >
+          <notum-icon name="markdown"></notum-icon>
+        </button> -->
+      </div>
+
+      <div *ngIf="hasPageBreak()" class="notum-document-editor__toolbar-divider"></div>
+
+      <!-- Page Break -->
+      <div *ngIf="hasPageBreak()" class="notum-document-editor__toolbar-group">
+        <button
+          notumButton
+          size="icon"
+          [disabled]="!editor.can().chain().focus().insertPageBreak().run()"
+          (click)="editor.chain().focus().insertPageBreak().run()"
+          title="Insert page break"
+        >
+          <notum-icon name="insert_page_break"></notum-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right side actions -->
+    <div class="notum-document-editor__toolbar-right">
+      <button notumButton size="icon" (click)="printValue()" title="Print Value">
+        <notum-icon name="print"></notum-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Color Bubble Menu -->
+  <notum-toolbar-bubble-menu
+    #colorBubbleMenu
+    [editor]="editor"
+    [config]="colorBubbleConfig"
+  ></notum-toolbar-bubble-menu>
+
+  <!-- Link Bubble Menu -->
+  <notum-editor-bubble-menu
+    *ngIf="hasLinks()"
+    #linkBubbleWrapper
+    [editor]="editor"
+    [config]="linkBubbleConfig"
+  ></notum-editor-bubble-menu>
+
+  <!-- Table Bubble Menu -->
+  <notum-editor-bubble-menu
+    *ngIf="hasTable()"
+    #tableBubbleWrapper
+    [editor]="editor"
+    [config]="tableBubbleConfig"
+  ></notum-editor-bubble-menu>
+
+  <!-- Image Bubble Menu -->
+  <notum-toolbar-bubble-menu
+    *ngIf="hasImages()"
+    #imageBubbleMenu
+    [editor]="editor"
+    [config]="imageBubbleConfig"
+  ></notum-toolbar-bubble-menu>
+
+  <!-- Special Characters Bubble Menu -->
+  <notum-toolbar-bubble-menu
+    *ngIf="hasSpecialChars()"
+    #specialCharsBubbleMenu
+    [editor]="editor"
+    [config]="specialCharsBubbleConfig"
+  ></notum-toolbar-bubble-menu>
+
+  <!-- Dynamic Fields Bubble Menu -->
+  <notum-toolbar-bubble-menu
+    *ngIf="hasDynamicFields()"
+    #dynamicFieldsBubbleMenu
+    [editor]="editor"
+    [config]="dynamicFieldsBubbleConfig"
+  ></notum-toolbar-bubble-menu>
+
+  <!-- Template Bubble Menu -->
+  <notum-toolbar-bubble-menu
+    *ngIf="hasTemplates()"
+    #templateBubbleMenu
+    [editor]="editor"
+    [config]="templateBubbleConfig"
+  ></notum-toolbar-bubble-menu>
+
+  <!-- Table Create Bubble Menu -->
+  <notum-toolbar-bubble-menu
+    *ngIf="hasTable()"
+    #tableCreateBubbleMenu
+    [editor]="editor"
+    [config]="tableCreateBubbleConfig"
+  ></notum-toolbar-bubble-menu>
+</div>

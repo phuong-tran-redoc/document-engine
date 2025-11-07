@@ -1,0 +1,70 @@
+.notum-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.notum-checkbox__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.notum-checkbox__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid var(--input);
+  border-radius: 0.25rem;
+  background-color: transparent;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+
+  .notum-checkbox__input:checked ~ & {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .notum-checkbox__input:focus-visible ~ & {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  .notum-checkbox__input:disabled ~ & {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.notum-checkbox__icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  color: var(--primary-foreground);
+}
+
+.notum-checkbox__label {
+  font-size: 0.875rem;
+  line-height: 1;
+  font-weight: 500;
+
+  .notum-checkbox__input:disabled ~ & {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.notum-checkbox-container {
+  display: inline-block;
+}
+

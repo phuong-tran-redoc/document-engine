@@ -1,0 +1,7 @@
+<div class="notum-document-editor">
+  <notum-toolbar *ngIf="showToolbar" [editor]="editor" [config]="mergedConfig" [editable]="editable"></notum-toolbar>
+
+  <div class="notum-document-editor__content">
+    <ng-content></ng-content>
+  </div>
+</div>

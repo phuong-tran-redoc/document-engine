@@ -1,0 +1,112 @@
+.template-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.template-view__header {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.template-view__search {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.template-view__search-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.template-view__search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.template-view__search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--muted-foreground);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.template-view__search-input-wrapper input {
+  padding-left: 2.5rem;
+}
+
+.template-view__list-container {
+  overflow-y: auto;
+  max-height: 20rem;
+}
+
+.template-view__list {
+  padding: 0.5rem 0;
+}
+
+.template-view__template-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.75rem;
+  width: 100%;
+  text-align: left;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  outline: none;
+
+  &:hover {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ring);
+    box-shadow-offset: 2px;
+  }
+}
+
+.template-view__template-title {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  margin-bottom: 0.25rem;
+}
+
+.template-view__template-description {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  line-height: 1.4;
+}
+
+.template-view__empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--muted-foreground);
+}
+
+.template-view__empty-icon {
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.template-view__empty-text {
+  font-size: 0.875rem;
+}
+
+.template-view__actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem;
+  border-top: 1px solid var(--border);
+}

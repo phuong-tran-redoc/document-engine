@@ -1,0 +1,28 @@
+<div class="notum-select" [class.notum-select--outline]="variant === 'outline'">
+  <button
+    #trigger
+    type="button"
+    class="notum-select__trigger"
+    [class.notum-select__trigger--open]="isOpen"
+    [class.notum-select__trigger--disabled]="disabled"
+    [disabled]="disabled"
+    (click)="toggle()"
+  >
+    <span class="notum-select__value">
+      <!-- Static label mode: use label directive content -->
+      <ng-container *ngIf="useStaticLabel">
+        <ng-content select="[notumSelectLabel]"></ng-content>
+      </ng-container>
+
+      <!-- ActiveOption mode: use computed label -->
+      <ng-container *ngIf="!useStaticLabel"> {{ selectedLabel }} </ng-container>
+    </span>
+    <notum-icon name="arrow_drop_down" class="notum-select__icon"></notum-icon>
+  </button>
+
+  <div #dropdown *ngIf="isOpen" class="notum-select__dropdown">
+    <div class="notum-select__options">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+.notum-page-break {
+  position: relative;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+
+  border-top-width: 2px;
+  border-top-style: dashed;
+  border-top-color: var(--notum-border, oklch(0.922 0 0));
+
+  user-select: none;
+}
+
+@media print {
+  .notum-page-break {
+    height: 0;
+    overflow: hidden;
+    border-top: none;
+    margin: 0;
+  }
+}
+
+.notum-page-break-label {
+  position: absolute;
+  top: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: var(--notum-background, oklch(1 0 0));
+  color: var(--notum-text-muted, oklch(0.556 0 0));
+
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}

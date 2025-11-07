@@ -1,0 +1,215 @@
+// Button styles translated from React component (button.tsx)
+// Base button styles
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  border-radius: 0.375rem; // rounded-md
+  font-size: 0.875rem; // text-sm (14px)
+  font-weight: 500; // font-medium
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+
+  // Disabled state
+  &:disabled,
+  &[disabled] {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  // Focus visible state
+  &:focus-visible {
+    border-color: var(--ring, hsl(221.2 83.2% 53.3%));
+    box-shadow: 0 0 0 3px var(--ring, hsl(221.2 83.2% 53.3% / 0.5));
+  }
+
+  // Aria invalid state
+  &[aria-invalid='true'] {
+    border-color: var(--destructive, hsl(0 84.2% 60.2%));
+    box-shadow: 0 0 0 3px var(--destructive, hsl(0 84.2% 60.2% / 0.2));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &[aria-invalid='true'] {
+      box-shadow: 0 0 0 3px var(--destructive, hsl(0 84.2% 60.2% / 0.4));
+    }
+  }
+}
+
+// Variant: default (primary)
+.btn--default {
+  background-color: var(--primary, hsl(221.2 83.2% 53.3%));
+  color: var(--primary-foreground, hsl(0 0% 100%));
+  border: 1px solid transparent;
+
+  &:hover:not(:disabled) {
+    background-color: var(--primary, hsl(221.2 83.2% 53.3% / 0.9));
+  }
+}
+
+// Variant: destructive
+.btn--destructive {
+  background-color: var(--destructive, hsl(0 84.2% 60.2%));
+  color: white;
+  border: 1px solid transparent;
+
+  &:hover:not(:disabled) {
+    background-color: var(--destructive, hsl(0 84.2% 60.2% / 0.9));
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px var(--destructive, hsl(0 84.2% 60.2% / 0.2));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--destructive, hsl(0 84.2% 60.2% / 0.6));
+
+    &:focus-visible {
+      box-shadow: 0 0 0 3px var(--destructive, hsl(0 84.2% 60.2% / 0.4));
+    }
+  }
+}
+
+// Variant: outline
+.btn--outline {
+  border: 1px solid var(--border, hsl(214.3 31.8% 91.4%));
+  background-color: var(--background, hsl(0 0% 100%));
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); // shadow-xs
+
+  &:hover:not(:disabled) {
+    background-color: var(--accent, hsl(210 40% 96.1%));
+    color: var(--accent-foreground, hsl(222.2 47.4% 11.2%));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--input, hsl(214.3 31.8% 91.4% / 0.3));
+    border-color: var(--input, hsl(214.3 31.8% 91.4%));
+
+    &:hover:not(:disabled) {
+      background-color: var(--input, hsl(214.3 31.8% 91.4% / 0.5));
+    }
+  }
+}
+
+// Variant: secondary
+.btn--secondary {
+  background-color: var(--secondary, hsl(210 40% 96.1%));
+  color: var(--secondary-foreground, hsl(222.2 47.4% 11.2%));
+  border: 1px solid transparent;
+
+  &:hover:not(:disabled) {
+    background-color: var(--secondary, hsl(210 40% 96.1% / 0.8));
+  }
+}
+
+// Variant: ghost
+.btn--ghost {
+  background-color: transparent;
+  border: 1px solid transparent;
+  // color: var(--secondary-foreground, hsl(222.2 47.4% 11.2%));
+  color: #414752;
+
+  &:hover:not(:disabled) {
+    background-color: var(--accent, hsl(210 40% 96.1%));
+    color: var(--accent-foreground, hsl(222.2 47.4% 11.2%));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover:not(:disabled) {
+      background-color: var(--accent, hsl(210 40% 96.1% / 0.5));
+    }
+  }
+}
+
+// Variant: link
+.btn--link {
+  background-color: transparent;
+  color: var(--primary, hsl(221.2 83.2% 53.3%));
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  border: none;
+  padding: 0;
+
+  &:hover:not(:disabled) {
+    text-decoration: underline;
+  }
+}
+
+// Size: default
+.btn--size-default {
+  height: 2.25rem; // h-9 (36px)
+  padding: 0.5rem 1rem; // px-4 py-2
+
+  &:has(> svg) {
+    padding-left: 0.75rem; // has-[>svg]:px-3
+    padding-right: 0.75rem;
+  }
+}
+
+// Size: sm
+.btn--size-sm {
+  height: 2rem; // h-8 (32px)
+  border-radius: 0.375rem; // rounded-md
+  gap: 0.375rem; // gap-1.5
+  padding: 0.5rem 0.75rem; // px-3
+
+  &:has(> svg) {
+    padding-left: 0.625rem; // has-[>svg]:px-2.5
+    padding-right: 0.625rem;
+  }
+}
+
+// Size: lg
+.btn--size-lg {
+  height: 2.5rem; // h-10 (40px)
+  border-radius: 0.375rem; // rounded-md
+  padding: 0.5rem 1.5rem; // px-6
+
+  &:has(> svg) {
+    padding-left: 1rem; // has-[>svg]:px-4
+    padding-right: 1rem;
+  }
+}
+
+// Size: icon
+.btn--size-icon {
+  width: 2.25rem; // size-9 (36px)
+  height: 2.25rem;
+  padding: 0;
+  border-radius: 0.375rem;
+
+  &:has(> svg) {
+    padding: 0;
+  }
+}
+
+// Size: icon-sm
+.btn--size-icon-sm {
+  width: 2rem; // size-8 (32px)
+  height: 2rem;
+  padding: 0;
+  border-radius: 0.375rem;
+
+  &:has(> svg) {
+    padding: 0;
+  }
+}
+
+// Size: icon-lg
+.btn--size-icon-lg {
+  width: 2.5rem; // size-10 (40px)
+  height: 2.5rem;
+  padding: 0;
+  border-radius: 0.375rem;
+
+  &:has(> svg) {
+    padding: 0;
+  }
+}

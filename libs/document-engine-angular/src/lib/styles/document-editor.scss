@@ -1,0 +1,15 @@
+.notum-document-editor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 0.75rem;
+  background-color: var(--card-bg, #fff);
+  color: var(--card-foreground, #000);
+  box-shadow: none;
+
+  &__content {
+    padding: 1rem;
+    border-top: 1px solid var(--border, #e5e7eb);
+  }
+}

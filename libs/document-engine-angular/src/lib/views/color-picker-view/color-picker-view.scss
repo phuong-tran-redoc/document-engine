@@ -1,0 +1,18 @@
+.color-picker-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.color-picker-view__title {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  font-weight: 500;
+}
+
+.color-picker-view__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-top: 1px solid var(--border, #e5e7eb);
+}

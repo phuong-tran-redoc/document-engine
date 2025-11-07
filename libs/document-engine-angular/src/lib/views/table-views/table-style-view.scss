@@ -1,0 +1,114 @@
+.table-style-view {
+  display: flex;
+  flex-direction: column;
+  width: 32.5rem;
+}
+
+.table-style-view__header {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.table-style-view__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.75rem;
+}
+
+.table-style-view__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.table-style-view__section-label {
+  font-weight: bold;
+  color: var(--muted-foreground);
+}
+
+.table-style-view__border-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.5rem;
+}
+
+.table-style-view__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  grid-column: span 2;
+
+  &--color {
+    grid-column: span 4;
+    position: relative;
+  }
+}
+
+.table-style-view__field-label {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.table-style-view__color-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  input {
+    flex: 1;
+    padding-right: 3rem;
+  }
+}
+
+.table-style-view__color-clear {
+  position: absolute;
+  right: 2.5rem;
+  z-index: 1;
+}
+
+.table-style-view__color-swatch {
+  position: absolute;
+  right: 0.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.2s;
+  overflow: hidden;
+  z-index: 2;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.table-style-view__color-checker {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  background-image: repeating-conic-gradient(#ccc 0deg 90deg, #fff 90deg 180deg);
+  background-size: 4px 4px;
+}
+
+.table-style-view__color-picker-dropdown {
+  z-index: 50;
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-elevation-2);
+  padding: 0.5rem;
+  // Position and visibility are handled by PopoverDirective
+}
+
+.table-style-view__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--border);
+}

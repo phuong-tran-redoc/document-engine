@@ -1,0 +1,34 @@
+.image-insert-view {
+  display: flex;
+  flex-direction: column;
+  min-width: 320px;
+}
+
+.image-insert-view__header {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.image-insert-view__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0.5rem;
+}
+
+.image-insert-view__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.image-insert-view__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.5rem;
+  border-top: 1px solid var(--border);
+}

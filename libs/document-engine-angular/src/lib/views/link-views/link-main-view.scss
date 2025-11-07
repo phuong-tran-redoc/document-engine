@@ -1,0 +1,65 @@
+.link-main-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.link-main-view__header {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.link-main-view__content {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  align-items: center;
+}
+
+.link-main-view__url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+  font-size: 0.875rem;
+  color: #3b82f6;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link-main-view__url:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.link-main-view__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.link-main-view__button notum-icon {
+  width: 1rem;
+  height: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-main-view__button span {
+  font-size: 0.875rem;
+}
+
+.link-main-view__button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.link-main-view__button-icon notum-icon {
+  width: 1rem;
+  height: 1rem;
+}
+

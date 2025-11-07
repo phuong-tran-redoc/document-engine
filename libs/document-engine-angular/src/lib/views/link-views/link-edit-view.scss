@@ -1,0 +1,82 @@
+.link-edit-view {
+  display: flex;
+  flex-direction: column;
+  min-width: 320px;
+}
+
+.link-edit-view__header {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.link-edit-view__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem 0.5rem;
+}
+
+.link-edit-view__shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem 0.5rem;
+}
+
+.link-edit-view__shortcuts-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.link-edit-view__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Form field styles */
+.link-edit-view__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* Chip styles */
+.chip-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+.chip:hover {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.chip:active {
+  background-color: #d1d5db;
+}

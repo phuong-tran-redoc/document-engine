@@ -1,0 +1,33 @@
+/**
+ * Main styles entry point for @notum/document-engine-angular
+ *
+ * Usage in client application:
+ *
+ * Option 1: Import default styles (recommended)
+ * In your main styles.scss or styles.css:
+ * @import '@notum/document-engine-angular/styles';
+ *
+ * Option 2: Import individual style files
+ * @import '@notum/document-engine-angular/styles/button';
+ * @import '@notum/document-engine-angular/styles/icon';
+ * @import '@notum/document-engine-angular/styles/toolbar';
+ * @import '@notum/document-engine-angular/styles/document-editor';
+ * @import '@notum/document-engine-angular/styles/color-picker';
+ *
+ * Option 3: Provide custom styles
+ * Styles use class and element selectors (notum-*, .notum-*),
+ * so you can override them with your own CSS without importing these files.
+ */
+
+@forward 'icon';
+@forward 'button';
+@forward 'toolbar';
+@forward 'document-editor';
+@forward 'color-picker';
+@forward 'select';
+@forward 'page-break';
+@forward 'input';
+@forward 'label';
+@forward 'error-message';
+@forward 'checkbox';
+@forward 'toggle-button';

@@ -1,0 +1,43 @@
+.notum-document-editor__toolbar {
+  padding: 0.5rem 1rem;
+
+  &-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  &-left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    flex: 1;
+    gap: 0.5rem;
+    max-width: 90%;
+  }
+
+  &-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  &-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  &-divider {
+    width: 1px;
+    height: 1.25rem;
+    margin: 0 0.5rem;
+    background-color: var(--muted-foreground, #9ca3af);
+    align-self: center;
+    flex-shrink: 0;
+  }
+}
