@@ -1,9 +1,16 @@
 {
-  "name": "@redoc/document-engine-angular",
+  "name": "@phuong-tran-redoc/document-engine-angular",
   "version": "0.0.1",
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phuong-tran-redoc/document-engine"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "dependencies": {
     "tslib": "^2.3.0",
     "@floating-ui/dom": "^1.7.4",

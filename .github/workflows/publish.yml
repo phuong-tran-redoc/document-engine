@@ -1,0 +1,115 @@
+name: Publish Packages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'libs/document-engine-core/**'
+      - 'libs/document-engine-angular/**'
+      - '.github/workflows/publish.yml'
+
+jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      core-changed: ${{ steps.changes.outputs.core }}
+      angular-changed: ${{ steps.changes.outputs.angular }}
+      skip-publish: ${{ steps.check-commit.outputs.skip }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit message for NO_PUBLISH
+        id: check-commit
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          if echo "$COMMIT_MSG" | grep -q "NO_PUBLISH"; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "Found NO_PUBLISH in commit message, skipping publish"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check changed files
+        id: changes
+        run: |
+          echo "Checking for changes between ${{ github.event.before }} and ${{ github.event.after }}"
+
+          if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q "^libs/document-engine-core/"; then
+            echo "core=true" >> $GITHUB_OUTPUT
+            echo "Found changes in document-engine-core"
+          else
+            echo "core=false" >> $GITHUB_OUTPUT
+          fi
+
+          if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q "^libs/document-engine-angular/"; then
+            echo "angular=true" >> $GITHUB_OUTPUT
+            echo "Found changes in document-engine-angular"
+          else
+            echo "angular=false" >> $GITHUB_OUTPUT
+          fi
+
+  publish:
+    needs: check-changes
+    runs-on: ubuntu-latest
+    if: needs.check-changes.outputs.skip-publish == 'false'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@phuong-tran-redoc'
+        env:
+          NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build document-engine-core
+        if: needs.check-changes.outputs.core-changed == 'true'
+        run: nx build document-engine-core
+
+      - name: Build document-engine-angular
+        if: needs.check-changes.outputs.angular-changed == 'true'
+        run: nx build document-engine-angular
+
+      - name: Publish document-engine-core
+        if: needs.check-changes.outputs.core-changed == 'true'
+        working-directory: dist/libs/document-engine-core
+        run: pnpm publish --no-git-checks
+
+      - name: Publish document-engine-angular
+        if: needs.check-changes.outputs.angular-changed == 'true'
+        working-directory: dist/libs/document-engine-angular
+        run: pnpm publish --no-git-checks
