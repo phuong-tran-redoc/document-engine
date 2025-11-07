@@ -1,5 +1,5 @@
 const { createGlobPatternsForDependencies } = require('@nx/angular/tailwind');
-const { join } = require('path');
+const { join, resolve } = require('path');
 const { scopedPreflightStyles, isolateOutsideOfContainer } = require(resolve(
   __dirname,
   '../../tools/tailwind/scoped-preflight.ts'

@@ -28,13 +28,13 @@ import { Subject, takeUntil } from 'rxjs';
  * Select component with floating dropdown using @floating-ui/dom
  *
  * Usage:
- * <notum-select [(value)]="selectedValue" placeholder="Select...">
- *   <button notumSelectOption value="option1">Option 1</button>
- *   <button notumSelectOption value="option2">Option 2</button>
- * </notum-select>
+ * <document-engine-select [(value)]="selectedValue" placeholder="Select...">
+ *   <button documentEngineSelectOption value="option1">Option 1</button>
+ *   <button documentEngineSelectOption value="option2">Option 2</button>
+ * </document-engine-select>
  */
 @Component({
-  selector: 'notum-select',
+  selector: 'document-engine-select',
   standalone: true,
   imports: [CommonModule, IconComponent],
   templateUrl: './select.component.html',

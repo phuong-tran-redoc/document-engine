@@ -1,12 +1,27 @@
 import { Component } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { DocumentEngineLayoutComponent } from '@document-engine/layout';
+
+const components = [
+  // Angular
+  RouterModule,
+
+  // Layout
+  DocumentEngineLayoutComponent,
+
+  // Material
+  MatSlideToggleModule,
+  MatMenuModule,
+  MatButtonModule,
+];
 
 @Component({
-  imports: [NxWelcome, RouterModule],
+  imports: components,
   selector: 'app-root',
   templateUrl: './app.html',
-  styleUrl: './app.scss',
 })
 export class App {
   protected title = 'document-engine';

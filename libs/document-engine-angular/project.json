@@ -19,7 +19,14 @@
         "outputPath": "dist/libs/document-engine-angular",
         "main": "libs/document-engine-angular/src/index.ts",
         "tsConfig": "libs/document-engine-angular/tsconfig.lib.json",
-        "assets": ["libs/document-engine-angular/*.md"]
+        "assets": [
+          "libs/document-engine-angular/*.md",
+          {
+            "glob": "**/*",
+            "input": "libs/document-engine-angular/src/lib/styles",
+            "output": "styles"
+          }
+        ]
       }
     },
     "nx-release-publish": {

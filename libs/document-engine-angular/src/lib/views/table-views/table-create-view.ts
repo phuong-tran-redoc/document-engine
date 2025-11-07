@@ -16,7 +16,7 @@ export interface TableCreateViewData {
  * Allows users to configure table dimensions and header row
  */
 @Component({
-  selector: 'notum-table-create-view',
+  selector: 'document-engine-table-create-view',
   standalone: true,
   imports: [
     CommonModule,
@@ -33,7 +33,7 @@ export interface TableCreateViewData {
 
       <!-- Header option -->
       <form [formGroup]="form" class="table-create-view__option">
-        <notum-checkbox formControlName="header">Header row</notum-checkbox>
+        <document-engine-checkbox formControlName="header">Header row</document-engine-checkbox>
       </form>
 
       <!-- Divider -->
@@ -68,32 +68,45 @@ export interface TableCreateViewData {
         <div class="table-create-view__form-label">Or enter dimensions manually:</div>
         <form [formGroup]="form" class="table-create-view__form-fields">
           <div class="table-create-view__form-field">
-            <input notumInput type="number" formControlName="rows" min="1" [max]="MAX_GRID_ROWS" placeholder="Rows" />
-            <notum-error-message *ngIf="form.controls.rows.invalid && form.controls.rows.touched">
+            <input
+              documentEngineInput
+              type="number"
+              formControlName="rows"
+              min="1"
+              [max]="MAX_GRID_ROWS"
+              placeholder="Rows"
+            />
+            <document-engine-error-message *ngIf="form.controls.rows.invalid && form.controls.rows.touched">
               Enter 1-{{ MAX_GRID_ROWS }}
-            </notum-error-message>
+            </document-engine-error-message>
           </div>
 
           <div class="table-create-view__form-field">
             <input
-              notumInput
+              documentEngineInput
               type="number"
               formControlName="cols"
               min="1"
               [max]="MAX_GRID_COLS"
               placeholder="Columns"
             />
-            <notum-error-message *ngIf="form.controls.cols.invalid && form.controls.cols.touched">
+            <document-engine-error-message *ngIf="form.controls.cols.invalid && form.controls.cols.touched">
               Enter 1-{{ MAX_GRID_COLS }}
-            </notum-error-message>
+            </document-engine-error-message>
           </div>
         </form>
       </div>
 
       <!-- Actions -->
       <div class="table-create-view__actions">
-        <button type="button" notumButton variant="ghost" (click)="close?.()">Cancel</button>
-        <button type="button" notumButton variant="default" (click)="onInsertFromForm()" [disabled]="form.invalid">
+        <button type="button" documentEngineButton variant="ghost" (click)="close?.()">Cancel</button>
+        <button
+          type="button"
+          documentEngineButton
+          variant="default"
+          (click)="onInsertFromForm()"
+          [disabled]="form.invalid"
+        >
           Insert
         </button>
       </div>

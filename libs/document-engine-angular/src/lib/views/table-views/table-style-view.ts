@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Color, getCursorCellInfo, TableDefaultAttributes } from '@notum/document-engine-core';
+import { Color, getCursorCellInfo, TableDefaultAttributes } from '@redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { COLORS } from '../../constants/color.constant';
 import { BubbleMenuViewContent, PopoverDirective } from '../../core';
@@ -19,7 +19,7 @@ import {
  * Allows styling the entire table (borders, background, dimensions, alignment)
  */
 @Component({
-  selector: 'notum-table-style-view',
+  selector: 'document-engine-table-style-view',
   standalone: true,
   imports: [
     CommonModule,
@@ -45,36 +45,41 @@ import {
             <div class="table-style-view__field">
               <div class="table-style-view__field-label">Width</div>
 
-              <input notumInput [(ngModel)]="borderWidth" (ngModelChange)="onBorderWidthChange()" placeholder="1px" />
+              <input
+                documentEngineInput
+                [(ngModel)]="borderWidth"
+                (ngModelChange)="onBorderWidthChange()"
+                placeholder="1px"
+              />
             </div>
 
             <div class="table-style-view__field">
               <div class="table-style-view__field-label">Style</div>
 
-              <notum-select [(value)]="borderStyle" variant="outline">
-                <button notumSelectOption value="solid">Solid</button>
-                <button notumSelectOption value="double">Double</button>
-                <button notumSelectOption value="dashed">Dashed</button>
-                <button notumSelectOption value="dotted">Dotted</button>
-                <button notumSelectOption value="none">None</button>
-              </notum-select>
+              <document-engine-select [(value)]="borderStyle" variant="outline">
+                <button documentEngineSelectOption value="solid">Solid</button>
+                <button documentEngineSelectOption value="double">Double</button>
+                <button documentEngineSelectOption value="dashed">Dashed</button>
+                <button documentEngineSelectOption value="dotted">Dotted</button>
+                <button documentEngineSelectOption value="none">None</button>
+              </document-engine-select>
             </div>
 
             <div class="table-style-view__field table-style-view__field--color">
               <div class="table-style-view__field-label">Color</div>
               <div class="table-style-view__color-input">
-                <input notumInput [value]="borderColor" readonly />
+                <input documentEngineInput [value]="borderColor" readonly />
 
                 <button
                   *ngIf="borderColor"
                   type="button"
-                  notumButton
+                  documentEngineButton
                   size="icon"
                   variant="ghost"
                   class="table-style-view__color-clear"
                   (click)="borderColor = null"
                 >
-                  <notum-icon name="close"></notum-icon>
+                  <document-engine-icon name="close"></document-engine-icon>
                 </button>
 
                 <button
@@ -97,7 +102,7 @@ import {
                 class="table-style-view__color-picker-dropdown"
                 (click)="$event.stopPropagation()"
               >
-                <notum-color-picker
+                <document-engine-color-picker
                   [colorPalette]="colorPalette"
                   [activeColor]="borderColorObj"
                   (colorSelected)="onBorderColorSelected($event)"
@@ -114,18 +119,18 @@ import {
             <div class="table-style-view__field-label">Color</div>
 
             <div class="table-style-view__color-input">
-              <input notumInput [value]="tableBg" readonly />
+              <input documentEngineInput [value]="tableBg" readonly />
 
               <button
                 *ngIf="tableBg"
                 type="button"
-                notumButton
+                documentEngineButton
                 size="icon"
                 variant="ghost"
                 class="table-style-view__color-clear"
                 (click)="tableBg = null"
               >
-                <notum-icon name="close"></notum-icon>
+                <document-engine-icon name="close"></document-engine-icon>
               </button>
 
               <button
@@ -148,7 +153,7 @@ import {
               class="table-style-view__color-picker-dropdown"
               (click)="$event.stopPropagation()"
             >
-              <notum-color-picker
+              <document-engine-color-picker
                 [colorPalette]="colorPalette"
                 [activeColor]="tableBgObj"
                 (colorSelected)="onTableBgSelected($event)"
@@ -161,8 +166,8 @@ import {
 
       <!-- Actions -->
       <div class="table-style-view__actions">
-        <button notumButton variant="ghost" (click)="cancel()">Cancel</button>
-        <button notumButton variant="default" (click)="onSave()">Save</button>
+        <button documentEngineButton variant="ghost" (click)="cancel()">Cancel</button>
+        <button documentEngineButton variant="default" (click)="onSave()">Save</button>
       </div>
     </div>
   `,

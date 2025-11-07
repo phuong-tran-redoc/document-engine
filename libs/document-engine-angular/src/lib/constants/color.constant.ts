@@ -1,4 +1,4 @@
-import { Color } from '@notum/document-engine-core';
+import { Color } from '@redoc/document-engine-core';
 
 export const COLORS: Color[] = Color.fromArray([
   { name: 'Black', value: '#000000', type: 'hex' },

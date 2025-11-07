@@ -5,12 +5,12 @@
     (
       panel-background-color: var(--popover),
       // item-label-text-color: var(--popover-foreground),
-       // item-icon-color: var(--popover-foreground),
+      // item-icon-color: var(--popover-foreground),,
     )
   );
 }
 
-.notum-select {
+.document-engine-select {
   &.mat-mdc-select-panel {
     padding: 0;
   }

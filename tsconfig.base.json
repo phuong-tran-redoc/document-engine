@@ -16,9 +16,20 @@
     "baseUrl": ".",
     "paths": {
       "@redoc/document-engine-core": ["libs/document-engine-core/src/index.ts"],
-      "@redoc/document-engine-angular": [
-        "libs/document-engine-angular/src/index.ts"
-      ]
+      "@redoc/document-engine-angular": ["libs/document-engine-angular/src/index.ts"],
+      "@redoc/document-engine-angular/styles": ["libs/document-engine-angular/src/lib/styles/index.scss"],
+      "@shared/ui/avatar": ["libs/shared/ui/avatar/src/index.ts"],
+      "@shared/ui/breadcrumb": ["libs/shared/ui/breadcrumb/src/index.ts"],
+      "@shared/ui/confirmation-dialog": ["libs/shared/ui/confirmation-dialog/src/index.ts"],
+      "@shared/ui/sidebar": ["libs/shared/ui/sidebar/src/index.ts"],
+      "@shared/ui/toast": ["libs/shared/ui/toast/src/index.ts"],
+      "@shared/features/breakpoint-observer": ["libs/shared/features/breakpoint-observer/src/index.ts"],
+      "@document-engine/util": ["libs/document-engine/util/src/index.ts"],
+      "@document-engine/layout": ["libs/document-engine/features/layout/src/index.ts"],
+      "@document-engine/home": ["libs/document-engine/features/home/src/index.ts"],
+      "@document-engine/http-error": ["libs/document-engine/features/http-error/src/index.ts"],
+      "@document-engine/demo": ["libs/document-engine/features/demo/src/index.ts"],
+      "@shared/features/theme-system": ["libs/shared/features/theme-system/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

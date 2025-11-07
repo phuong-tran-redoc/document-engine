@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 
-.notum-card {
+.document-engine-card {
   @include mat.card-overrides(
     (
       elevated-container-color: var(--card),

@@ -17,7 +17,7 @@ interface LinkAttrs {
  * Provides navigation to edit and properties views
  */
 @Component({
-  selector: 'notum-link-main-view',
+  selector: 'document-engine-link-main-view',
   standalone: true,
   imports: [CommonModule, ButtonDirective, IconComponent],
   template: `
@@ -31,25 +31,31 @@ interface LinkAttrs {
           {{ currentUrl }}
         </a>
 
-        <button notumButton variant="ghost" size="sm" class="link-main-view__button" (click)="editLink()">
-          <notum-icon name="edit"></notum-icon>
+        <button documentEngineButton variant="ghost" size="sm" class="link-main-view__button" (click)="editLink()">
+          <document-engine-icon name="edit"></document-engine-icon>
           <span>Edit</span>
         </button>
 
-        <button notumButton variant="ghost" size="sm" class="link-main-view__button" (click)="openProperties()">
-          <notum-icon name="settings"></notum-icon>
+        <button
+          documentEngineButton
+          variant="ghost"
+          size="sm"
+          class="link-main-view__button"
+          (click)="openProperties()"
+        >
+          <document-engine-icon name="settings"></document-engine-icon>
           <span>Properties</span>
         </button>
 
         <button
-          notumButton
+          documentEngineButton
           variant="ghost"
           size="icon-sm"
           class="link-main-view__button-icon"
           (click)="removeLink()"
           title="Remove link"
         >
-          <notum-icon name="link_off"></notum-icon>
+          <document-engine-icon name="link_off"></document-engine-icon>
         </button>
       </div>
     </div>

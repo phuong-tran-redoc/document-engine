@@ -1,4 +1,4 @@
-.notum-select {
+.document-engine-select {
   position: relative;
   display: inline-block;
   min-width: 3.5rem;
@@ -60,7 +60,7 @@
     color: var(--muted-foreground, #9ca3af);
     transition: transform 0.15s ease;
 
-    .notum-select__trigger--open & {
+    .document-engine-select__trigger--open & {
       transform: rotate(180deg);
     }
   }
@@ -74,10 +74,8 @@
     background-color: var(--card-bg, #fff);
     border: 1px solid var(--border, #e5e7eb);
     border-radius: 0.375rem;
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.1),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    animation: notum-select-dropdown-fade-in 0.15s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    animation: document-engine-select-dropdown-fade-in 0.15s ease;
   }
 
   // &__options {
@@ -87,7 +85,7 @@
 }
 
 // Option styles
-.notum-select-option {
+.document-engine-select-option {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -120,21 +118,21 @@
 }
 
 // Outline variant - affects options only
-.notum-select--outline {
+.document-engine-select--outline {
   width: 100%;
 
-  .notum-select__trigger {
+  .document-engine-select__trigger {
     border: 1px solid var(--border, #e5e7eb);
     width: 100%;
   }
 
-  .notum-select__dropdown {
+  .document-engine-select__dropdown {
     width: 100%;
   }
 }
 
 // Animation
-@keyframes notum-select-dropdown-fade-in {
+@keyframes document-engine-select-dropdown-fade-in {
   from {
     opacity: 0;
     transform: translateY(-4px);

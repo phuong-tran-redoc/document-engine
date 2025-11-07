@@ -17,7 +17,7 @@ interface LinkAttrs {
  * Allows user to configure SEO and security settings
  */
 @Component({
-  selector: 'notum-link-properties-view',
+  selector: 'document-engine-link-properties-view',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ButtonDirective],
   template: `
@@ -54,9 +54,9 @@ interface LinkAttrs {
 
       <!-- Actions -->
       <div class="link-properties-view__actions">
-        <button notumButton variant="ghost" (click)="cancel()">Cancel</button>
+        <button documentEngineButton variant="ghost" (click)="cancel()">Cancel</button>
 
-        <button type="submit" notumButton variant="default" (click)="saveProperties()">Save</button>
+        <button type="submit" documentEngineButton variant="default" (click)="saveProperties()">Save</button>
       </div>
     </div>
   `,

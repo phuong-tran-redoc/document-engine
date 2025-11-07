@@ -1,0 +1,301 @@
+<document-engine-sidebar
+  #primarySidebarEl
+  [mode]="mode()"
+  [expandVariant]="expandVariant()"
+  [state]="sidebarState()"
+  (closeStart)="onSidebarStateChange('close')"
+>
+  <!-- Sidebar header -->
+  <div slot="header">
+    <div class="flex">
+      <button
+        class="flex items-center justify-center gap-x-4 cursor-pointer p-2 rounded-lg w-full hover:bg-[var(--sidebar-accent)]"
+        matRipple
+        (click)="headerMenuTrigger.openMenu()"
+      >
+        <mat-icon>apartment</mat-icon>
+
+        @if (expandVariant() === 'full') {
+        <span class="flex flex-col items-start flex-1 gap-y-1">
+          <span class="font-bold">documentEngine</span>
+          <span>Dashboard</span>
+        </span>
+
+        <mat-icon class="transition-transform duration-200 ease-in-out" [class.rotate-90]="headerMenuTrigger.menuOpen">
+          chevron_right
+        </mat-icon>
+        }
+      </button>
+
+      <div #headerMenuTrigger="matMenuTrigger" [matMenuTriggerFor]="headerMenu" class="absolute top-0 right-0"></div>
+
+      <mat-menu #headerMenu="matMenu" xPosition="after" yPosition="above" overlapTrigger="false" class="w-40">
+        <button mat-menu-item>Item 1</button>
+        <button mat-menu-item>Item 2</button>
+      </mat-menu>
+    </div>
+
+    <!-- <div class="mt-2" documentEngineSidebarSeparator></div> -->
+  </div>
+
+  <!-- Sidebar content using new directives -->
+  <div slot="content" class="p-2">
+    <!-- Normal Items -->
+    <div documentEngineSidebarGroup class="mb-4">
+      <div documentEngineSidebarGroupLabel>Normal Items</div>
+
+      <ul documentEngineSidebarMenu>
+        @for (item of normalItems; track item.id) {
+        <li documentEngineSidebarMenuItem>
+          <a documentEngineSidebarMenuButton [routerLink]="item.url" [isActive]="item.isActive ?? false">{{
+            item.name
+          }}</a>
+        </li>
+        }
+      </ul>
+    </div>
+
+    <!-- Items with prefix-icon and action button -->
+    <div documentEngineSidebarGroup class="group-data-[collapsible=icon]:hidden" class="mb-4">
+      <div documentEngineSidebarGroupLabel>Projects</div>
+
+      <ul documentEngineSidebarMenu>
+        @for (item of projects; track item.id) {
+        <li documentEngineSidebarMenuItem>
+          <a
+            documentEngineSidebarMenuButton
+            [routerLink]="item.url"
+            [size]="'default'"
+            [isActive]="isActive(item)"
+            [title]="isActive(item) ? 'Active' : null"
+            [class]="{ 'flex flex-col': expandVariant() === 'compact' }"
+          >
+            <mat-icon class="document-engine-icon--base">{{ item.icon }}</mat-icon>
+            <span>{{ item.name }}</span>
+          </a>
+
+          <button
+            documentEngineSidebarMenuAction
+            [showOnHover]="true"
+            aria-label="More"
+            [isPeerActive]="isActive(item)"
+            [matMenuTriggerFor]="itemMenu"
+          >
+            <mat-icon class="document-engine-icon--base">more_horiz</mat-icon>
+            <span class="sr-only">More</span>
+          </button>
+
+          <mat-menu
+            #itemMenu="matMenu"
+            xPosition="after"
+            yPosition="above"
+            overlapTrigger="false"
+            class="w-48 rounded-lg"
+          >
+            <button mat-menu-item>
+              <mat-icon>folder</mat-icon>
+              <span>View Project</span>
+            </button>
+            <button mat-menu-item>
+              <mat-icon>forward</mat-icon>
+              <span>Share Project</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item>
+              <mat-icon>delete</mat-icon>
+              <span>Delete Project</span>
+            </button>
+          </mat-menu>
+        </li>
+        }
+
+        <li documentEngineSidebarMenuItem>
+          <button documentEngineSidebarMenuButton>
+            <mat-icon class="document-engine-icon--base">more_horiz</mat-icon>
+            <span>More</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Items with submenu -->
+    <div class="mt-4" documentEngineSidebarGroup>
+      <div documentEngineSidebarGroupLabel>Platform</div>
+
+      <ul documentEngineSidebarMenu>
+        @for (item of items; track item.id) { @switch (expandVariant()) { @case ('compact') {
+        <li documentEngineSidebarMenuItem>
+          <button documentEngineSidebarMenuButton (click)="onItemClick(item)">
+            <span>{{ item.name }}</span>
+          </button>
+        </li>
+        } @default {
+        <mat-expansion-panel
+          [expanded]="item.isActive"
+          hideToggle
+          #collapsible="matExpansionPanel"
+          class="group/collapsible !shadow-none"
+        >
+          <mat-expansion-panel-header class="!p-0 !h-auto">
+            <li documentEngineSidebarMenuItem class="w-full">
+              <button documentEngineSidebarMenuButton class="w-full text-left">
+                @if (item.icon) {
+                <mat-icon class="document-engine-icon--base min-w-5">{{ item.icon }}</mat-icon>
+                }
+
+                <span>{{ item.name }}</span>
+
+                <mat-icon
+                  class="ml-auto transition-transform duration-200 ease-in-out document-engine-icon--base"
+                  [class.rotate-90]="collapsible.expanded"
+                >
+                  chevron_right
+                </mat-icon>
+              </button>
+            </li>
+          </mat-expansion-panel-header>
+
+          <ul documentEngineSidebarMenuSub>
+            @for (sub of item.items; track sub.id) {
+            <li documentEngineSidebarMenuSubItem>
+              <a documentEngineSidebarMenuSubButton [routerLink]="sub.url" [isActive]="sub.isActive ?? false">
+                <span>{{ sub.name }}</span>
+              </a>
+            </li>
+            }
+          </ul>
+        </mat-expansion-panel>
+        } } }
+      </ul>
+    </div>
+
+    <!-- Nested items -->
+    <div documentEngineSidebarGroup class="mt-4">
+      <div documentEngineSidebarGroupLabel>Deep Nested</div>
+
+      <ul documentEngineSidebarMenu>
+        @if (expandVariant() === 'compact') { @for (group of deepMenu; track group.id) {
+        <li documentEngineSidebarMenuItem>
+          @if (!!group.items?.length) {
+          <button documentEngineSidebarMenuButton class="w-full text-left" (click)="openSecondary(group)">
+            @if (group.icon) {
+            <mat-icon class="document-engine-icon--base min-w-5">{{ group.icon }}</mat-icon>
+            }
+            <span>{{ group.name }}</span>
+          </button>
+          } @else {
+          <a
+            documentEngineSidebarMenuButton
+            [routerLink]="group.url"
+            [isActive]="group.isActive ?? false"
+            class="w-full text-left"
+          >
+            @if (group.icon) {
+            <mat-icon class="document-engine-icon--base min-w-5">{{ group.icon }}</mat-icon>
+            }
+            <span>{{ group.name }}</span>
+          </a>
+          }
+        </li>
+        } } @else {
+        <ng-container
+          [ngTemplateOutlet]="renderNodes"
+          [ngTemplateOutletContext]="{ $implicit: deepMenu, depth: 0 }"
+        ></ng-container>
+        }
+      </ul>
+    </div>
+
+    <ng-template #renderNodes let-nodes let-depth="depth">
+      @for (node of nodes; track node.id) { @if (!!node.items?.length) {
+      <mat-expansion-panel hideToggle #exp="matExpansionPanel" class="group/collapsible !shadow-none">
+        <mat-expansion-panel-header class="!p-0 !h-auto">
+          @if (depth === 0) {
+          <li documentEngineSidebarMenuItem class="w-full">
+            <button documentEngineSidebarMenuButton class="w-full text-left">
+              @if (node.icon) {
+              <mat-icon class="document-engine-icon--base min-w-5">{{ node.icon }}</mat-icon>
+              }
+              <span>{{ node.name }}</span>
+              <mat-icon
+                class="ml-auto transition-transform duration-200 ease-in-out document-engine-icon--base"
+                [class.rotate-90]="exp.expanded"
+              >
+                chevron_right
+              </mat-icon>
+            </button>
+          </li>
+          } @else {
+          <li documentEngineSidebarMenuSubItem class="w-full">
+            <a documentEngineSidebarMenuSubButton class="w-full">
+              <span>{{ node.name }}</span>
+              <mat-icon
+                class="ml-auto transition-transform duration-200 ease-in-out document-engine-icon--base"
+                [class.rotate-90]="exp.expanded"
+              >
+                chevron_right
+              </mat-icon>
+            </a>
+          </li>
+          }
+        </mat-expansion-panel-header>
+
+        <ul documentEngineSidebarMenuSub>
+          <ng-container
+            [ngTemplateOutlet]="renderNodes"
+            [ngTemplateOutletContext]="{ $implicit: node.items, depth: depth + 1 }"
+          ></ng-container>
+        </ul>
+      </mat-expansion-panel>
+      } @else { @if (depth === 0) {
+      <li documentEngineSidebarMenuItem>
+        <a documentEngineSidebarMenuButton [routerLink]="node.url" [isActive]="node.isActive ?? false">
+          <span>{{ node.name }}</span>
+        </a>
+      </li>
+      } @else {
+      <li documentEngineSidebarMenuSubItem>
+        <a documentEngineSidebarMenuSubButton [routerLink]="node.url" [isActive]="node.isActive ?? false">
+          <span>{{ node.name }}</span>
+        </a>
+      </li>
+      } } }
+    </ng-template>
+  </div>
+
+  <!-- Sidebar footer -->
+  <div slot="footer" class="flex">
+    <button
+      class="flex items-center justify-center gap-x-4 cursor-pointer p-2 rounded-lg w-full hover:bg-[var(--sidebar-accent)]"
+      matRipple
+      (click)="menuTrigger.openMenu()"
+    >
+      <document-engine-avatar [items]="avatar" (avatarClick)="onAvatarClick($event)"></document-engine-avatar>
+
+      @if (expandVariant() === 'full') {
+      <span class="flex flex-col items-start flex-1 gap-y-1">
+        <span class="font-bold">Phuong Tran</span>
+        <span>phuong.tran&#64;documentEngine.io</span>
+      </span>
+
+      <mat-icon class="transition-transform duration-200 ease-in-out" [class.rotate-90]="menuTrigger.menuOpen">
+        chevron_right
+      </mat-icon>
+      }
+    </button>
+
+    <div #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu" class="absolute bottom-0 right-0"></div>
+
+    <mat-menu #menu="matMenu" xPosition="after" yPosition="above" overlapTrigger="false" class="w-40">
+      <button mat-menu-item>Item 1</button>
+      <button mat-menu-item>Item 2</button>
+    </mat-menu>
+  </div>
+
+  <!-- Content -->
+  <main class="w-full">
+    <ng-container [cdkPortalOutlet]="header()"></ng-container>
+
+    <router-outlet></router-outlet>
+  </main>
+</document-engine-sidebar>

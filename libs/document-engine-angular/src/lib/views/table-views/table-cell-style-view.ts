@@ -7,7 +7,7 @@ import {
   getSelectedCells,
   TableBorder,
   TableDefaultAttributes,
-} from '@notum/document-engine-core';
+} from '@redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { COLORS } from '../../constants';
 import { BubbleMenuViewContent, PopoverDirective } from '../../core';
@@ -27,7 +27,7 @@ import {
  * Allows styling individual table cells (borders, background, alignment)
  */
 @Component({
-  selector: 'notum-table-cell-style-view',
+  selector: 'document-engine-table-cell-style-view',
   standalone: true,
   imports: [
     CommonModule,
@@ -54,36 +54,41 @@ import {
           <div class="table-cell-style-view__border-grid">
             <div class="table-cell-style-view__field">
               <div class="table-cell-style-view__field-label">Width</div>
-              <input notumInput [(ngModel)]="borderWidth" (ngModelChange)="onBorderWidthChange()" placeholder="1px" />
+              <input
+                documentEngineInput
+                [(ngModel)]="borderWidth"
+                (ngModelChange)="onBorderWidthChange()"
+                placeholder="1px"
+              />
             </div>
 
             <div class="table-cell-style-view__field">
               <div class="table-cell-style-view__field-label">Style</div>
 
-              <notum-select [(value)]="borderStyle" variant="outline">
-                <button notumSelectOption value="solid">Solid</button>
-                <button notumSelectOption value="dashed">Dashed</button>
-                <button notumSelectOption value="dotted">Dotted</button>
-                <button notumSelectOption value="none">None</button>
-              </notum-select>
+              <document-engine-select [(value)]="borderStyle" variant="outline">
+                <button documentEngineSelectOption value="solid">Solid</button>
+                <button documentEngineSelectOption value="dashed">Dashed</button>
+                <button documentEngineSelectOption value="dotted">Dotted</button>
+                <button documentEngineSelectOption value="none">None</button>
+              </document-engine-select>
             </div>
 
             <div class="table-cell-style-view__field table-cell-style-view__field--color">
               <div class="table-cell-style-view__field-label">Color</div>
 
               <div class="table-cell-style-view__color-input">
-                <input notumInput [value]="borderColor" readonly />
+                <input documentEngineInput [value]="borderColor" readonly />
 
                 <button
                   *ngIf="borderColor"
                   type="button"
-                  notumButton
+                  documentEngineButton
                   size="icon"
                   variant="ghost"
                   class="table-cell-style-view__color-clear"
                   (click)="borderColor = null"
                 >
-                  <notum-icon name="close"></notum-icon>
+                  <document-engine-icon name="close"></document-engine-icon>
                 </button>
 
                 <button
@@ -106,7 +111,7 @@ import {
                 class="table-cell-style-view__color-picker-dropdown"
                 (click)="$event.stopPropagation()"
               >
-                <notum-color-picker
+                <document-engine-color-picker
                   [colorPalette]="colorPalette"
                   [activeColor]="borderColorObj"
                   (colorSelected)="onBorderColorSelected($event)"
@@ -123,18 +128,18 @@ import {
             <div class="table-cell-style-view__field-label">Color</div>
 
             <div class="table-cell-style-view__color-input">
-              <input notumInput [value]="backgroundColor" readonly />
+              <input documentEngineInput [value]="backgroundColor" readonly />
 
               <button
                 *ngIf="backgroundColor"
                 type="button"
-                notumButton
+                documentEngineButton
                 size="icon"
                 variant="ghost"
                 class="table-cell-style-view__color-clear"
                 (click)="backgroundColor = null"
               >
-                <notum-icon name="close"></notum-icon>
+                <document-engine-icon name="close"></document-engine-icon>
               </button>
 
               <button
@@ -157,7 +162,7 @@ import {
               class="table-cell-style-view__color-picker-dropdown"
               (click)="$event.stopPropagation()"
             >
-              <notum-color-picker
+              <document-engine-color-picker
                 [colorPalette]="colorPalette"
                 [activeColor]="backgroundColorObj"
                 (colorSelected)="onBackgroundColorSelected($event)"
@@ -170,43 +175,43 @@ import {
         <div class="table-cell-style-view__section">
           <div class="table-cell-style-view__section-label">Text alignment</div>
 
-          <notum-toggle-group [(value)]="textAlign">
-            <button notumToggleOption value="left" title="Left">
-              <notum-icon name="format_align_left"></notum-icon>
+          <document-engine-toggle-group [(value)]="textAlign">
+            <button documentEngineToggleOption value="left" title="Left">
+              <document-engine-icon name="format_align_left"></document-engine-icon>
             </button>
-            <button notumToggleOption value="center" title="Center">
-              <notum-icon name="format_align_center"></notum-icon>
+            <button documentEngineToggleOption value="center" title="Center">
+              <document-engine-icon name="format_align_center"></document-engine-icon>
             </button>
-            <button notumToggleOption value="right" title="Right">
-              <notum-icon name="format_align_right"></notum-icon>
+            <button documentEngineToggleOption value="right" title="Right">
+              <document-engine-icon name="format_align_right"></document-engine-icon>
             </button>
-            <button notumToggleOption value="justify" title="Justify">
-              <notum-icon name="format_align_justify"></notum-icon>
+            <button documentEngineToggleOption value="justify" title="Justify">
+              <document-engine-icon name="format_align_justify"></document-engine-icon>
             </button>
-          </notum-toggle-group>
+          </document-engine-toggle-group>
         </div>
 
         <div class="table-cell-style-view__section">
           <div class="table-cell-style-view__section-label">Vertical alignment</div>
 
-          <notum-toggle-group [(value)]="vAlign">
-            <button notumToggleOption value="top" title="Top">
-              <notum-icon name="vertical_align_top"></notum-icon>
+          <document-engine-toggle-group [(value)]="vAlign">
+            <button documentEngineToggleOption value="top" title="Top">
+              <document-engine-icon name="vertical_align_top"></document-engine-icon>
             </button>
-            <button notumToggleOption value="middle" title="Middle">
-              <notum-icon name="vertical_align_center"></notum-icon>
+            <button documentEngineToggleOption value="middle" title="Middle">
+              <document-engine-icon name="vertical_align_center"></document-engine-icon>
             </button>
-            <button notumToggleOption value="bottom" title="Bottom">
-              <notum-icon name="vertical_align_bottom"></notum-icon>
+            <button documentEngineToggleOption value="bottom" title="Bottom">
+              <document-engine-icon name="vertical_align_bottom"></document-engine-icon>
             </button>
-          </notum-toggle-group>
+          </document-engine-toggle-group>
         </div>
       </div>
 
       <!-- Actions -->
       <div class="table-cell-style-view__actions">
-        <button notumButton variant="ghost" (click)="cancel()">Cancel</button>
-        <button notumButton variant="default" (click)="onSave()">Save</button>
+        <button documentEngineButton variant="ghost" (click)="cancel()">Cancel</button>
+        <button documentEngineButton variant="default" (click)="onSave()">Save</button>
       </div>
     </div>
   `,
@@ -259,7 +264,7 @@ export class TableCellStyleViewComponent implements BubbleMenuViewContent {
     const backgroundColor = getCombinedCellAttributeValue(
       cells,
       'backgroundColor',
-      TableDefaultAttributes.cellBackgroundColor,
+      TableDefaultAttributes.cellBackgroundColor
     ) as string | null;
 
     const border = getCombinedCellAttributeValue(cells, 'border', TableDefaultAttributes.cellBorder) as TableBorder;

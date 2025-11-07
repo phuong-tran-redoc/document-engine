@@ -1,0 +1,199 @@
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <ol class="breadcrumb-list">
+    <!-- Home Icon -->
+    @if (showHomeIcon()) {
+      <li class="breadcrumb-item">
+        <a class="breadcrumb-link breadcrumb-home" [routerLink]="'/'" aria-label="Go to home page">
+          <mat-icon class="breadcrumb-home-icon">home</mat-icon>
+        </a>
+      </li>
+      @if (displayItems.length > 0) {
+        <li class="breadcrumb-separator" aria-hidden="true">
+          <ng-container [ngTemplateOutlet]="separatorTemplate() || defaultSeparator"></ng-container>
+        </li>
+      }
+    }
+
+    <!-- First item (when dropdown is needed) -->
+    @if (shouldShowDropdown && firstItem) {
+      <li class="breadcrumb-item">
+        <ng-container
+          [ngTemplateOutlet]="itemTemplate"
+          [ngTemplateOutletContext]="{ $implicit: firstItem, isLast: false }"
+        ></ng-container>
+      </li>
+
+      <!-- Separator -->
+      <li class="breadcrumb-separator" aria-hidden="true">
+        <ng-container [ngTemplateOutlet]="separatorTemplate() || defaultSeparator"></ng-container>
+      </li>
+
+      <!-- Dropdown for middle items -->
+      <li class="breadcrumb-item breadcrumb-dropdown">
+        <button mat-button [matMenuTriggerFor]="dropdownMenu" class="breadcrumb-dropdown-trigger">
+          <mat-icon>more_horiz</mat-icon>
+        </button>
+        <mat-menu #dropdownMenu="matMenu">
+          @for (item of dropdownItems; track item.label) {
+            <ng-container
+              [ngTemplateOutlet]="menuItemTemplate"
+              [ngTemplateOutletContext]="{ $implicit: item }"
+            ></ng-container>
+          }
+        </mat-menu>
+      </li>
+
+      <!-- Separator -->
+      <li class="breadcrumb-separator" aria-hidden="true">
+        <ng-container [ngTemplateOutlet]="separatorTemplate() || defaultSeparator"></ng-container>
+      </li>
+
+      <!-- Last items -->
+      @for (item of lastItems; track item.label; let isLast = $last; let index = $index) {
+        <li class="breadcrumb-item">
+          <ng-container
+            [ngTemplateOutlet]="itemTemplate"
+            [ngTemplateOutletContext]="{
+              $implicit: item,
+              isLast: isLast && index === lastItems.length - 1,
+            }"
+          ></ng-container>
+        </li>
+
+        @if (!isLast || index < lastItems.length - 1) {
+          <li class="breadcrumb-separator" aria-hidden="true">
+            <ng-container
+              [ngTemplateOutlet]="separatorTemplate() || defaultSeparator"
+            ></ng-container>
+          </li>
+        }
+      }
+    } @else {
+      <!-- Normal display (no dropdown needed) -->
+      @for (item of displayItems; track item.label; let isLast = $last; let index = $index) {
+        <li class="breadcrumb-item" [class.breadcrumb-mobile-hidden]="!isLast">
+          <ng-container
+            [ngTemplateOutlet]="itemTemplate"
+            [ngTemplateOutletContext]="{ $implicit: item, isLast: isLast }"
+          ></ng-container>
+        </li>
+
+        @if (!isLast) {
+          <li class="breadcrumb-separator breadcrumb-mobile-hidden" aria-hidden="true">
+            <ng-container
+              [ngTemplateOutlet]="separatorTemplate() || defaultSeparator"
+            ></ng-container>
+          </li>
+        }
+      }
+    }
+  </ol>
+</nav>
+
+<!-- Item Template -->
+<ng-template #itemTemplate let-item let-isLast="isLast">
+  @switch (getItemType(item)) {
+    @case ('link') {
+      @if (item.url && !item.disabled && !isLast) {
+        <a
+          class="breadcrumb-link"
+          [routerLink]="item.url"
+          [attr.aria-current]="isLast ? 'page' : null"
+          (click)="onItemClick(item)"
+        >
+          @if (item.icon) {
+            <mat-icon class="breadcrumb-item-icon">{{ item.icon }}</mat-icon>
+          }
+          <span class="breadcrumb-label">{{ item.label }}</span>
+        </a>
+      } @else {
+        <span
+          class="breadcrumb-text"
+          [class.breadcrumb-current]="isLast"
+          [class.breadcrumb-disabled]="item.disabled"
+          [attr.aria-current]="isLast ? 'page' : null"
+        >
+          @if (item.icon && !item.disabled) {
+            <mat-icon class="breadcrumb-item-icon">{{ item.icon }}</mat-icon>
+          }
+          <span class="breadcrumb-label">{{ item.label }}</span>
+        </span>
+      }
+    }
+    @case ('button') {
+      <button
+        mat-button
+        class="breadcrumb-button"
+        [disabled]="item.disabled"
+        [attr.aria-current]="isLast ? 'page' : null"
+        (click)="onItemClick(item)"
+      >
+        @if (item.icon) {
+          <mat-icon class="breadcrumb-item-icon">{{ item.icon }}</mat-icon>
+        }
+        <span class="breadcrumb-label">{{ item.label }}</span>
+      </button>
+    }
+    @case ('text') {
+      <span
+        class="breadcrumb-text"
+        [class.breadcrumb-current]="isLast"
+        [class.breadcrumb-disabled]="item.disabled"
+        [attr.aria-current]="isLast ? 'page' : null"
+      >
+        @if (item.icon && !item.disabled) {
+          <mat-icon class="breadcrumb-item-icon">{{ item.icon }}</mat-icon>
+        }
+        <span class="breadcrumb-label">{{ item.label }}</span>
+      </span>
+    }
+  }
+</ng-template>
+
+<!-- Menu Item Template -->
+<ng-template #menuItemTemplate let-item>
+  @switch (getItemType(item)) {
+    @case ('link') {
+      @if (item.url && !item.disabled) {
+        <a mat-menu-item [routerLink]="item.url" (click)="onItemClick(item)">
+          @if (item.icon) {
+            <mat-icon>{{ item.icon }}</mat-icon>
+          }
+          <span>{{ item.label }}</span>
+        </a>
+      } @else {
+        <div mat-menu-item [class.disabled]="item.disabled">
+          @if (item.icon) {
+            <mat-icon>{{ item.icon }}</mat-icon>
+          }
+          <span>{{ item.label }}</span>
+        </div>
+      }
+    }
+    @case ('button') {
+      <button mat-menu-item [disabled]="item.disabled" (click)="onItemClick(item)">
+        @if (item.icon) {
+          <mat-icon>{{ item.icon }}</mat-icon>
+        }
+        <span>{{ item.label }}</span>
+      </button>
+    }
+    @case ('text') {
+      <div mat-menu-item [class.disabled]="item.disabled">
+        @if (item.icon) {
+          <mat-icon>{{ item.icon }}</mat-icon>
+        }
+        <span>{{ item.label }}</span>
+      </div>
+    }
+  }
+</ng-template>
+
+<!-- Default Separator Template -->
+<ng-template #defaultSeparator>
+  @if (separatorText) {
+    <span class="breadcrumb-separator-text">{{ separatorText }}</span>
+  } @else {
+    <mat-icon>{{ separatorIcon }}</mat-icon>
+  }
+</ng-template>

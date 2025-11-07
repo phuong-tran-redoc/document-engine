@@ -10,7 +10,7 @@ import {
   Output,
   inject,
 } from '@angular/core';
-import { DocumentEngineConfig, DocumentEngineKit } from '@notum/document-engine-core';
+import { DocumentEngineConfig, DocumentEngineKit } from '@redoc/document-engine-core';
 import { ToolbarComponent } from '../ui/toolbar';
 import { Editor } from '@tiptap/core';
 
@@ -20,19 +20,22 @@ import { Editor } from '@tiptap/core';
  * Provides a simple API for consumers without exposing internal dependencies
  *
  * Usage:
- * <notum-document-editor
+ * <document-engine-document-editor
  *   #docEditor
  *   [config]="editorConfig"
+ *
+
+
  *   (editorReady)="editor = docEditor.editor"
  * >
  *   <tiptap-editor
  *     [editor]="docEditor.editor"
  *     [(ngModel)]="content"
  *   ></tiptap-editor>
- * </notum-document-editor>
+ * </document-engine-document-editor>
  */
 @Component({
-  selector: 'notum-document-editor',
+  selector: 'document-engine-document-editor',
   standalone: true,
   imports: [CommonModule, ToolbarComponent],
   templateUrl: './document-editor.component.html',

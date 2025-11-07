@@ -1,0 +1,21 @@
+{
+  "name": "document-engine-http-error",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/document-engine/features/http-error/src",
+  "prefix": "document-engine",
+  "projectType": "library",
+  "tags": ["scope:document-engine", "type:feature"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/document-engine/features/http-error/jest.config.ts",
+        "tsConfig": "libs/document-engine/features/http-error/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

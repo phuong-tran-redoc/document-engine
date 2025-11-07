@@ -13,7 +13,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { getClosestDomElement } from '@notum/document-engine-core';
+import { getClosestDomElement } from '@redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import {
   BubbleMenuViewConfig,
@@ -26,7 +26,7 @@ import {
 } from '../../core';
 
 @Component({
-  selector: 'notum-editor-bubble-menu',
+  selector: 'document-engine-editor-bubble-menu',
   standalone: true,
   imports: [CommonModule, TiptapBubbleMenuDirective],
   template: `
@@ -128,7 +128,7 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
       const target = event.target as Node;
 
       // Check if click is inside editor or its children
-      const isClickInsideEditor = this.editor.options.element?.contains(target);
+      const isClickInsideEditor = (this.editor.options.element as HTMLElement | undefined)?.contains(target);
 
       // Check if click is inside bubble menu or its children
       const isClickInsideBubbleMenu = this.bubbleElement?.nativeElement?.contains(target);

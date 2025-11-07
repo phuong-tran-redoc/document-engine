@@ -9,7 +9,7 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
-import { DocumentEngineConfig, ListStyleType, TextCaseOptions } from '@notum/document-engine-core';
+import { DocumentEngineConfig, ListStyleType, TextCaseOptions } from '@redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import {
   ColorBubbleConfig,
@@ -35,7 +35,7 @@ import { EditorBubbleMenuComponent, ToolbarBubbleMenuComponent } from '../../vie
  * Provides toolbar controls for editor actions
  */
 @Component({
-  selector: 'notum-toolbar',
+  selector: 'document-engine-toolbar',
   standalone: true,
   imports: [
     CommonModule,

@@ -23,10 +23,10 @@ export const PageBreak = Node.create({
       'div',
       mergeAttributes(HTMLAttributes, {
         'data-page-break': 'true',
-        class: 'notum-page-break',
+        class: 'document-engine-page-break',
         style: 'break-before: page;',
       }),
-      ['span', { class: 'notum-page-break-label' }, 'Page break'],
+      ['span', { class: 'document-engine-page-break-label' }, 'Page break'],
     ];
   },
 

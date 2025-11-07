@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { getCursorCellInfo } from '@notum/document-engine-core';
+import { getCursorCellInfo } from '@redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { CellSelection } from '@tiptap/pm/tables';
 import { BubbleMenuViewContent } from '../../core';
@@ -12,47 +12,59 @@ import { ButtonDirective, IconComponent, SelectComponent, SelectLabelDirective, 
  * Provides navigation to cell and table styling views
  */
 @Component({
-  selector: 'notum-table-main-view',
+  selector: 'document-engine-table-main-view',
   standalone: true,
   imports: [CommonModule, ButtonDirective, IconComponent, SelectComponent, SelectOptionDirective, SelectLabelDirective],
   template: `
     <div class="table-main-view">
       <!-- Column actions -->
-      <notum-select [(value)]="colAction" (valueChange)="handleColAction($event)" labelMode="static">
-        <notum-icon notumSelectLabel name="table_column"></notum-icon>
+      <document-engine-select [(value)]="colAction" (valueChange)="handleColAction($event)" labelMode="static">
+        <document-engine-icon documentEngineSelectLabel name="table_column"></document-engine-icon>
 
-        <button notumSelectOption value="add-before">Insert column left</button>
-        <button notumSelectOption value="add-after">Insert column right</button>
-        <button notumSelectOption value="delete">Remove column</button>
-        <button notumSelectOption value="select">Select column</button>
-      </notum-select>
+        <button documentEngineSelectOption value="add-before">Insert column left</button>
+        <button documentEngineSelectOption value="add-after">Insert column right</button>
+        <button documentEngineSelectOption value="delete">Remove column</button>
+        <button documentEngineSelectOption value="select">Select column</button>
+      </document-engine-select>
 
       <!-- Row actions -->
-      <notum-select [(value)]="rowAction" (valueChange)="handleRowAction($event)" labelMode="static">
-        <notum-icon notumSelectLabel name="table_row"></notum-icon>
+      <document-engine-select [(value)]="rowAction" (valueChange)="handleRowAction($event)" labelMode="static">
+        <document-engine-icon documentEngineSelectLabel name="table_row"></document-engine-icon>
 
-        <button notumSelectOption value="add-before">Insert row above</button>
-        <button notumSelectOption value="add-after">Insert row below</button>
-        <button notumSelectOption value="delete">Remove row</button>
-        <button notumSelectOption value="select">Select row</button>
-      </notum-select>
+        <button documentEngineSelectOption value="add-before">Insert row above</button>
+        <button documentEngineSelectOption value="add-after">Insert row below</button>
+        <button documentEngineSelectOption value="delete">Remove row</button>
+        <button documentEngineSelectOption value="select">Select row</button>
+      </document-engine-select>
 
       <!-- Cell actions -->
-      <notum-select [(value)]="cellAction" (valueChange)="handleCellAction($event)" labelMode="static">
-        <notum-icon notumSelectLabel name="table_merge_cell"></notum-icon>
+      <document-engine-select [(value)]="cellAction" (valueChange)="handleCellAction($event)" labelMode="static">
+        <document-engine-icon documentEngineSelectLabel name="table_merge_cell"></document-engine-icon>
 
-        <button notumSelectOption value="merge" [disabled]="!canMerge">Merge cells</button>
-        <button notumSelectOption value="split" [disabled]="!canSplit">Split cell</button>
-      </notum-select>
+        <button documentEngineSelectOption value="merge" [disabled]="!canMerge">Merge cells</button>
+        <button documentEngineSelectOption value="split" [disabled]="!canSplit">Split cell</button>
+      </document-engine-select>
 
       <!-- Table style -->
-      <button notumButton size="icon" variant="ghost" title="Table Properties" (click)="navigateTo?.('table-style')">
-        <notum-icon name="table_property"></notum-icon>
+      <button
+        documentEngineButton
+        size="icon"
+        variant="ghost"
+        title="Table Properties"
+        (click)="navigateTo?.('table-style')"
+      >
+        <document-engine-icon name="table_property"></document-engine-icon>
       </button>
 
       <!-- Cell style -->
-      <button notumButton size="icon" variant="ghost" title="Cell Properties" (click)="navigateTo?.('cell-style')">
-        <notum-icon name="table_cell_property"></notum-icon>
+      <button
+        documentEngineButton
+        size="icon"
+        variant="ghost"
+        title="Cell Properties"
+        (click)="navigateTo?.('cell-style')"
+      >
+        <document-engine-icon name="table_cell_property"></document-engine-icon>
       </button>
     </div>
   `,

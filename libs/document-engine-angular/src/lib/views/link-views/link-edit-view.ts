@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { getActiveMarkRange } from '@notum/document-engine-core';
+import { getActiveMarkRange } from '@redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { BubbleMenuViewContent } from '../../core';
 import { urlValidator } from '../../utils';
@@ -25,7 +25,7 @@ interface LinkFormControls {
  * Provides URL input, display text input, and quick link shortcuts
  */
 @Component({
-  selector: 'notum-link-edit-view',
+  selector: 'document-engine-link-edit-view',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ButtonDirective, InputDirective, LabelDirective, ErrorMessageComponent],
   template: `
@@ -40,27 +40,31 @@ interface LinkFormControls {
         <div class="link-edit-view__content">
           <!-- URL input -->
           <div class="link-edit-view__field">
-            <label notumLabel for="url-input">URL</label>
+            <label documentEngineLabel for="url-input">URL</label>
             <input
               #urlInput
-              notumInput
+              documentEngineInput
               id="url-input"
               formControlName="url"
               placeholder="https://example.com"
               [attr.aria-invalid]="linkForm.controls.url.invalid && linkForm.controls.url.touched"
             />
-            <notum-error-message *ngIf="linkForm.controls.url.hasError('required') && linkForm.controls.url.touched">
+            <document-engine-error-message
+              *ngIf="linkForm.controls.url.hasError('required') && linkForm.controls.url.touched"
+            >
               This field is required
-            </notum-error-message>
-            <notum-error-message *ngIf="linkForm.controls.url.hasError('url') && linkForm.controls.url.touched">
+            </document-engine-error-message>
+            <document-engine-error-message
+              *ngIf="linkForm.controls.url.hasError('url') && linkForm.controls.url.touched"
+            >
               Enter a valid URL
-            </notum-error-message>
+            </document-engine-error-message>
           </div>
 
           <!-- Display text input -->
           <div class="link-edit-view__field">
-            <label notumLabel for="display-text-input">Display Text</label>
-            <input notumInput id="display-text-input" formControlName="displayText" placeholder="Click here" />
+            <label documentEngineLabel for="display-text-input">Display Text</label>
+            <input documentEngineInput id="display-text-input" formControlName="displayText" placeholder="Click here" />
           </div>
         </div>
 
@@ -82,9 +86,9 @@ interface LinkFormControls {
 
         <!-- Actions -->
         <div class="link-edit-view__actions">
-          <button type="button" notumButton variant="ghost" (click)="cancel()">Cancel</button>
+          <button type="button" documentEngineButton variant="ghost" (click)="cancel()">Cancel</button>
 
-          <button type="submit" notumButton variant="default" [disabled]="!canApply()">
+          <button type="submit" documentEngineButton variant="default" [disabled]="!canApply()">
             {{ isNewLink ? 'Insert' : 'Update' }}
           </button>
         </div>

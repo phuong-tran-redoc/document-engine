@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Color } from '@notum/document-engine-core';
+import { Color } from '@redoc/document-engine-core';
 import { ButtonDirective } from './button';
 import { IconComponent } from './icon';
 
 @Component({
   standalone: true,
-  selector: 'notum-color-picker',
+  selector: 'document-engine-color-picker',
   imports: [CommonModule, FormsModule, ButtonDirective, IconComponent],
   template: `
-    <div class="notum-color-picker">
+    <div class="document-engine-color-picker">
       <!-- Color Palette -->
       <div class="palette">
         <div class="palette__item" *ngFor="let color of colorPalette; trackBy: trackByColorValue">
@@ -32,7 +32,7 @@ import { IconComponent } from './icon';
             [attr.title]="'Unset color'"
             aria-label="Unset color"
           >
-            <notum-icon name="check"></notum-icon>
+            <document-engine-icon name="check"></document-engine-icon>
           </button>
         </div>
       </div>
@@ -70,7 +70,7 @@ import { IconComponent } from './icon';
 
           <button
             type="button"
-            notumButton
+            documentEngineButton
             variant="default"
             (click)="selectCustomColor()"
             [disabled]="hexInput.invalid"

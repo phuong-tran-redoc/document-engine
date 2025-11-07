@@ -1,0 +1,117 @@
+@switch (variant) {
+  @case ('icon') {
+    <button mat-icon-button (click)="toggleQuick()" [matTooltip]="getTooltipText()" [attr.aria-label]="ariaLabel">
+      <mat-icon>{{ getThemeIcon() }}</mat-icon>
+    </button>
+  }
+  @case ('menu') {
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="themeMenu"
+      [matTooltip]="getTooltipText()"
+      [attr.aria-label]="ariaLabel"
+    >
+      <mat-icon>{{ getThemeIcon() }}</mat-icon>
+    </button>
+
+    <mat-menu #themeMenu="matMenu" class="min-w-[240px]">
+      <!-- System Themes -->
+      <div class="py-2">
+        <div class="px-4 pt-2 pb-1 text-xs font-medium uppercase tracking-[0.1em] text-gray-500">System</div>
+
+        <button mat-menu-item (click)="setTheme('system')" class="px-4 py-2 min-h-12 flex items-center gap-3">
+          <mat-icon>settings_brightness</mat-icon>
+          <span>System Default</span>
+          @if (themeService.themeMode() === 'system') {
+            <mat-icon class="ml-auto text-blue-600">check</mat-icon>
+          }
+        </button>
+
+        <button mat-menu-item (click)="setTheme('light')" class="px-4 py-2 min-h-12 flex items-center gap-3">
+          <mat-icon>light_mode</mat-icon>
+          <span>Light</span>
+          @if (themeService.themeMode() === 'light') {
+            <mat-icon class="ml-auto text-blue-600">check</mat-icon>
+          }
+        </button>
+
+        <button mat-menu-item (click)="setTheme('dark')" class="px-4 py-2 min-h-12 flex items-center gap-3">
+          <mat-icon>dark_mode</mat-icon>
+          <span>Dark</span>
+          @if (themeService.themeMode() === 'dark') {
+            <mat-icon class="ml-auto text-blue-600">check</mat-icon>
+          }
+        </button>
+      </div>
+
+      <!-- Custom Themes -->
+      @if (showCustomThemes && customThemes().length > 0) {
+        <mat-divider></mat-divider>
+
+        <div class="py-2">
+          <div class="px-4 pt-2 pb-1 text-xs font-medium uppercase tracking-[0.1em] text-gray-500">Custom</div>
+
+          @for (theme of customThemes(); track theme.id) {
+            <button mat-menu-item (click)="setTheme(theme.id)" class="px-4 py-2 min-h-12 flex items-center gap-3">
+              <mat-icon>{{ getCustomThemeIcon(theme) }}</mat-icon>
+              <div class="flex-1 flex flex-col items-start">
+                <span class="leading-tight">{{ theme.name }}</span>
+                @if (theme.description) {
+                  <small class="text-xs text-gray-500 leading-tight mt-0.5">{{ theme.description }}</small>
+                }
+              </div>
+              @if (themeService.themeMode() === theme.id) {
+                <mat-icon class="ml-auto text-blue-600">check</mat-icon>
+              }
+            </button>
+          }
+        </div>
+      }
+      @if (showThemeCreator) {
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="openThemeCreator()" class="px-4 py-2 min-h-12 flex items-center gap-3">
+          <mat-icon>add</mat-icon>
+          <span>Create Custom Theme</span>
+        </button>
+      }
+    </mat-menu>
+  }
+  @case ('select') {
+    <!-- Select dropdown implementation -->
+    <mat-form-field class="min-w-[120px]">
+      <mat-label>Theme</mat-label>
+      <mat-select [value]="themeService.themeMode()" (selectionChange)="setTheme($event.value)">
+        <mat-option value="system">System Default</mat-option>
+        <mat-option value="light">Light</mat-option>
+        <mat-option value="dark">Dark</mat-option>
+        @for (theme of customThemes(); track theme.id) {
+          <mat-option [value]="theme.id">{{ theme.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+  @case ('segmented') {
+    <!-- Segmented control implementation -->
+    <mat-button-toggle-group
+      class="flex gap-1"
+      [value]="themeService.themeMode()"
+      (change)="setTheme($event.value)"
+      aria-label="Theme selection"
+    >
+      <mat-button-toggle value="light">
+        <mat-icon>light_mode</mat-icon>
+        Light
+      </mat-button-toggle>
+      <mat-button-toggle value="dark">
+        <mat-icon>dark_mode</mat-icon>
+        Dark
+      </mat-button-toggle>
+      @if (themeService.themeMode() === 'system') {
+        <mat-button-toggle value="system">
+          <mat-icon>settings_brightness</mat-icon>
+          System
+        </mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+  }
+}

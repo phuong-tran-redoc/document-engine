@@ -3,21 +3,21 @@ import { SelectComponent } from './select.component';
 
 /**
  * Directive for select options
- * Must be used within notum-select component
+ * Must be used within document-engine-select component
  *
  * Usage:
- * <button notumSelectOption value="option1">Option 1</button>
+ * <button documentEngineSelectOption value="option1">Option 1</button>
  */
 @Directive({
-  selector: '[notumSelectOption]',
+  selector: '[documentEngineSelectOption]',
   standalone: true,
   host: {
     role: 'option',
     '[attr.aria-selected]': 'select.value === value',
     '[attr.aria-disabled]': 'disabled',
-    class: 'notum-select-option',
-    '[class.notum-select-option--disabled]': 'disabled',
-    '[class.notum-select-option--selected]': 'select.value === value',
+    class: 'document-engine-select-option',
+    '[class.document-engine-select-option--disabled]': 'disabled',
+    '[class.document-engine-select-option--selected]': 'select.value === value',
   },
 })
 export class SelectOptionDirective {

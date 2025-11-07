@@ -12,7 +12,7 @@ import {
 import { IconRegistryService } from './icon-registry.service';
 
 @Component({
-  selector: 'notum-icon',
+  selector: 'document-engine-icon',
   standalone: true,
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,

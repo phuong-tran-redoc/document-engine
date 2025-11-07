@@ -1,10 +1,10 @@
 @use '@angular/material' as mat;
 
-.notum-button {
-  $notum-icon-button-sizes: 14, 16, 18, 20, 24;
+.document-engine-button {
+  $document-engine-icon-button-sizes: 14, 16, 18, 20, 24;
 
   // List of button types: each item is a tuple [bg-color, text-color]
-  $notum-button-type: (('primary', 'primary-foreground'), ('secondary', 'secondary-foreground'));
+  $document-engine-button-type: (('primary', 'primary-foreground'), ('secondary', 'secondary-foreground'));
 
   @include mat.button-overrides(
     (
@@ -21,7 +21,7 @@
 
   display: inline-flex !important;
 
-  @each $size in $notum-icon-button-sizes {
+  @each $size in $document-engine-icon-button-sizes {
     &--icon-#{$size} {
       @include mat.icon-button-overrides(
         (
@@ -39,7 +39,7 @@
     }
   }
 
-  @each $bg-color, $text-color in $notum-button-type {
+  @each $bg-color, $text-color in $document-engine-button-type {
     &--#{$bg-color} {
       @include mat.button-overrides(
         (

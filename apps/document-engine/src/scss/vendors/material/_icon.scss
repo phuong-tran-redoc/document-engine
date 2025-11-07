@@ -1,24 +1,24 @@
-@mixin notum-icon-size($size) {
+@mixin document-engine-icon-size($size) {
   font-size: $size;
   width: $size !important;
   height: $size !important;
   line-height: 1;
 }
 
-.notum-icon {
+.document-engine-icon {
   &--sm {
-    @include notum-icon-size(16px);
+    @include document-engine-icon-size(16px);
   }
 
   &--base {
-    @include notum-icon-size(20px);
+    @include document-engine-icon-size(20px);
   }
 
   &--md {
-    @include notum-icon-size(24px);
+    @include document-engine-icon-size(24px);
   }
 
   &--lg {
-    @include notum-icon-size(30px);
+    @include document-engine-icon-size(30px);
   }
 }

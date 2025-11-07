@@ -4,12 +4,12 @@ import { Component, Input } from '@angular/core';
  * Error message component for form validation
  *
  * Usage:
- * <notum-error-message *ngIf="control.hasError('required')">
+ * <document-engine-error-message *ngIf="control.hasError('required')">
  *   This field is required
- * </notum-error-message>
+ * </document-engine-error-message>
  */
 @Component({
-  selector: 'notum-error-message',
+  selector: 'document-engine-error-message',
   standalone: true,
   template: `
     <p [class]="errorClasses">
@@ -21,6 +21,6 @@ export class ErrorMessageComponent {
   @Input() class = '';
 
   get errorClasses(): string {
-    return ['notum-error-message__text', this.class].filter(Boolean).join(' ');
+    return ['document-engine-error-message__text', this.class].filter(Boolean).join(' ');
   }
 }

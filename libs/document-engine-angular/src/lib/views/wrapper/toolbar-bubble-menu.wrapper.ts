@@ -28,7 +28,7 @@ import {
  * and doesn't depend on text selection in the editor
  */
 @Component({
-  selector: 'notum-toolbar-bubble-menu',
+  selector: 'document-engine-toolbar-bubble-menu',
   standalone: true,
   imports: [CommonModule],
   template: `
@@ -48,9 +48,7 @@ import {
       .toolbar-bubble-menu {
         opacity: 0;
         transform: translateY(-10px);
-        transition:
-          opacity 200ms ease-out,
-          transform 200ms ease-out;
+        transition: opacity 200ms ease-out, transform 200ms ease-out;
         pointer-events: none;
       }
 

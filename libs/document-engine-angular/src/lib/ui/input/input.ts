@@ -5,11 +5,11 @@ import { Directive, HostBinding, Input } from '@angular/core';
  * Supports all standard input attributes and types
  *
  * Usage:
- * <input notumInput type="text" placeholder="Enter text" />
- * <input notumInput type="email" class="custom-class" />
+ * <input documentEngineInput type="text" placeholder="Enter text" />
+ * <input documentEngineInput type="email" class="custom-class" />
  */
 @Directive({
-  selector: 'input[notumInput]',
+  selector: 'input[documentEngineInput]',
   standalone: true,
 })
 export class InputDirective {
@@ -17,6 +17,6 @@ export class InputDirective {
 
   @HostBinding('class')
   get inputClasses(): string {
-    return ['notum-input', this.class].filter(Boolean).join(' ');
+    return ['document-engine-input', this.class].filter(Boolean).join(' ');
   }
 }

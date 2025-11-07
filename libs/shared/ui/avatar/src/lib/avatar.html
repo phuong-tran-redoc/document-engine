@@ -1,0 +1,103 @@
+<!-- Single Avatar -->
+@if (singleAvatarData(); as avatar) {
+  <div [class]="sizeClasses()">
+    <div class="relative size-full">
+      <!-- Photo Mode -->
+      @if (avatar.shouldShowPhoto) {
+        <ng-container
+          [ngTemplateOutlet]="imageTpl"
+          [ngTemplateOutletContext]="{ $implicit: avatar.item, index: 0 }"
+        />
+      } @else {
+        <!-- Fallback/Initials Mode -->
+        <ng-container
+          [ngTemplateOutlet]="fallbackTpl"
+          [ngTemplateOutletContext]="{
+            $implicit: avatar.item,
+            index: 0,
+            bg: avatar.backgroundColor,
+            text: avatar.displayText,
+          }"
+        />
+      }
+    </div>
+  </div>
+}
+
+<!-- Stacked Avatars -->
+@if (isStacked()) {
+  <div class="flex items-center" [class]="overlapOffset()">
+    @for (avatarItem of avatarData(); track avatarItem.index) {
+      <div [class]="avatarItem.stackedClasses">
+        <!-- Photo Mode -->
+        @if (avatarItem.shouldShowPhoto) {
+          <ng-container
+            [ngTemplateOutlet]="imageTpl"
+            [ngTemplateOutletContext]="{ $implicit: avatarItem.item, index: avatarItem.index }"
+          />
+        } @else {
+          <!-- Fallback/Initials Mode -->
+          <ng-container
+            [ngTemplateOutlet]="fallbackTpl"
+            [ngTemplateOutletContext]="{
+              $implicit: avatarItem.item,
+              index: avatarItem.index,
+              bg: avatarItem.backgroundColor,
+              text: avatarItem.displayText,
+            }"
+          />
+        }
+      </div>
+    }
+
+    <!-- Remaining count indicator -->
+    @if (remainingCountData(); as remaining) {
+      <div [class]="remaining.stackedClasses">
+        <div
+          (click)="emitRemainingCountClick($event)"
+          (keydown.enter)="emitRemainingCountClick($event)"
+          (keydown.space)="emitRemainingCountClick($event)"
+          tabindex="0"
+          [class]="fallbackClasses() + ' bg-gray-600'"
+        >
+          +{{ remaining.count }}
+        </div>
+      </div>
+    }
+  </div>
+}
+
+<!-- Empty state -->
+@if (items().length === 0) {
+  <div [class]="sizeClasses()">
+    <div [class]="fallbackClasses() + ' bg-gray-400'">?</div>
+  </div>
+}
+
+<!-- Reusable templates -->
+<ng-template #imageTpl let-item let-index="index">
+  <img
+    [src]="item.photo"
+    [alt]="item.alt || 'Avatar'"
+    [class]="imageClasses()"
+    (error)="onImageError($event)"
+    role="button"
+    tabindex="0"
+    (click)="emitAvatarClick(item, index, $event)"
+    (keydown.enter)="emitAvatarClick(item, index, $event)"
+    (keydown.space)="emitAvatarClick(item, index, $event)"
+  />
+</ng-template>
+
+<ng-template #fallbackTpl let-item let-index="index" let-bg="bg" let-text="text">
+  <div
+    [class]="fallbackClasses() + ' ' + bg"
+    role="button"
+    tabindex="0"
+    (click)="emitAvatarClick(item, index, $event)"
+    (keydown.enter)="emitAvatarClick(item, index, $event)"
+    (keydown.space)="emitAvatarClick(item, index, $event)"
+  >
+    {{ text }}
+  </div>
+</ng-template>

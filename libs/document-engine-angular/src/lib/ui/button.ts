@@ -6,13 +6,13 @@ import { Directive, HostBinding, Input } from '@angular/core';
  * Supports sizes: default, sm, lg, icon, icon-sm, icon-lg
  *
  * Usage:
- * - <button notumButton>Text</button> - secondary variant, default size
- * - <button notumButton="filled">Text</button> - default variant (primary)
- * - <button notumButton variant="outline">Text</button> - outline variant
- * - <button notumButton variant="icon" size="icon-sm">Icon</button> - icon button
+ * - <button documentEngineButton>Text</button> - secondary variant, default size
+ * - <button documentEngineButton="filled">Text</button> - default variant (primary)
+ * - <button documentEngineButton variant="outline">Text</button> - outline variant
+ * - <button documentEngineButton variant="icon" size="icon-sm">Icon</button> - icon button
  */
 @Directive({
-  selector: 'button[notumButton]',
+  selector: 'button[documentEngineButton]',
   standalone: true,
   host: {
     type: 'button',

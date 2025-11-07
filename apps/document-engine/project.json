@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/document-engine/src",
-  "tags": [],
+  "tags": ["scope:document-engine"],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
@@ -54,8 +54,8 @@
           "sourceMap": true,
           "fileReplacements": [
             {
-              "replace": "apps/dashboard/src/environments/environment.ts",
-              "with": "apps/dashboard/src/environments/environment.local.ts"
+              "replace": "apps/document-engine/src/environments/environment.ts",
+              "with": "apps/document-engine/src/environments/environment.local.ts"
             }
           ]
         }

@@ -1,4 +1,4 @@
-.notum-toggle-group {
+.document-engine-toggle-group {
   display: inline-flex;
   border-radius: 0.375rem;
   border: 1px solid var(--border);
@@ -6,7 +6,7 @@
   overflow: hidden;
 }
 
-.notum-toggle-option {
+.document-engine-toggle-option {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -18,16 +18,14 @@
   border: none;
   border-right: 1px solid var(--border);
   cursor: pointer;
-  transition:
-    background-color 0.2s,
-    color 0.2s;
+  transition: background-color 0.2s, color 0.2s;
   outline: none;
 
   &:last-child {
     border-right: none;
   }
 
-  &:hover:not(:disabled):not(.notum-toggle-option--active) {
+  &:hover:not(:disabled):not(.document-engine-toggle-option--active) {
     background-color: var(--accent);
     color: var(--accent-foreground);
   }
@@ -44,7 +42,7 @@
   }
 }
 
-.notum-toggle-option--active {
+.document-engine-toggle-option--active {
   background-color: var(--primary);
   color: var(--primary-foreground);
 
@@ -53,4 +51,3 @@
     color: var(--primary-foreground);
   }
 }
-

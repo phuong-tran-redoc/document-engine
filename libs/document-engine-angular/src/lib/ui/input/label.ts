@@ -4,10 +4,10 @@ import { Directive, HostBinding, Input } from '@angular/core';
  * Label directive for form fields
  *
  * Usage:
- * <label notumLabel for="input-id">Label text</label>
+ * <label documentEngineLabel for="input-id">Label text</label>
  */
 @Directive({
-  selector: 'label[notumLabel]',
+  selector: 'label[documentEngineLabel]',
   standalone: true,
 })
 export class LabelDirective {
@@ -15,6 +15,6 @@ export class LabelDirective {
 
   @HostBinding('class')
   get labelClasses(): string {
-    return ['notum-label', this.class].filter(Boolean).join(' ');
+    return ['document-engine-label', this.class].filter(Boolean).join(' ');
   }
 }

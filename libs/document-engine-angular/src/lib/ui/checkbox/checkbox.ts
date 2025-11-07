@@ -16,10 +16,10 @@ import { IconComponent } from '../icon';
  * Works with ngModel and reactive forms
  *
  * Usage:
- * <notum-checkbox [(ngModel)]="checked">Label text</notum-checkbox>
+ * <document-engine-checkbox [(ngModel)]="checked">Label text</document-engine-checkbox>
  */
 @Component({
-  selector: 'notum-checkbox',
+  selector: 'document-engine-checkbox',
   standalone: true,
   imports: [CommonModule, IconComponent],
   providers: [
@@ -30,18 +30,22 @@ import { IconComponent } from '../icon';
     },
   ],
   template: `
-    <label class="notum-checkbox">
+    <label class="document-engine-checkbox">
       <input
         type="checkbox"
-        class="notum-checkbox__input"
+        class="document-engine-checkbox__input"
         [checked]="checked"
         [disabled]="disabled"
         (change)="onCheckboxChange($event)"
       />
-      <span class="notum-checkbox__box">
-        <notum-icon *ngIf="checked" name="check" class="notum-checkbox__icon"></notum-icon>
+      <span class="document-engine-checkbox__box">
+        <document-engine-icon
+          *ngIf="checked"
+          name="check"
+          class="document-engine-checkbox__icon"
+        ></document-engine-icon>
       </span>
-      <span class="notum-checkbox__label">
+      <span class="document-engine-checkbox__label">
         <ng-content></ng-content>
       </span>
     </label>
@@ -55,7 +59,7 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   @Output() checkedChange = new EventEmitter<boolean>();
 
-  @HostBinding('class.notum-checkbox-container') hostClass = true;
+  @HostBinding('class.document-engine-checkbox-container') hostClass = true;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onChange: (value: boolean) => void = () => {};

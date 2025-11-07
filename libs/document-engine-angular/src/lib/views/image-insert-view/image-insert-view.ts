@@ -13,7 +13,7 @@ import { InputDirective, LabelDirective, ErrorMessageComponent } from '../../ui/
  * This is a temporary solution until full upload flow is implemented
  */
 @Component({
-  selector: 'notum-image-insert-view',
+  selector: 'document-engine-image-insert-view',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ButtonDirective, InputDirective, LabelDirective, ErrorMessageComponent],
   template: `
@@ -26,35 +26,39 @@ import { InputDirective, LabelDirective, ErrorMessageComponent } from '../../ui/
         <div class="image-insert-view__content">
           <!-- Image URL input -->
           <div class="image-insert-view__field">
-            <label notumLabel for="url-input">Image URL</label>
+            <label documentEngineLabel for="url-input">Image URL</label>
             <input
               #urlInput
-              notumInput
+              documentEngineInput
               id="url-input"
               formControlName="url"
               placeholder="https://example.com/image.jpg"
               [attr.aria-invalid]="imageForm.controls.url.invalid && imageForm.controls.url.touched"
             />
-            <notum-error-message *ngIf="imageForm.controls.url.hasError('required') && imageForm.controls.url.touched">
+            <document-engine-error-message
+              *ngIf="imageForm.controls.url.hasError('required') && imageForm.controls.url.touched"
+            >
               This field is required
-            </notum-error-message>
-            <notum-error-message *ngIf="imageForm.controls.url.hasError('url') && imageForm.controls.url.touched">
+            </document-engine-error-message>
+            <document-engine-error-message
+              *ngIf="imageForm.controls.url.hasError('url') && imageForm.controls.url.touched"
+            >
               Enter a valid URL
-            </notum-error-message>
+            </document-engine-error-message>
           </div>
 
           <!-- Alt text input -->
           <div class="image-insert-view__field">
-            <label notumLabel for="alt-input">Alt Text</label>
-            <input notumInput id="alt-input" formControlName="alt" placeholder="Describe the image" />
+            <label documentEngineLabel for="alt-input">Alt Text</label>
+            <input documentEngineInput id="alt-input" formControlName="alt" placeholder="Describe the image" />
           </div>
         </div>
 
         <!-- Actions -->
         <div class="image-insert-view__actions">
-          <button type="button" notumButton variant="ghost" (click)="cancel()">Cancel</button>
+          <button type="button" documentEngineButton variant="ghost" (click)="cancel()">Cancel</button>
 
-          <button type="submit" notumButton variant="default" [disabled]="!canInsert()">Insert Image</button>
+          <button type="submit" documentEngineButton variant="default" [disabled]="!canInsert()">Insert Image</button>
         </div>
       </form>
     </div>

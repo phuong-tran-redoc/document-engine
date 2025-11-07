@@ -1,0 +1,21 @@
+{
+  "name": "document-engine-home",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/document-engine/features/home/src",
+  "prefix": "document-engine",
+  "projectType": "library",
+  "tags": ["scope:document-engine", "type:feature"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/document-engine/features/home/jest.config.ts",
+        "tsConfig": "libs/document-engine/features/home/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

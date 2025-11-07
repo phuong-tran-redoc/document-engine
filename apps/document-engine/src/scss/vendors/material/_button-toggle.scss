@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 
-.notum-button-toggle {
+.document-engine-button-toggle {
   @include mat.button-toggle-overrides(
     (
       shape: 4px,

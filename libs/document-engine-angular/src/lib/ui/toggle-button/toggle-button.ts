@@ -14,13 +14,13 @@ import {
  * Toggle button option directive
  */
 @Component({
-  selector: 'button[notumToggleOption]',
+  selector: 'button[documentEngineToggleOption]',
   standalone: true,
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.notum-toggle-option]': 'true',
-    '[class.notum-toggle-option--active]': 'isActive',
+    '[class.document-engine-toggle-option]': 'true',
+    '[class.document-engine-toggle-option--active]': 'isActive',
     '[disabled]': 'disabled',
     '(click)': 'onClick()',
   },
@@ -29,7 +29,7 @@ export class ToggleOptionDirective {
   @Input() value!: string;
   @Input() disabled = false;
 
-  @HostBinding('class.notum-toggle-option--active')
+  @HostBinding('class.document-engine-toggle-option--active')
   isActive = false;
 
   onClick(): void {
@@ -46,17 +46,17 @@ export class ToggleOptionDirective {
  * Similar to mat-button-toggle-group
  *
  * Usage:
- * <notum-toggle-group [(value)]="alignment">
- *   <button notumToggleOption value="left"><notum-icon name="format_align_left"></notum-icon></button>
- *   <button notumToggleOption value="center"><notum-icon name="format_align_center"></notum-icon></button>
- * </notum-toggle-group>
+ * <document-engine-toggle-group [(value)]="alignment">
+ *   <button documentEngineToggleOption value="left"><document-engine-icon name="format_align_left"></document-engine-icon></button>
+ *   <button documentEngineToggleOption value="center"><document-engine-icon name="format_align_center"></document-engine-icon></button>
+ * </document-engine-toggle-group>
  */
 @Component({
-  selector: 'notum-toggle-group',
+  selector: 'document-engine-toggle-group',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="notum-toggle-group">
+    <div class="document-engine-toggle-group">
       <ng-content></ng-content>
     </div>
   `,

@@ -2,19 +2,19 @@ import { Directive } from '@angular/core';
 
 /**
  * Directive for select label content
- * Must be used within notum-select component when labelMode="static"
+ * Must be used within document-engine-select component when labelMode="static"
  *
  * Usage:
- * <notum-select labelMode="static">
- *   <div notumSelectLabel>
- *     <notum-icon name="format_size"></notum-icon>
+ * <document-engine-select labelMode="static">
+ *   <div documentEngineSelectLabel>
+ *     <document-engine-icon name="format_size"></document-engine-icon>
  *     <span>Font Size</span>
  *   </div>
- *   <button notumSelectOption value="14px">14px</button>
- * </notum-select>
+ *   <button documentEngineSelectOption value="14px">14px</button>
+ * </document-engine-select>
  */
 @Directive({
-  selector: '[notumSelectLabel]',
+  selector: '[documentEngineSelectLabel]',
   standalone: true,
 })
 export class SelectLabelDirective {}

@@ -1,0 +1,11 @@
+<header class="flex items-center justify-between w-full h-16 px-4">
+  <div class="flex items-center gap-x-6">
+    <button matIconButton class="document-engine-button--icon" (click)="toggleSidebar()">
+      <mat-icon>dock_to_right</mat-icon>
+    </button>
+
+    <document-engine-breadcrumb [items]="breadcrumbItems()"></document-engine-breadcrumb>
+  </div>
+
+  <document-engine-theme-toggle variant="icon"> </document-engine-theme-toggle>
+</header>

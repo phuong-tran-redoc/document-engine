@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { DynamicFieldCategory, DynamicFieldItem } from '@notum/document-engine-core';
+import { DynamicFieldCategory, DynamicFieldItem } from '@redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { BubbleMenuViewContent } from '../../core';
@@ -12,7 +12,7 @@ import { ButtonDirective, IconComponent, InputDirective, LabelDirective } from '
  * Shows categorized dynamic fields for insertion into the editor
  */
 @Component({
-  selector: 'notum-dynamic-fields-view',
+  selector: 'document-engine-dynamic-fields-view',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ButtonDirective, InputDirective, LabelDirective, IconComponent],
   template: `
@@ -23,11 +23,11 @@ import { ButtonDirective, IconComponent, InputDirective, LabelDirective } from '
       <!-- Search Bar -->
       <div class="dynamic-fields-view__search">
         <div class="dynamic-fields-view__search-field">
-          <label notumLabel for="search-input">Search merge field</label>
+          <label documentEngineLabel for="search-input">Search merge field</label>
           <div class="dynamic-fields-view__search-input-wrapper">
-            <notum-icon name="search" class="dynamic-fields-view__search-icon"></notum-icon>
+            <document-engine-icon name="search" class="dynamic-fields-view__search-icon"></document-engine-icon>
             <input
-              notumInput
+              documentEngineInput
               id="search-input"
               [formControl]="searchControl"
               placeholder="Search fields..."
@@ -65,7 +65,7 @@ import { ButtonDirective, IconComponent, InputDirective, LabelDirective } from '
 
         <ng-template #noResults>
           <div class="dynamic-fields-view__empty">
-            <notum-icon name="search_off" class="dynamic-fields-view__empty-icon"></notum-icon>
+            <document-engine-icon name="search_off" class="dynamic-fields-view__empty-icon"></document-engine-icon>
             <div class="dynamic-fields-view__empty-text">No fields found matching "{{ searchQuery }}"</div>
           </div>
         </ng-template>
@@ -73,7 +73,7 @@ import { ButtonDirective, IconComponent, InputDirective, LabelDirective } from '
 
       <!-- Actions -->
       <div class="dynamic-fields-view__actions">
-        <button type="button" notumButton variant="secondary" (click)="close?.()">Close</button>
+        <button type="button" documentEngineButton variant="secondary" (click)="close?.()">Close</button>
       </div>
     </div>
   `,
@@ -136,7 +136,7 @@ export class DynamicFieldsViewComponent implements BubbleMenuViewContent<Record<
           (field) =>
             field.label.toLowerCase().includes(query) ||
             field.description?.toLowerCase().includes(query) ||
-            field.id.toLowerCase().includes(query),
+            field.id.toLowerCase().includes(query)
         );
 
         if (categoryFields.length > 0) {

@@ -21,7 +21,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
  * Shows categorized special characters for insertion
  */
 @Component({
-  selector: 'notum-special-characters-view',
+  selector: 'document-engine-special-characters-view',
   standalone: true,
   imports: [CommonModule, ButtonDirective, SelectComponent, SelectOptionDirective],
   template: `
@@ -31,14 +31,14 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
 
       <!-- Category Select -->
       <div class="special-characters-view__select">
-        <notum-select [(value)]="selectedCategory" labelMode="activeOption">
-          <button notumSelectOption value="all">All</button>
-          <button notumSelectOption value="currency">Currency</button>
-          <button notumSelectOption value="math">Math</button>
-          <button notumSelectOption value="arrows">Arrows</button>
-          <button notumSelectOption value="symbols">Symbols</button>
-          <button notumSelectOption value="punctuation">Punctuation</button>
-        </notum-select>
+        <document-engine-select [(value)]="selectedCategory" labelMode="activeOption">
+          <button documentEngineSelectOption value="all">All</button>
+          <button documentEngineSelectOption value="currency">Currency</button>
+          <button documentEngineSelectOption value="math">Math</button>
+          <button documentEngineSelectOption value="arrows">Arrows</button>
+          <button documentEngineSelectOption value="symbols">Symbols</button>
+          <button documentEngineSelectOption value="punctuation">Punctuation</button>
+        </document-engine-select>
       </div>
 
       <!-- Characters Grid -->
@@ -68,7 +68,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
 
       <!-- Actions -->
       <div class="special-characters-view__actions">
-        <button type="button" notumButton variant="secondary" (click)="close?.()">Close</button>
+        <button type="button" documentEngineButton variant="secondary" (click)="close?.()">Close</button>
       </div>
     </div>
   `,

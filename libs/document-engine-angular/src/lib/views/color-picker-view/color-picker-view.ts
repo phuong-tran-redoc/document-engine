@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Color, normalizeColor } from '@notum/document-engine-core';
+import { Color, normalizeColor } from '@redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { BubbleMenuViewContent } from '../../core';
 import { COLORS } from '../../constants/color.constant';
@@ -12,7 +12,7 @@ import { ColorPickerComponent } from '../../ui/color-picker';
  * Shows color palette for text and background colors
  */
 @Component({
-  selector: 'notum-color-picker-view',
+  selector: 'document-engine-color-picker-view',
   standalone: true,
   imports: [CommonModule, ButtonDirective, ColorPickerComponent],
   template: `
@@ -21,7 +21,7 @@ import { ColorPickerComponent } from '../../ui/color-picker';
       <div class="color-picker-view__title">{{ colorType === 'text' ? 'Text Color' : 'Background Color' }}noôi</div>
 
       <!-- Color Picker Component -->
-      <notum-color-picker
+      <document-engine-color-picker
         [colorPalette]="colorPalette"
         [activeColor]="activeColor"
         [usedColors]="usedColors"
@@ -31,8 +31,8 @@ import { ColorPickerComponent } from '../../ui/color-picker';
 
       <!-- Actions -->
       <div class="color-picker-view__actions">
-        <button type="button" notumButton variant="destructive" (click)="removeColor()">Remove Color</button>
-        <button type="button" notumButton variant="secondary" (click)="close?.()">Close</button>
+        <button type="button" documentEngineButton variant="destructive" (click)="removeColor()">Remove Color</button>
+        <button type="button" documentEngineButton variant="secondary" (click)="close?.()">Close</button>
       </div>
     </div>
   `,
