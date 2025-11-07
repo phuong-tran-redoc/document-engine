@@ -3,6 +3,8 @@
 # enviroment
 *.local.ts
 
+.npmrc
+
 # compiled output
 dist
 tmp
