@@ -18,14 +18,26 @@ jobs:
       core-changed: ${{ steps.changes.outputs.core }}
       angular-changed: ${{ steps.changes.outputs.angular }}
       skip-publish: ${{ steps.check-commit.outputs.skip }}
+      is-manual: ${{ steps.check-trigger.outputs.is-manual }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Check if manual trigger
+        id: check-trigger
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "is-manual=true" >> $GITHUB_OUTPUT
+            echo "Manual trigger detected, will publish both packages"
+          else
+            echo "is-manual=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Check commit message for NO_PUBLISH
         id: check-commit
+        if: github.event_name == 'push'
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
           if echo "$COMMIT_MSG" | grep -q "NO_PUBLISH"; then
@@ -35,8 +47,15 @@ jobs:
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Set skip to false for manual trigger
+        id: check-commit-manual
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "skip=false" >> $GITHUB_OUTPUT
+
       - name: Check changed files
         id: changes
+        if: github.event_name == 'push'
         run: |
           echo "Checking for changes between ${{ github.event.before }} and ${{ github.event.after }}"
 
@@ -53,6 +72,14 @@ jobs:
           else
             echo "angular=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Set both packages to publish for manual trigger
+        id: changes-manual
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "core=true" >> $GITHUB_OUTPUT
+          echo "angular=true" >> $GITHUB_OUTPUT
+          echo "Manual trigger: will publish both packages"
 
   publish:
     needs: check-changes
@@ -99,19 +126,19 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build document-engine-core
-        if: needs.check-changes.outputs.core-changed == 'true'
+        if: needs.check-changes.outputs.core-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
         run: pnpm nx build document-engine-core
 
       - name: Build document-engine-angular
-        if: needs.check-changes.outputs.angular-changed == 'true'
+        if: needs.check-changes.outputs.angular-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
         run: pnpm nx build document-engine-angular
 
       - name: Publish document-engine-core
-        if: needs.check-changes.outputs.core-changed == 'true'
+        if: needs.check-changes.outputs.core-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
         working-directory: dist/libs/document-engine-core
         run: pnpm publish --no-git-checks
 
       - name: Publish document-engine-angular
-        if: needs.check-changes.outputs.angular-changed == 'true'
+        if: needs.check-changes.outputs.angular-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
         working-directory: dist/libs/document-engine-angular
         run: pnpm publish --no-git-checks
