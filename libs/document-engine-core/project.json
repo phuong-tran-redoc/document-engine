@@ -1,5 +1,5 @@
 {
-  "name": "document-engine-core",
+  "name": "@redoc/document-engine-core",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/document-engine-core/src",
   "projectType": "library",

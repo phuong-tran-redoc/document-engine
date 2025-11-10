@@ -2,6 +2,7 @@
 
 # enviroment
 *.local.ts
+*.env
 
 .npmrc
 
