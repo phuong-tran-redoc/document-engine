@@ -2,11 +2,19 @@
   <document-engine-toolbar
     *ngIf="showToolbar"
     [editor]="editor"
-    [config]="mergedConfig"
+    [capabilities]="capabilities"
     [editable]="editable"
+    [config]="mergedConfig"
   ></document-engine-toolbar>
 
   <div class="document-engine-document-editor__content">
     <ng-content></ng-content>
   </div>
+
+  <document-engine-footer
+    *ngIf="editor && mergedConfig.showFooter"
+    [editor]="editor"
+    [config]="mergedConfig"
+    [editable]="editable"
+  ></document-engine-footer>
 </div>

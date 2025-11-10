@@ -9,7 +9,7 @@
   border-radius: 0.375rem; // rounded-md
   font-size: 0.875rem; // text-sm (14px)
   font-weight: 500; // font-medium
-  transition-property: all;
+  transition-property: box-shadow, opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
   outline: none;
@@ -113,8 +113,7 @@
 .btn--ghost {
   background-color: transparent;
   border: 1px solid transparent;
-  // color: var(--secondary-foreground, hsl(222.2 47.4% 11.2%));
-  color: #414752;
+  color: var(--secondary-foreground, hsl(222.2 47.4% 11.2%));
 
   &:hover:not(:disabled) {
     background-color: var(--accent, hsl(210 40% 96.1%));

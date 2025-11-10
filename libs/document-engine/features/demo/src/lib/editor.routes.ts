@@ -6,11 +6,11 @@ export const EDITOR_ROUTES: Route[] = [
     redirectTo: 'test-advanced',
     pathMatch: 'full',
   },
-  // {
-  //   path: 'basic',
-  //   data: { breadcrumb: 'Basic' },
-  //   loadComponent: () => import('./editor-basic').then((m) => m.EditorBasicComponent),
-  // },
+  {
+    path: 'basic',
+    data: { breadcrumb: 'Basic' },
+    loadComponent: () => import('./editor-basic').then((m) => m.EditorBasicComponent),
+  },
   // {
   //   path: 'restricted-editing',
   //   data: { breadcrumb: 'Restricted Editing' },

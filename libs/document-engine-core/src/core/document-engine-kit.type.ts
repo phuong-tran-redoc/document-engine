@@ -54,7 +54,14 @@ export interface DocumentEngineConfig {
   tables?: Partial<TableKitOptions> | boolean;
 
   /**
+   * Hiển thị footer (chứa character count và các component khác)
+   * @default true
+   */
+  showFooter?: boolean;
+
+  /**
    * Cấu hình cho @tiptap/extension-character-count
+   * Footer phải được bật để hiển thị character count
    * @default false (Thường được bật/tắt bởi client)
    */
   characterCount?: Partial<CharacterCountOptions> | boolean;
@@ -168,4 +175,16 @@ export interface DocumentEngineConfig {
    * @default true
    */
   markdown?: boolean;
+
+  /**
+   * Hiển thị Font Size trong toolbar
+   * @default true
+   */
+  fontSize?: boolean;
+
+  /**
+   * Hiển thị Line Height trong toolbar
+   * @default true
+   */
+  lineHeight?: boolean;
 }

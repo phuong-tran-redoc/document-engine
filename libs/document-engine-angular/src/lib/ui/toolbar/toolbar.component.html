@@ -2,7 +2,7 @@
   <div class="document-engine-document-editor__toolbar-content">
     <div class="document-engine-document-editor__toolbar-left">
       <!-- History: Undo/Redo -->
-      <div *ngIf="hasHistory()" class="document-engine-document-editor__toolbar-group">
+      <div *ngIf="capabilities.hasHistory" class="document-engine-document-editor__toolbar-group">
         <button
           documentEngineButton
           size="icon"
@@ -23,12 +23,20 @@
         </button>
       </div>
 
-      <div *ngIf="hasHistory() && hasFormatting()" class="document-engine-document-editor__toolbar-divider"></div>
+      <div
+        *ngIf="capabilities.hasHistory && capabilities.hasFormatting"
+        class="document-engine-document-editor__toolbar-divider"
+      ></div>
 
       <!-- Text Formatting: Font Size, Line Height, Text Case, Heading -->
-      <div *ngIf="hasFormatting()" class="document-engine-document-editor__toolbar-group">
+      <div *ngIf="capabilities.hasFormatting" class="document-engine-document-editor__toolbar-group">
         <!-- Font Size -->
-        <document-engine-select [value]="activeFontSize" placeholder="Font Size" labelMode="static">
+        <document-engine-select
+          *ngIf="capabilities.hasFontSize"
+          [value]="activeFontSize"
+          placeholder="Font Size"
+          labelMode="static"
+        >
           <document-engine-icon documentEngineSelectLabel name="format_size"></document-engine-icon>
 
           <button documentEngineSelectOption [value]="null">Default</button>
@@ -41,7 +49,12 @@
         </document-engine-select>
 
         <!-- Line Height -->
-        <document-engine-select [value]="activeLineHeight" placeholder="Line Height" labelMode="static">
+        <document-engine-select
+          *ngIf="capabilities.hasLineHeight"
+          [value]="activeLineHeight"
+          placeholder="Line Height"
+          labelMode="static"
+        >
           <document-engine-icon documentEngineSelectLabel name="format_line_spacing"></document-engine-icon>
 
           @for (option of lineHeightOptions; track option.value) {
@@ -52,7 +65,7 @@
         </document-engine-select>
 
         <!-- Text Case -->
-        <document-engine-select *ngIf="hasTextCase()" placeholder="Text Case" labelMode="static">
+        <document-engine-select *ngIf="capabilities.hasTextCase" placeholder="Text Case" labelMode="static">
           <document-engine-icon documentEngineSelectLabel name="match_case"></document-engine-icon>
 
           @for (option of textCaseOptions; track option.value) {
@@ -68,7 +81,7 @@
 
         <!-- Heading -->
         <document-engine-select
-          *ngIf="hasHeading()"
+          *ngIf="capabilities.hasHeading"
           [value]="activeHeading?.toString() || null"
           placeholder="Normal text"
         >
@@ -85,10 +98,19 @@
         </document-engine-select>
       </div>
 
-      <div *ngIf="hasFormatting()" class="document-engine-document-editor__toolbar-divider"></div>
+      <div
+        *ngIf="
+          capabilities.hasFormatting &&
+          (capabilities.hasFontSize ||
+            capabilities.hasLineHeight ||
+            capabilities.hasTextCase ||
+            capabilities.hasHeading)
+        "
+        class="document-engine-document-editor__toolbar-divider"
+      ></div>
 
       <!-- Reset Formatting -->
-      <div *ngIf="hasFormatting()" class="document-engine-document-editor__toolbar-group">
+      <div *ngIf="capabilities.hasResetFormat" class="document-engine-document-editor__toolbar-group">
         <button
           documentEngineButton
           size="icon"
@@ -100,10 +122,13 @@
         </button>
       </div>
 
-      <div *ngIf="hasFormatting() && hasColors()" class="document-engine-document-editor__toolbar-divider"></div>
+      <div
+        *ngIf="capabilities.hasResetFormat && capabilities.hasColors"
+        class="document-engine-document-editor__toolbar-divider"
+      ></div>
 
       <!-- Colors: Text/Background -->
-      <div *ngIf="hasColors()" class="document-engine-document-editor__toolbar-group">
+      <div *ngIf="capabilities.hasColors" class="document-engine-document-editor__toolbar-group">
         <button documentEngineButton size="icon" title="Text Color" (click)="openColorBubble($event, 'text')">
           <document-engine-icon name="format_color_text"></document-engine-icon>
         </button>
@@ -113,11 +138,25 @@
         </button>
       </div>
 
-      <div *ngIf="hasColors() && hasFormatting()" class="document-engine-document-editor__toolbar-divider"></div>
+      <div
+        *ngIf="
+          capabilities.hasColors &&
+          (capabilities.hasBold ||
+            capabilities.hasItalic ||
+            capabilities.hasUnderline ||
+            capabilities.hasStrike ||
+            capabilities.hasFormatting)
+        "
+        class="document-engine-document-editor__toolbar-divider"
+      ></div>
 
       <!-- Text Styles: Bold/Italic/Underline/Strike -->
-      <div *ngIf="hasFormatting()" class="document-engine-document-editor__toolbar-group">
+      <div
+        *ngIf="capabilities.hasBold || capabilities.hasItalic || capabilities.hasUnderline || capabilities.hasStrike"
+        class="document-engine-document-editor__toolbar-group"
+      >
         <button
+          *ngIf="capabilities.hasBold"
           documentEngineButton
           size="icon"
           [disabled]="!editor.can().chain().focus().toggleBold().run()"
@@ -129,6 +168,7 @@
         </button>
 
         <button
+          *ngIf="capabilities.hasItalic"
           documentEngineButton
           size="icon"
           [disabled]="!editor.can().chain().focus().toggleItalic().run()"
@@ -140,6 +180,7 @@
         </button>
 
         <button
+          *ngIf="capabilities.hasUnderline"
           documentEngineButton
           size="icon"
           [disabled]="!editor.can().chain().focus().toggleUnderline().run()"
@@ -151,6 +192,7 @@
         </button>
 
         <button
+          *ngIf="capabilities.hasStrike"
           documentEngineButton
           size="icon"
           [disabled]="!editor.can().chain().focus().toggleStrike().run()"
@@ -162,10 +204,16 @@
         </button>
       </div>
 
-      <div *ngIf="hasFormatting()" class="document-engine-document-editor__toolbar-divider"></div>
+      <div
+        *ngIf="
+          (capabilities.hasBold || capabilities.hasItalic || capabilities.hasUnderline || capabilities.hasStrike) &&
+          capabilities.hasFormatting
+        "
+        class="document-engine-document-editor__toolbar-divider"
+      ></div>
 
       <!-- Text Styles: Sub/Super/Code -->
-      <div *ngIf="hasFormatting()" class="document-engine-document-editor__toolbar-group">
+      <div *ngIf="capabilities.hasFormatting" class="document-engine-document-editor__toolbar-group">
         <button
           documentEngineButton
           size="icon"
@@ -200,10 +248,10 @@
         </button>
       </div>
 
-      <div *ngIf="hasFormatting()" class="document-engine-document-editor__toolbar-divider"></div>
+      <div *ngIf="capabilities.hasFormatting" class="document-engine-document-editor__toolbar-divider"></div>
 
       <!-- Text Alignment -->
-      <div *ngIf="hasFormatting()" class="document-engine-document-editor__toolbar-group">
+      <div *ngIf="capabilities.hasFormatting" class="document-engine-document-editor__toolbar-group">
         <document-engine-select
           [value]="activeTextAlign"
           (valueChange)="setTextAlign($event)"
@@ -232,10 +280,13 @@
         </button>
       </div>
 
-      <div *ngIf="hasFormatting() && hasIndent()" class="document-engine-document-editor__toolbar-divider"></div>
+      <div
+        *ngIf="capabilities.hasFormatting && capabilities.hasIndent"
+        class="document-engine-document-editor__toolbar-divider"
+      ></div>
 
       <!-- Indent -->
-      <div *ngIf="hasIndent()" class="document-engine-document-editor__toolbar-group">
+      <div *ngIf="capabilities.hasIndent" class="document-engine-document-editor__toolbar-group">
         <button
           documentEngineButton
           size="icon"
@@ -257,10 +308,13 @@
         </button>
       </div>
 
-      <div *ngIf="hasIndent() && hasLists()" class="document-engine-document-editor__toolbar-divider"></div>
+      <div
+        *ngIf="capabilities.hasIndent && capabilities.hasLists"
+        class="document-engine-document-editor__toolbar-divider"
+      ></div>
 
       <!-- Lists: Bullet, Numbered (with style) -->
-      <div *ngIf="hasLists()" class="document-engine-document-editor__toolbar-group">
+      <div *ngIf="capabilities.hasLists" class="document-engine-document-editor__toolbar-group">
         <button
           documentEngineButton
           size="icon"
@@ -302,14 +356,17 @@
       </div>
 
       <div
-        *ngIf="hasLists() && (hasTable() || hasAdvanced())"
+        *ngIf="capabilities.hasLists && (capabilities.hasTable || capabilities.hasAdvanced)"
         class="document-engine-document-editor__toolbar-divider"
       ></div>
 
       <!-- Advanced: Table, Links, Images, Special Chars, Dynamic Fields -->
-      <div *ngIf="hasTable() || hasAdvanced()" class="document-engine-document-editor__toolbar-group">
+      <div
+        *ngIf="capabilities.hasTable || capabilities.hasAdvanced"
+        class="document-engine-document-editor__toolbar-group"
+      >
         <button
-          *ngIf="hasTable()"
+          *ngIf="capabilities.hasTable"
           documentEngineButton
           size="icon"
           (click)="openCreateTableBubble($event)"
@@ -319,7 +376,7 @@
           <document-engine-icon name="table_rows"></document-engine-icon>
         </button>
         <button
-          *ngIf="hasLinks()"
+          *ngIf="capabilities.hasLinks"
           documentEngineButton
           size="icon"
           [disabled]="!editor.can().chain().focus().toggleLink().run()"
@@ -330,12 +387,18 @@
           <document-engine-icon [name]="editor.isActive('link') ? 'link_off' : 'link'"></document-engine-icon>
         </button>
 
-        <button *ngIf="hasImages()" documentEngineButton size="icon" title="Insert Image" (click)="insertImage($event)">
+        <button
+          *ngIf="capabilities.hasImages"
+          documentEngineButton
+          size="icon"
+          title="Insert Image"
+          (click)="insertImage($event)"
+        >
           <document-engine-icon name="photo"></document-engine-icon>
         </button>
 
         <button
-          *ngIf="hasSpecialChars()"
+          *ngIf="capabilities.hasSpecialChars"
           documentEngineButton
           size="icon"
           title="Special Character"
@@ -345,7 +408,7 @@
         </button>
 
         <button
-          *ngIf="hasDynamicFields()"
+          *ngIf="capabilities.hasDynamicFields"
           documentEngineButton
           size="icon"
           title="Dynamic Field"
@@ -355,7 +418,7 @@
         </button>
 
         <button
-          *ngIf="hasTemplates()"
+          *ngIf="capabilities.hasTemplates"
           documentEngineButton
           size="icon"
           title="Template"
@@ -366,14 +429,17 @@
       </div>
 
       <div
-        *ngIf="(hasTable() || hasAdvanced()) && (hasEditableRegion() || hasClearContent() || hasPageBreak())"
+        *ngIf="
+          (capabilities.hasTable || capabilities.hasAdvanced) &&
+          (capabilities.hasEditableRegion || capabilities.hasClearContent || capabilities.hasPageBreak)
+        "
         class="document-engine-document-editor__toolbar-divider"
       ></div>
 
       <!-- Utilities: Editable Region, Clear Content, Markdown -->
       <div class="document-engine-document-editor__toolbar-group">
         <button
-          *ngIf="hasEditableRegion()"
+          *ngIf="capabilities.hasEditableRegion"
           documentEngineButton
           size="icon"
           [disabled]="!editor.can().chain().focus().toggleEditableRegion().run()"
@@ -385,7 +451,7 @@
         </button>
 
         <button
-          *ngIf="hasClearContent()"
+          *ngIf="capabilities.hasClearContent"
           documentEngineButton
           size="icon"
           [disabled]="!editor.can().chain().focus().clear().run()"
@@ -396,7 +462,7 @@
         </button>
 
         <!-- <button
-          *ngIf="hasMarkdown()"
+          *ngIf="capabilities.hasMarkdown"
           documentEngineButton
           size="icon"
           (click)="downloadAsMarkdown()"
@@ -406,10 +472,10 @@
         </button> -->
       </div>
 
-      <div *ngIf="hasPageBreak()" class="document-engine-document-editor__toolbar-divider"></div>
+      <div *ngIf="capabilities.hasPageBreak" class="document-engine-document-editor__toolbar-divider"></div>
 
       <!-- Page Break -->
-      <div *ngIf="hasPageBreak()" class="document-engine-document-editor__toolbar-group">
+      <div *ngIf="capabilities.hasPageBreak" class="document-engine-document-editor__toolbar-group">
         <button
           documentEngineButton
           size="icon"
@@ -439,7 +505,7 @@
 
   <!-- Link Bubble Menu -->
   <document-engine-editor-bubble-menu
-    *ngIf="hasLinks()"
+    *ngIf="capabilities.hasLinks"
     #linkBubbleWrapper
     [editor]="editor"
     [config]="linkBubbleConfig"
@@ -447,7 +513,7 @@
 
   <!-- Table Bubble Menu -->
   <document-engine-editor-bubble-menu
-    *ngIf="hasTable()"
+    *ngIf="capabilities.hasTable"
     #tableBubbleWrapper
     [editor]="editor"
     [config]="tableBubbleConfig"
@@ -455,7 +521,7 @@
 
   <!-- Image Bubble Menu -->
   <document-engine-toolbar-bubble-menu
-    *ngIf="hasImages()"
+    *ngIf="capabilities.hasImages"
     #imageBubbleMenu
     [editor]="editor"
     [config]="imageBubbleConfig"
@@ -463,7 +529,7 @@
 
   <!-- Special Characters Bubble Menu -->
   <document-engine-toolbar-bubble-menu
-    *ngIf="hasSpecialChars()"
+    *ngIf="capabilities.hasSpecialChars"
     #specialCharsBubbleMenu
     [editor]="editor"
     [config]="specialCharsBubbleConfig"
@@ -471,7 +537,7 @@
 
   <!-- Dynamic Fields Bubble Menu -->
   <document-engine-toolbar-bubble-menu
-    *ngIf="hasDynamicFields()"
+    *ngIf="capabilities.hasDynamicFields"
     #dynamicFieldsBubbleMenu
     [editor]="editor"
     [config]="dynamicFieldsBubbleConfig"
@@ -479,7 +545,7 @@
 
   <!-- Template Bubble Menu -->
   <document-engine-toolbar-bubble-menu
-    *ngIf="hasTemplates()"
+    *ngIf="capabilities.hasTemplates"
     #templateBubbleMenu
     [editor]="editor"
     [config]="templateBubbleConfig"
@@ -487,7 +553,7 @@
 
   <!-- Table Create Bubble Menu -->
   <document-engine-toolbar-bubble-menu
-    *ngIf="hasTable()"
+    *ngIf="capabilities.hasTable"
     #tableCreateBubbleMenu
     [editor]="editor"
     [config]="tableCreateBubbleConfig"

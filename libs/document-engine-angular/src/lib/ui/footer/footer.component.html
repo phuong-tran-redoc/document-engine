@@ -1,0 +1,16 @@
+<div class="document-engine-document-editor__footer">
+  <div class="document-engine-document-editor__footer-content">
+    <div class="document-engine-document-editor__footer-left">
+      <!-- Additional footer components can be added here -->
+    </div>
+
+    <div class="document-engine-document-editor__footer-right">
+      <document-engine-character-count
+        *ngIf="hasCharacterCount()"
+        [editor]="editor"
+        [config]="config"
+        mode="characters"
+      ></document-engine-character-count>
+    </div>
+  </div>
+</div>

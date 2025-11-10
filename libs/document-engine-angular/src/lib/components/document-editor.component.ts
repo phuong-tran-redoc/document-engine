@@ -5,13 +5,16 @@ import {
   EventEmitter,
   Input,
   NgZone,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
   inject,
 } from '@angular/core';
-import { DocumentEngineConfig, DocumentEngineKit } from '@phuong-tran-redoc/document-engine-core';
+import { DocumentEngineConfig, DocumentEngineKit, EditorCapabilities } from '@phuong-tran-redoc/document-engine-core';
 import { ToolbarComponent } from '../ui/toolbar';
+import { FooterComponent } from '../ui/footer';
 import { Editor } from '@tiptap/core';
 
 /**
@@ -35,7 +38,7 @@ import { Editor } from '@tiptap/core';
 @Component({
   selector: 'document-engine-editor',
   standalone: true,
-  imports: [CommonModule, ToolbarComponent],
+  imports: [CommonModule, ToolbarComponent, FooterComponent],
   templateUrl: './document-editor.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -53,7 +56,7 @@ import { Editor } from '@tiptap/core';
     `,
   ],
 })
-export class DocumentEditorComponent implements OnInit, OnDestroy {
+export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
   private readonly ngZone = inject(NgZone);
 
   @Input() showToolbar = true;
@@ -71,6 +74,22 @@ export class DocumentEditorComponent implements OnInit, OnDestroy {
   }
 
   private _mergedConfig?: Partial<DocumentEngineConfig>;
+
+  // Capabilities instance for toolbar
+  capabilities!: EditorCapabilities;
+
+  private updateCapabilities(): void {
+    this.capabilities = new EditorCapabilities(this.mergedConfig, this.editable);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['config'] || changes['editable']) {
+      if (this._mergedConfig) {
+        this._mergedConfig = this.getMergedConfig();
+        this.updateCapabilities();
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.initializeEditor();
@@ -97,6 +116,8 @@ export class DocumentEditorComponent implements OnInit, OnDestroy {
 
       // Emit editorReady event back inside Angular zone
       this.ngZone.run(() => {
+        // Create capabilities instance after editor is initialized
+        this.updateCapabilities();
         this.editorReady.emit(this.editor);
       });
     });
@@ -126,14 +147,10 @@ export class DocumentEditorComponent implements OnInit, OnDestroy {
       },
 
       // Text style for colors
-      textStyleKit: true,
+      textStyleKit: false,
 
       // Tables with resizing
-      tables: {
-        table: {
-          resizable: true,
-        },
-      },
+      tables: false,
 
       // Character count
       characterCount: true,
@@ -165,6 +182,11 @@ export class DocumentEditorComponent implements OnInit, OnDestroy {
       heading: true, // Custom NotumHeading
       dynamicField: true,
       orderedList: true, // Custom CustomOrderedList
+
+      // UI components
+      showFooter: false,
+      fontSize: true,
+      lineHeight: true,
     };
 
     // Merge user config with defaults
@@ -191,6 +213,9 @@ export class DocumentEditorComponent implements OnInit, OnDestroy {
       restrictedEditing: this.config?.restrictedEditing ?? false,
       dynamicFieldsCategories: this.config?.dynamicFieldsCategories ?? defaultConfig.dynamicFieldsCategories,
       templates: this.config?.templates ?? defaultConfig.templates,
+      showFooter: this.config?.showFooter ?? defaultConfig.showFooter,
+      fontSize: this.config?.fontSize ?? defaultConfig.fontSize,
+      lineHeight: this.config?.lineHeight ?? defaultConfig.lineHeight,
     };
   }
 

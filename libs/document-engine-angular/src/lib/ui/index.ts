@@ -3,6 +3,8 @@ export * from './icon';
 export * from './color-picker';
 export * from './select';
 export * from './toolbar';
+export * from './footer';
+export * from './character-count';
 export * from './input';
 export * from './toggle-button';
 export * from './checkbox';

@@ -9,7 +9,12 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
-import { DocumentEngineConfig, ListStyleType, TextCaseOptions } from '@phuong-tran-redoc/document-engine-core';
+import {
+  DocumentEngineConfig,
+  EditorCapabilities,
+  ListStyleType,
+  TextCaseOptions,
+} from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import {
   ColorBubbleConfig,
@@ -54,8 +59,9 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);
 
   @Input() editor!: Editor;
-  @Input() config?: Partial<DocumentEngineConfig>;
+  @Input() capabilities!: EditorCapabilities;
   @Input() editable = true;
+  @Input() config?: Partial<DocumentEngineConfig>; // Only for dynamicFieldsCategories and templates
 
   activeFontSize: string | null = null;
   activeLineHeight: string | null = null;
@@ -299,124 +305,5 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     console.log('html', this.editor.getHTML());
     console.log('json', this.editor.getJSON());
     console.log('State', this.editor.state);
-  }
-
-  // Toolbar configuration helpers
-  hasHistory(): boolean {
-    const config = this.config ?? {};
-    return config.starterKit !== false;
-  }
-
-  hasFormatting(): boolean {
-    const config = this.config ?? {};
-    return config.starterKit !== false;
-  }
-
-  hasColors(): boolean {
-    const config = this.config ?? {};
-    return config.textStyleKit !== false;
-  }
-
-  hasAdvanced(): boolean {
-    // Check if any advanced features are enabled
-    return (
-      this.hasTextCase() ||
-      this.hasLists() ||
-      this.hasLinks() ||
-      this.hasImages() ||
-      this.hasDynamicFields() ||
-      this.hasSpecialChars() ||
-      this.hasTemplates()
-    );
-  }
-
-  hasTextCase(): boolean {
-    const config = this.config ?? {};
-    return config.textCase !== false;
-  }
-
-  hasHeading(): boolean {
-    const config = this.config ?? {};
-    return config.heading !== false;
-  }
-
-  hasIndent(): boolean {
-    const config = this.config ?? {};
-    return config.indent !== false;
-  }
-
-  hasLists(): boolean {
-    const config = this.config ?? {};
-    // Check orderedList first (custom extension)
-    if (config.orderedList !== false) {
-      return true;
-    }
-
-    // Then check starterKit for bulletList
-    if (config.starterKit === false) {
-      return false;
-    }
-
-    if (config.starterKit && typeof config.starterKit === 'object') {
-      const starterKit = config.starterKit;
-      return starterKit.bulletList !== false;
-    }
-    return true; // Default includes lists
-  }
-
-  hasLinks(): boolean {
-    const config = this.config ?? {};
-    if (config.starterKit === false) {
-      return false;
-    }
-    if (config.starterKit && typeof config.starterKit === 'object') {
-      return config.starterKit.link !== false;
-    }
-    return true; // Default includes links
-  }
-
-  hasImages(): boolean {
-    const config = this.config ?? {};
-    return config.image !== false;
-  }
-
-  hasDynamicFields(): boolean {
-    const config = this.config ?? {};
-    return config.dynamicField !== false;
-  }
-
-  hasSpecialChars(): boolean {
-    // Special characters are typically always available if editor is editable
-    return this.editable;
-  }
-
-  hasTemplates(): boolean {
-    const config = this.config ?? {};
-    return config.templates !== undefined && config.templates !== null && config.templates.length > 0;
-  }
-
-  hasTable(): boolean {
-    const config = this.config ?? {};
-    return config.tables !== false;
-  }
-
-  hasEditableRegion(): boolean {
-    const config = this.config ?? {};
-    return config.restrictedEditing !== false;
-  }
-
-  hasPageBreak(): boolean {
-    const config = this.config ?? {};
-    return config.pageBreak !== false;
-  }
-
-  hasClearContent(): boolean {
-    const config = this.config ?? {};
-    return config.clearContent !== false;
-  }
-
-  hasMarkdown(): boolean {
-    const config = this.config ?? {};
-    return config.markdown !== false;
   }
 }

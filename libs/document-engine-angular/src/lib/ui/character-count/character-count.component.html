@@ -1,0 +1,14 @@
+<div class="document-engine-character-count">
+  <span
+    class="document-engine-character-count__text"
+    [class.document-engine-character-count__text--muted]="!isNearLimit() && !isOverLimit()"
+    [class.document-engine-character-count__text--warning]="isNearLimit() && !isOverLimit()"
+    [class.document-engine-character-count__text--error]="isOverLimit()"
+  >
+    <ng-container *ngIf="mode === 'characters'">
+      <ng-container *ngIf="limit; else noLimit"> {{ count }} / {{ limit }} characters. </ng-container>
+      <ng-template #noLimit> {{ count }} {{ count === 1 ? 'character' : 'characters' }}. </ng-template>
+    </ng-container>
+    <ng-container *ngIf="mode === 'words'"> {{ count }} {{ count === 1 ? 'word' : 'words' }}. </ng-container>
+  </span>
+</div>

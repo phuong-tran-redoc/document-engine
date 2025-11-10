@@ -38,6 +38,8 @@
   align-items: center;
   gap: 0.25rem;
   white-space: nowrap;
+  min-width: fit-content;
+  width: auto;
 }
 
 .link-main-view__button document-engine-icon {

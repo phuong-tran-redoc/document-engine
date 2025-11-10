@@ -18,9 +18,9 @@ import { DYNAMIC_FIELDS_CATEGORIES } from './misc/common-dynamic-field';
   selector: 'document-engine-editor-test-advanced',
   imports: [CommonModule, FormsModule, DocumentEditorComponent, TiptapEditorDirective],
   template: `
-    <div class="editor-container">
-      <h2 class="editor-title">Advanced Document Engine Test</h2>
-      <p class="editor-subtitle">Full-featured configuration with ALL extensions enabled</p>
+    <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto">
+      <h2 class="text-2xl font-semibold m-0 text-foreground">Advanced Document Engine Test</h2>
+      <p class="text-sm m-0 text-muted-foreground">Full-featured configuration with ALL extensions enabled</p>
 
       <document-engine-editor
         #docEditor
@@ -31,35 +31,6 @@ import { DYNAMIC_FIELDS_CATEGORIES } from './misc/common-dynamic-field';
         <tiptap-editor [editor]="docEditor.editor" [(ngModel)]="value"></tiptap-editor>
       </document-engine-editor>
     </div>
-  `,
-  styles: `
-    .editor-container {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      padding: 1rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .editor-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin: 0;
-      color: var(--foreground, #1f2937);
-    }
-
-    .editor-subtitle {
-      font-size: 0.875rem;
-      color: var(--muted-foreground, #6b7280);
-      margin: 0;
-    }
-
-    .character-count {
-      margin-left: auto;
-      font-size: 0.875rem;
-      color: var(--muted-foreground, #6b7280);
-    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -83,6 +54,7 @@ export class EditorTestAdvancedComponent {
 
   // Full-featured editor configuration - ALL extensions enabled
   editorConfig: Partial<DocumentEngineConfig> = {
+    showFooter: false,
     // StarterKit with link enabled
     starterKit: {
       link: {
@@ -107,11 +79,6 @@ export class EditorTestAdvancedComponent {
       table: {
         resizable: true,
       },
-    },
-
-    // Character count with limit
-    characterCount: {
-      limit: 5000,
     },
 
     // Subscript and superscript

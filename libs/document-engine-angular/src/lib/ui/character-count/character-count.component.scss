@@ -1,0 +1,22 @@
+.document-engine-character-count {
+  display: flex;
+  justify-content: flex-end;
+
+  &__text {
+    font-size: 0.875rem;
+    transition: color 0.2s ease-in-out;
+
+    &--muted {
+      color: var(--muted-foreground, #6b7280);
+    }
+
+    &--warning {
+      color: var(--warning, #d97706);
+    }
+
+    &--error {
+      color: var(--destructive, #dc2626);
+    }
+  }
+}
+
