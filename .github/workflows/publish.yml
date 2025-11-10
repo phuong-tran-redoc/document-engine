@@ -9,6 +9,8 @@ on:
       - 'libs/document-engine-angular/**'
       - '.github/workflows/publish.yml'
 
+  workflow_dispatch:
+
 jobs:
   check-changes:
     runs-on: ubuntu-latest
