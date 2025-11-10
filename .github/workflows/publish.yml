@@ -100,11 +100,11 @@ jobs:
 
       - name: Build document-engine-core
         if: needs.check-changes.outputs.core-changed == 'true'
-        run: nx build document-engine-core
+        run: pnpm nx build document-engine-core
 
       - name: Build document-engine-angular
         if: needs.check-changes.outputs.angular-changed == 'true'
-        run: nx build document-engine-angular
+        run: pnpm nx build document-engine-angular
 
       - name: Publish document-engine-core
         if: needs.check-changes.outputs.core-changed == 'true'
