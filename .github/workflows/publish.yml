@@ -15,9 +15,9 @@ jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      core-changed: ${{ steps.changes.outputs.core }}
-      angular-changed: ${{ steps.changes.outputs.angular }}
-      skip-publish: ${{ steps.check-commit.outputs.skip }}
+      core-changed: ${{ steps.set-changes.outputs.core }}
+      angular-changed: ${{ steps.set-changes.outputs.angular }}
+      skip-publish: ${{ steps.set-skip.outputs.skip }}
       is-manual: ${{ steps.check-trigger.outputs.is-manual }}
     steps:
       - name: Checkout code
@@ -35,51 +35,46 @@ jobs:
             echo "is-manual=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Check commit message for NO_PUBLISH
-        id: check-commit
-        if: github.event_name == 'push'
+      - name: Set skip-publish output
+        id: set-skip
         run: |
-          COMMIT_MSG=$(git log -1 --pretty=%B)
-          if echo "$COMMIT_MSG" | grep -q "NO_PUBLISH"; then
-            echo "skip=true" >> $GITHUB_OUTPUT
-            echo "Found NO_PUBLISH in commit message, skipping publish"
-          else
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "skip=false" >> $GITHUB_OUTPUT
+            echo "Manual trigger: skip-publish=false"
+          else
+            COMMIT_MSG=$(git log -1 --pretty=%B)
+            if echo "$COMMIT_MSG" | grep -q "NO_PUBLISH"; then
+              echo "skip=true" >> $GITHUB_OUTPUT
+              echo "Found NO_PUBLISH in commit message, skipping publish"
+            else
+              echo "skip=false" >> $GITHUB_OUTPUT
+            fi
           fi
 
-      - name: Set skip to false for manual trigger
-        id: check-commit-manual
-        if: github.event_name == 'workflow_dispatch'
+      - name: Set changed packages
+        id: set-changes
         run: |
-          echo "skip=false" >> $GITHUB_OUTPUT
-
-      - name: Check changed files
-        id: changes
-        if: github.event_name == 'push'
-        run: |
-          echo "Checking for changes between ${{ github.event.before }} and ${{ github.event.after }}"
-
-          if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q "^libs/document-engine-core/"; then
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "core=true" >> $GITHUB_OUTPUT
-            echo "Found changes in document-engine-core"
-          else
-            echo "core=false" >> $GITHUB_OUTPUT
-          fi
-
-          if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q "^libs/document-engine-angular/"; then
             echo "angular=true" >> $GITHUB_OUTPUT
-            echo "Found changes in document-engine-angular"
+            echo "Manual trigger: will publish both packages"
           else
-            echo "angular=false" >> $GITHUB_OUTPUT
-          fi
+            echo "Checking for changes between ${{ github.event.before }} and ${{ github.event.after }}"
 
-      - name: Set both packages to publish for manual trigger
-        id: changes-manual
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          echo "core=true" >> $GITHUB_OUTPUT
-          echo "angular=true" >> $GITHUB_OUTPUT
-          echo "Manual trigger: will publish both packages"
+            if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q "^libs/document-engine-core/"; then
+              echo "core=true" >> $GITHUB_OUTPUT
+              echo "Found changes in document-engine-core"
+            else
+              echo "core=false" >> $GITHUB_OUTPUT
+            fi
+
+            if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q "^libs/document-engine-angular/"; then
+              echo "angular=true" >> $GITHUB_OUTPUT
+              echo "Found changes in document-engine-angular"
+            else
+              echo "angular=false" >> $GITHUB_OUTPUT
+            fi
+          fi
 
   publish:
     needs: check-changes
