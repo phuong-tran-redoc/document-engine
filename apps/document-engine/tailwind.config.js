@@ -11,6 +11,8 @@ module.exports = {
     join(__dirname, 'src/**/!(*.stories|*.spec).{ts,html}'),
     'libs/**/!(*.stories|*.spec).{html,ts}',
     ...createGlobPatternsForDependencies(__dirname),
+    // Exclude node_modules in libs (pnpm workspace)
+    '!libs/**/node_modules/**',
   ],
   theme: {
     extend: {

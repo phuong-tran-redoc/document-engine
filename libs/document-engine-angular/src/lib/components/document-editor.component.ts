@@ -20,22 +20,20 @@ import { Editor } from '@tiptap/core';
  * Provides a simple API for consumers without exposing internal dependencies
  *
  * Usage:
- * <document-engine-document-editor
- *   #docEditor
+ * <document-engine-editor
+ *   #editor
  *   [config]="editorConfig"
  *
-
-
  *   (editorReady)="editor = docEditor.editor"
  * >
  *   <tiptap-editor
  *     [editor]="docEditor.editor"
  *     [(ngModel)]="content"
  *   ></tiptap-editor>
- * </document-engine-document-editor>
+ * </document-engine-editor>
  */
 @Component({
-  selector: 'document-engine-document-editor',
+  selector: 'document-engine-editor',
   standalone: true,
   imports: [CommonModule, ToolbarComponent],
   templateUrl: './document-editor.component.html',

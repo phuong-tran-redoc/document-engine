@@ -22,14 +22,14 @@ import { DYNAMIC_FIELDS_CATEGORIES } from './misc/common-dynamic-field';
       <h2 class="editor-title">Advanced Document Engine Test</h2>
       <p class="editor-subtitle">Full-featured configuration with ALL extensions enabled</p>
 
-      <document-engine-document-editor
+      <document-engine-editor
         #docEditor
         [showToolbar]="true"
         [config]="editorConfig"
         (editorReady)="onEditorReady($event)"
       >
         <tiptap-editor [editor]="docEditor.editor" [(ngModel)]="value"></tiptap-editor>
-      </document-engine-document-editor>
+      </document-engine-editor>
     </div>
   `,
   styles: `
@@ -55,53 +55,10 @@ import { DYNAMIC_FIELDS_CATEGORIES } from './misc/common-dynamic-field';
       margin: 0;
     }
 
-    .editor-footer {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      padding: 0.5rem;
-    }
-
-    .editor-footer button {
-      padding: 0.5rem 1rem;
-      border: 1px solid var(--border-color, #e5e7eb);
-      border-radius: 0.25rem;
-      background-color: var(--card-bg, #fff);
-      cursor: pointer;
-      font-size: 0.875rem;
-    }
-
-    .editor-footer button:hover {
-      background-color: var(--muted, #f3f4f6);
-    }
-
     .character-count {
       margin-left: auto;
       font-size: 0.875rem;
       color: var(--muted-foreground, #6b7280);
-    }
-
-    .config-info {
-      padding: 1rem;
-      border: 1px solid var(--border-color, #e5e7eb);
-      border-radius: 0.25rem;
-      background-color: var(--muted, #f9fafb);
-    }
-
-    .config-info h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin: 0 0 0.5rem 0;
-    }
-
-    .config-info ul {
-      margin: 0;
-      padding-left: 1.5rem;
-    }
-
-    .config-info li {
-      font-size: 0.875rem;
-      color: var(--foreground, #374151);
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
