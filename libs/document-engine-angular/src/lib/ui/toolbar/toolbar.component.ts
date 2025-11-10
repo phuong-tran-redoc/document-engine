@@ -9,7 +9,7 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
-import { DocumentEngineConfig, ListStyleType, TextCaseOptions } from '@redoc/document-engine-core';
+import { DocumentEngineConfig, ListStyleType, TextCaseOptions } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import {
   ColorBubbleConfig,

@@ -10,7 +10,7 @@ import {
   Output,
   inject,
 } from '@angular/core';
-import { DocumentEngineConfig, DocumentEngineKit } from '@redoc/document-engine-core';
+import { DocumentEngineConfig, DocumentEngineKit } from '@phuong-tran-redoc/document-engine-core';
 import { ToolbarComponent } from '../ui/toolbar';
 import { Editor } from '@tiptap/core';
 

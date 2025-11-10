@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Color } from '@redoc/document-engine-core';
+import { Color } from '@phuong-tran-redoc/document-engine-core';
 import { ButtonDirective } from './button';
 import { IconComponent } from './icon';
 

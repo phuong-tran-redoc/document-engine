@@ -1,5 +1,5 @@
 {
-  "name": "@redoc/document-engine-angular",
+  "name": "@phuong-tran-redoc/document-engine-angular",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/document-engine-angular/src",
   "projectType": "library",

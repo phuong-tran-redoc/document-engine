@@ -246,7 +246,7 @@ importers:
       '@floating-ui/dom':
         specifier: ^1.7.4
         version: 1.7.4
-      '@redoc/document-engine-core':
+      '@phuong-tran-redoc/document-engine-core':
         specifier: workspace:*
         version: link:../document-engine-core
       '@tiptap/core':

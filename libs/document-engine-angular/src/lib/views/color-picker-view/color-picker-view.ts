@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Color, normalizeColor } from '@redoc/document-engine-core';
+import { Color, normalizeColor } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { BubbleMenuViewContent } from '../../core';
 import { COLORS } from '../../constants/color.constant';

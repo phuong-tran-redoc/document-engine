@@ -1,4 +1,4 @@
-import { DynamicFieldCategory } from '@redoc/document-engine-angular';
+import { DynamicFieldCategory } from '@phuong-tran-redoc/document-engine-angular';
 
 /**
  * Dynamic Fields categorized by type

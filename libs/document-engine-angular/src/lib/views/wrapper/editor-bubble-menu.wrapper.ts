@@ -13,7 +13,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { getClosestDomElement } from '@redoc/document-engine-core';
+import { getClosestDomElement } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import {
   BubbleMenuViewConfig,

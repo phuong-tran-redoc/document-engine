@@ -6,8 +6,8 @@ import {
   DocumentEngineConfig,
   Editor,
   TiptapEditorDirective,
-} from '@redoc/document-engine-angular';
-import { TemplateItem } from '@redoc/document-engine-core';
+} from '@phuong-tran-redoc/document-engine-angular';
+import { TemplateItem } from '@phuong-tran-redoc/document-engine-core';
 import { DYNAMIC_FIELDS_CATEGORIES } from './misc/common-dynamic-field';
 
 /**

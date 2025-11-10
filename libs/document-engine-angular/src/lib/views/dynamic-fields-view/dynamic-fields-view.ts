@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { DynamicFieldCategory, DynamicFieldItem } from '@redoc/document-engine-core';
+import { DynamicFieldCategory, DynamicFieldItem } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { BubbleMenuViewContent } from '../../core';

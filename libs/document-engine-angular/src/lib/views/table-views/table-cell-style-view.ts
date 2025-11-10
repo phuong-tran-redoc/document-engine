@@ -7,7 +7,7 @@ import {
   getSelectedCells,
   TableBorder,
   TableDefaultAttributes,
-} from '@redoc/document-engine-core';
+} from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { COLORS } from '../../constants';
 import { BubbleMenuViewContent, PopoverDirective } from '../../core';

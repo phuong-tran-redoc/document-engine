@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { getActiveMarkRange } from '@redoc/document-engine-core';
+import { getActiveMarkRange } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { BubbleMenuViewContent } from '../../core';
 import { urlValidator } from '../../utils';

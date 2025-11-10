@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Color, getCursorCellInfo, TableDefaultAttributes } from '@redoc/document-engine-core';
+import { Color, getCursorCellInfo, TableDefaultAttributes } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { COLORS } from '../../constants/color.constant';
 import { BubbleMenuViewContent, PopoverDirective } from '../../core';

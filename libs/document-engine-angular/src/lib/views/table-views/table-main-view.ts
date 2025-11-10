@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { getCursorCellInfo } from '@redoc/document-engine-core';
+import { getCursorCellInfo } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { CellSelection } from '@tiptap/pm/tables';
 import { BubbleMenuViewContent } from '../../core';

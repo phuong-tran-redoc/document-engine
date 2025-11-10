@@ -1,5 +1,5 @@
 {
-  "name": "@redoc/document-engine-angular",
+  "name": "@phuong-tran-redoc/document-engine-angular",
   "version": "0.0.1",
   "type": "commonjs",
   "main": "./src/index.js",
@@ -16,7 +16,7 @@
     "@floating-ui/dom": "^1.7.4",
     "@tiptap/extension-bubble-menu": "^3.4.3",
     "@tiptap/extension-floating-menu": "^3.4.3",
-    "@redoc/document-engine-core": "workspace:*"
+    "@phuong-tran-redoc/document-engine-core": "workspace:*"
   },
   "peerDependencies": {
     "rxjs": "^7.5.0",
