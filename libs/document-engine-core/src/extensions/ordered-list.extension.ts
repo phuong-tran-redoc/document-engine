@@ -3,7 +3,10 @@ import { ListStyleType } from '../types';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
-    customOrderedList: { setListStyle: (listStyleType: ListStyleType) => ReturnType };
+    customOrderedList: {
+      toggleOrderedList: () => ReturnType;
+      setListStyle: (listStyleType: ListStyleType) => ReturnType;
+    };
   }
 }
 
