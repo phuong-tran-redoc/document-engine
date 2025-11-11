@@ -1,12 +1,20 @@
+import { BlockquoteOptions } from '@tiptap/extension-blockquote';
+import { BoldOptions } from '@tiptap/extension-bold';
+import { CodeOptions } from '@tiptap/extension-code';
+import { CodeBlockOptions } from '@tiptap/extension-code-block';
+import { HeadingOptions } from '@tiptap/extension-heading';
 import { ImageOptions } from '@tiptap/extension-image';
+import { ItalicOptions } from '@tiptap/extension-italic';
+import { LinkOptions } from '@tiptap/extension-link';
+import { StrikeOptions } from '@tiptap/extension-strike';
 import { SubscriptExtensionOptions } from '@tiptap/extension-subscript';
 import { SuperscriptExtensionOptions } from '@tiptap/extension-superscript';
 import { TableKitOptions } from '@tiptap/extension-table';
 import { TextAlignOptions } from '@tiptap/extension-text-align';
 import { TextStyleKitOptions } from '@tiptap/extension-text-style';
-import { CharacterCountOptions, PlaceholderOptions } from '@tiptap/extensions';
-import { StarterKitOptions } from '@tiptap/starter-kit';
-import { CustomOrderedListOptions, IndentOptions, RestrictedEditingOptions } from '../extensions';
+import { UnderlineOptions } from '@tiptap/extension-underline';
+import { CharacterCountOptions, PlaceholderOptions, UndoRedoOptions } from '@tiptap/extensions';
+import { IndentOptions, RestrictedEditingOptions } from '../extensions';
 import { DynamicFieldCategory, DynamicFieldOptions } from '../nodes';
 
 export interface TemplateItem {
@@ -23,98 +31,104 @@ export interface TemplateItem {
  * - `object`: Để bật và cung cấp cấu hình tùy chỉnh.
  */
 export interface DocumentEngineConfig {
+  // ============================================
+  // History
+  // ============================================
   /**
-   * Cấu hình cho StarterKit.
-   * @default {
-   * ```ts
-   *  link: {
-   *    openOnClick: false,
-   *    defaultProtocol: 'https',
-   *    enableClickSelection: true,
-   *    shouldAutoLink: (url) =>
-   *      url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:') || url.startsWith('tel:'),
-   *  },
-   *  heading: false,
-   *  orderedList: false,
-   * }
-   * ```
+   * If set to false, the undo-redo extension will not be registered
+   * @example undoRedo: false
    */
-  starterKit?: Partial<StarterKitOptions> | boolean;
+  undoRedo: Partial<UndoRedoOptions> | boolean;
+
+  // ============================================
+  // Basic Inline
+  // ============================================
+  /**
+   * If set to false, the bold extension will not be registered
+   * @example bold: false
+   */
+  bold: Partial<BoldOptions> | boolean;
 
   /**
-   * Cấu hình cho @tiptap/extension-text-style (TextStyleKit)
-   * @default true
+   * If set to false, the italic extension will not be registered
+   * @example italic: false
    */
-  textStyleKit?: Partial<TextStyleKitOptions> | boolean;
+  italic: Partial<ItalicOptions> | boolean;
 
   /**
-   * Cấu hình cho @tiptap/extension-table (StyledTableKit)
-   * @default { table: { resizable: true } }
+   * If set to false, the underline extension will not be registered
+   * @example underline: false
    */
-  tables?: Partial<TableKitOptions> | boolean;
+  underline: Partial<UnderlineOptions> | boolean;
 
   /**
-   * Hiển thị footer (chứa character count và các component khác)
-   * @default true
+   * If set to false, the strike extension will not be registered
+   * @example strike: false
    */
-  showFooter?: boolean;
+  strike: Partial<StrikeOptions> | boolean;
 
-  /**
-   * Cấu hình cho @tiptap/extension-character-count
-   * Footer phải được bật để hiển thị character count
-   * @default false (Thường được bật/tắt bởi client)
-   */
-  characterCount?: Partial<CharacterCountOptions> | boolean;
-
+  // ============================================
+  // Advanced Inline
+  // ============================================
   /**
    * Cấu hình cho @tiptap/extension-subscript
-   * @default true
+   * @default false
    */
   subscript?: Partial<SubscriptExtensionOptions> | boolean;
 
   /**
    * Cấu hình cho @tiptap/extension-superscript
-   * @default true
+   * @default false
    */
   superscript?: Partial<SuperscriptExtensionOptions> | boolean;
 
+  /**
+   * If set to false, the code extension will not be registered
+   * @example code: false
+   */
+  code: Partial<CodeOptions> | boolean;
+
+  /**
+   * If set to false, the link extension will not be registered
+   * @example link: false
+   */
+  link: Partial<LinkOptions> | boolean;
+
+  // ============================================
+  // Text Property
+  // ============================================
+  /**
+   * Cấu hình cho NotumHeading (custom, thay thế cho heading gốc)
+   * @default {}
+   */
+  heading?: Partial<HeadingOptions> | boolean;
+
+  /**
+   * Hiển thị Font Size trong toolbar
+   * @default true
+   */
+  fontSize?: boolean;
+
+  /**
+   * Hiển thị Line Height trong toolbar
+   * @default true
+   */
+  lineHeight?: boolean;
+
+  /**
+   * Cấu hình cho TextCase (custom)
+   * @default true
+   */
+  textCase?: boolean;
+
+  // ============================================
+  // Alignment & Layout
+  // ============================================
   /**
    * Cấu hình cho @tiptap/extension-text-align
    * @default { types: ['paragraph', 'heading'] }
    */
   textAlign?: Partial<TextAlignOptions> | boolean;
-
-  /**
-   * Cấu hình cho @tiptap/extension-image
-   * @default {}
-   */
-  image?: Partial<ImageOptions> | boolean;
-
-  /**
-   * Cấu hình cho @tiptap/extension-placeholder
-   * @default { placeholder: 'Type something...' }
-   */
-  placeholder?: Partial<PlaceholderOptions> | boolean;
-
-  // --- Custom Extensions ---
-
-  /**
-   * Cấu hình cho PageBreak (custom)
-   * @default true
-   */
-  pageBreak?: boolean;
-
-  /**
-   * Cấu hình cho ResetFormat (custom)
-   * @default true
-   */
-  resetFormat?: boolean;
-
-  /**
-   * Cấu hình cho ResetOnEnter (custom)
-   * @default true
-   */
-  resetOnEnter?: boolean;
 
   /**
    * Cấu hình cho Indent (custom)
@@ -123,22 +137,82 @@ export interface DocumentEngineConfig {
   indent?: Partial<IndentOptions> | boolean;
 
   /**
-   * Cấu hình cho ClearContent (custom)
-   * @default true
+   * If set to false, the list extension will not be registered
+   * @example list: false
    */
-  clearContent?: boolean;
+  list: boolean;
+
+  // ============================================
+  // Format Utilities
+  // ============================================
+  /**
+   * Cấu hình cho @tiptap/extension-text-style (TextStyleKit)
+   * @default false
+   */
+  textStyleKit?: Partial<TextStyleKitOptions> | boolean;
 
   /**
-   * Cấu hình cho TextCase (custom)
-   * @default true
+   * Cấu hình cho ResetFormat (custom)
+   * @default false
    */
-  textCase?: boolean;
+  resetFormat?: boolean;
+
+  // ============================================
+  // Block Types
+  // ============================================
+  /**
+   * If set to false, the codeBlock extension will not be registered
+   * @example codeBlock: false
+   */
+  codeBlock: Partial<CodeBlockOptions> | boolean;
 
   /**
-   * Cấu hình cho NotumHeading (custom, thay thế cho heading gốc)
+   * If set to false, the blockquote extension will not be registered
+   * @example blockquote: false
+   */
+  blockquote: Partial<BlockquoteOptions> | boolean;
+
+  // ============================================
+  // Insert Object
+  // ============================================
+  /**
+   * Cấu hình cho @tiptap/extension-image
    * @default {}
    */
-  heading?: boolean;
+  image?: Partial<ImageOptions> | boolean;
+
+  /**
+   * Cấu hình cho @tiptap/extension-table (StyledTableKit)
+   * @default false
+   */
+  tables?: Partial<TableKitOptions> | boolean;
+
+  /**
+   * Cấu hình cho Special Characters (custom)
+   * @default false
+   */
+  specialCharacters?: boolean;
+
+  /**
+   * Cấu hình cho PageBreak (custom)
+   * @default true
+   */
+  pageBreak?: boolean;
+
+  /**
+   * Cấu hình cho @tiptap/extension-placeholder
+   * @default { placeholder: 'Type something...' }
+   */
+  placeholder?: Partial<PlaceholderOptions> | boolean;
+
+  // ============================================
+  // Business Features
+  // ============================================
+  /**
+   * Danh sách templates
+   * Được sử dụng để hiển thị trong bubble menu
+   */
+  templates?: TemplateItem[];
 
   /**
    * Cấu hình cho DynamicField (custom)
@@ -153,22 +227,19 @@ export interface DocumentEngineConfig {
   dynamicFieldsCategories?: DynamicFieldCategory[];
 
   /**
-   * Danh sách templates
-   * Được sử dụng để hiển thị trong bubble menu
-   */
-  templates?: TemplateItem[];
-
-  /**
-   * Cấu hình cho CustomOrderedList (custom, thay thế cho list gốc)
-   * @default {}
-   */
-  orderedList?: Partial<CustomOrderedListOptions> | boolean;
-
-  /**
    * Cấu hình cho RestrictedEditing (custom)
    * @default { initialMode: 'standard' }
    */
   restrictedEditing?: Partial<RestrictedEditingOptions> | boolean;
+
+  // ============================================
+  // Actions
+  // ============================================
+  /**
+   * Cấu hình cho ClearContent (custom)
+   * @default true
+   */
+  clearContent?: boolean;
 
   /**
    * Cấu hình cho Markdown download (toolbar feature)
@@ -176,15 +247,19 @@ export interface DocumentEngineConfig {
    */
   markdown?: boolean;
 
+  // ============================================
+  // UI Components
+  // ============================================
   /**
-   * Hiển thị Font Size trong toolbar
-   * @default true
+   * Hiển thị footer (chứa character count và các component khác)
+   * @default false
    */
-  fontSize?: boolean;
+  showFooter?: boolean;
 
   /**
-   * Hiển thị Line Height trong toolbar
-   * @default true
+   * Cấu hình cho @tiptap/extension-character-count
+   * Footer phải được bật để hiển thị character count
+   * @default false (Thường được bật/tắt bởi client)
    */
-  lineHeight?: boolean;
+  characterCount?: Partial<CharacterCountOptions> | boolean;
 }

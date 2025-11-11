@@ -113,9 +113,7 @@ tiptap-editor {
     left: -32px;
     top: 0;
     opacity: 0;
-    transition:
-      opacity 0.15s ease-in-out,
-      background-color 0.15s ease-in-out;
+    transition: opacity 0.15s ease-in-out, background-color 0.15s ease-in-out;
 
     svg {
       width: 20px;
@@ -300,11 +298,12 @@ tiptap-editor {
 
   /* Custom Ordered List Styles using CSS Counters */
   ol[data-list-style-type] {
-    margin: 0;
+    // margin: 0;
     counter-reset: list-counter;
     list-style: none;
     padding-left: 3rem;
     margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 
   ol[data-list-style-type] > li {

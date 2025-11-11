@@ -55,21 +55,6 @@ export class EditorTestAdvancedComponent {
   // Full-featured editor configuration - ALL extensions enabled
   editorConfig: Partial<DocumentEngineConfig> = {
     showFooter: false,
-    // StarterKit with link enabled
-    starterKit: {
-      link: {
-        openOnClick: false,
-        defaultProtocol: 'https',
-        enableClickSelection: true,
-        shouldAutoLink: (url) =>
-          url.startsWith('http://') ||
-          url.startsWith('https://') ||
-          url.startsWith('mailto:') ||
-          url.startsWith('tel:'),
-      },
-      heading: false, // Using custom NotumHeading instead
-      orderedList: false, // Using CustomOrderedList instead
-    },
 
     // Text style for colors
     textStyleKit: true,
@@ -103,13 +88,11 @@ export class EditorTestAdvancedComponent {
     // Custom extensions - ALL enabled
     pageBreak: true,
     resetFormat: true,
-    resetOnEnter: true,
     indent: true,
     clearContent: true,
     textCase: true,
     heading: true, // Custom NotumHeading
     dynamicField: true,
-    orderedList: true, // Custom CustomOrderedList
     // restrictedEditing: false, // Optional: enable if needed
     templates: this.templates,
   };

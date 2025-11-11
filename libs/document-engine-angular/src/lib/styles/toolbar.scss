@@ -14,7 +14,7 @@
     align-items: center;
     justify-content: flex-start;
     flex: 1;
-    gap: 0.5rem;
+    gap: 0;
     max-width: 90%;
   }
 
@@ -30,14 +30,24 @@
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
+
+    // Auto-add divider after each group (except the last one)
+    // Divider appears between groups automatically
+    // The divider is positioned with margin to create spacing
+    &:not(:last-child)::after {
+      content: '';
+      width: 1px;
+      height: 1.25rem;
+      margin-left: 0.5rem;
+      margin-right: 1rem;
+      background-color: var(--muted-foreground, #9ca3af);
+      align-self: center;
+      flex-shrink: 0;
+    }
   }
 
+  // Legacy divider class (kept for backward compatibility, but not needed anymore)
   &-divider {
-    width: 1px;
-    height: 1.25rem;
-    margin: 0 0.5rem;
-    background-color: var(--muted-foreground, #9ca3af);
-    align-self: center;
-    flex-shrink: 0;
+    display: none;
   }
 }

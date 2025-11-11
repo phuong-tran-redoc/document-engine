@@ -79,7 +79,7 @@ export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
   capabilities!: EditorCapabilities;
 
   private updateCapabilities(): void {
-    this.capabilities = new EditorCapabilities(this.mergedConfig, this.editable);
+    this.capabilities = new EditorCapabilities(this.mergedConfig);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -131,20 +131,28 @@ export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
     // Default config that enables ALL extensions
     const defaultConfig: Partial<DocumentEngineConfig> = {
       // StarterKit with link enabled
-      starterKit: {
-        link: {
-          openOnClick: false,
-          defaultProtocol: 'https',
-          enableClickSelection: true,
-          shouldAutoLink: (url) =>
-            url.startsWith('http://') ||
-            url.startsWith('https://') ||
-            url.startsWith('mailto:') ||
-            url.startsWith('tel:'),
-        },
-        heading: false, // Using custom NotumHeading instead
-        orderedList: false, // Using CustomOrderedList instead
+
+      link: {
+        openOnClick: false,
+        defaultProtocol: 'https',
+        enableClickSelection: true,
+        shouldAutoLink: (url) =>
+          url.startsWith('http://') ||
+          url.startsWith('https://') ||
+          url.startsWith('mailto:') ||
+          url.startsWith('tel:'),
       },
+
+      blockquote: false,
+      heading: false,
+      bold: false,
+      italic: false,
+      underline: false,
+      strike: false,
+      list: false,
+      codeBlock: false,
+      code: false,
+      undoRedo: false,
 
       // Text style for colors
       textStyleKit: false,
@@ -153,46 +161,50 @@ export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
       tables: false,
 
       // Character count
-      characterCount: true,
+      characterCount: false,
 
       // Subscript and Superscript
-      subscript: true,
-      superscript: true,
+      subscript: false,
+      superscript: false,
 
       // Text alignment
-      textAlign: {
-        types: ['paragraph', 'heading'],
-      },
+      textAlign: false,
 
       // Image support
-      image: true,
+      image: false,
 
       // Placeholder
-      placeholder: {
-        placeholder: 'Type something...',
-      },
+      placeholder: false,
 
       // Custom extensions - all enabled
-      pageBreak: true,
-      resetFormat: true,
-      resetOnEnter: true,
-      indent: true,
-      clearContent: true,
-      textCase: true,
-      heading: true, // Custom NotumHeading
-      dynamicField: true,
-      orderedList: true, // Custom CustomOrderedList
+      pageBreak: false,
+      resetFormat: false,
+      indent: false,
+      clearContent: false,
+      textCase: false,
+      dynamicField: false,
+      specialCharacters: false,
 
       // UI components
       showFooter: false,
-      fontSize: true,
-      lineHeight: true,
+      fontSize: false,
+      lineHeight: false,
     };
 
     // Merge user config with defaults
     // If user provides a property, use it; otherwise use default
     return {
-      starterKit: this.config?.starterKit ?? defaultConfig.starterKit,
+      link: this.config?.link ?? defaultConfig.link,
+      blockquote: this.config?.blockquote ?? defaultConfig.blockquote,
+      heading: this.config?.heading ?? defaultConfig.heading,
+      bold: this.config?.bold ?? defaultConfig.bold,
+      italic: this.config?.italic ?? defaultConfig.italic,
+      underline: this.config?.underline ?? defaultConfig.underline,
+      strike: this.config?.strike ?? defaultConfig.strike,
+      list: this.config?.list ?? defaultConfig.list,
+      codeBlock: this.config?.codeBlock ?? defaultConfig.codeBlock,
+      code: this.config?.code ?? defaultConfig.code,
+      undoRedo: this.config?.undoRedo ?? defaultConfig.undoRedo,
       textStyleKit: this.config?.textStyleKit ?? defaultConfig.textStyleKit,
       tables: this.config?.tables ?? defaultConfig.tables,
       characterCount: this.config?.characterCount ?? defaultConfig.characterCount,
@@ -203,56 +215,17 @@ export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
       placeholder: this.config?.placeholder ?? defaultConfig.placeholder,
       pageBreak: this.config?.pageBreak ?? defaultConfig.pageBreak,
       resetFormat: this.config?.resetFormat ?? defaultConfig.resetFormat,
-      resetOnEnter: this.config?.resetOnEnter ?? defaultConfig.resetOnEnter,
       indent: this.config?.indent ?? defaultConfig.indent,
       clearContent: this.config?.clearContent ?? defaultConfig.clearContent,
       textCase: this.config?.textCase ?? defaultConfig.textCase,
-      heading: this.config?.heading ?? defaultConfig.heading,
       dynamicField: this.config?.dynamicField ?? defaultConfig.dynamicField,
-      orderedList: this.config?.orderedList ?? defaultConfig.orderedList,
       restrictedEditing: this.config?.restrictedEditing ?? false,
       dynamicFieldsCategories: this.config?.dynamicFieldsCategories ?? defaultConfig.dynamicFieldsCategories,
       templates: this.config?.templates ?? defaultConfig.templates,
       showFooter: this.config?.showFooter ?? defaultConfig.showFooter,
       fontSize: this.config?.fontSize ?? defaultConfig.fontSize,
       lineHeight: this.config?.lineHeight ?? defaultConfig.lineHeight,
+      specialCharacters: this.config?.specialCharacters ?? defaultConfig.specialCharacters,
     };
-  }
-
-  // Public API methods
-  getHTML(): string {
-    return this.editor?.getHTML() || '';
-  }
-
-  getJSON(): Record<string, unknown> {
-    return this.editor?.getJSON() || {};
-  }
-
-  getText(): string {
-    return this.editor?.getText() || '';
-  }
-
-  setContent(content: string): void {
-    if (this.editor) {
-      this.editor.commands.setContent(content);
-    }
-  }
-
-  focus(): void {
-    if (this.editor) {
-      this.editor.commands.focus();
-    }
-  }
-
-  blur(): void {
-    if (this.editor) {
-      this.editor.commands.blur();
-    }
-  }
-
-  clear(): void {
-    if (this.editor) {
-      this.editor.commands.clearContent();
-    }
   }
 }

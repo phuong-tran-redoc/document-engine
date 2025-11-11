@@ -40,35 +40,14 @@ export class EditorBasicComponent {
 
   // Basic editor configuration - minimal features
   editorConfig: Partial<DocumentEngineConfig> = {
+    undoRedo: true,
+
+    bold: true,
+    italic: true,
+    underline: true,
+    list: true,
+
     textStyleKit: true,
-
-    // Subscript and superscript
-    subscript: true,
-    superscript: true,
-
-    // Text alignment
-    textAlign: {
-      types: ['paragraph', 'heading'],
-      alignments: ['left', 'center', 'right', 'justify'],
-    },
-
-    // Image support
-    image: true,
-
-    // Placeholder
-    placeholder: {
-      placeholder: 'Type something...',
-    },
-
-    // Custom extensions
-    pageBreak: true,
-    resetFormat: true,
-    resetOnEnter: true,
-    indent: true,
-    clearContent: true,
-    textCase: true,
-    heading: true, // Custom NotumHeading
-    orderedList: true, // Custom CustomOrderedList
   };
 
   onEditorReady(editor: Editor): void {
