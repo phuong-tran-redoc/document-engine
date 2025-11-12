@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
   AfterContentInit,
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -18,11 +17,11 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
-import { computePosition, flip, offset, shift, autoUpdate } from '@floating-ui/dom';
+import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
+import { Subject, takeUntil } from 'rxjs';
 import { IconComponent } from '../icon';
 import { SelectLabelDirective } from './select-label.directive';
 import { SelectOptionDirective } from './select-option.directive';
-import { Subject, takeUntil } from 'rxjs';
 
 /**
  * Select component with floating dropdown using @floating-ui/dom

@@ -41,13 +41,14 @@ export class EditorBasicComponent {
   // Basic editor configuration - minimal features
   editorConfig: Partial<DocumentEngineConfig> = {
     undoRedo: true,
-
     bold: true,
     italic: true,
     underline: true,
     list: true,
-
     textStyleKit: true,
+
+    showFooter: true,
+    characterCount: true,
   };
 
   onEditorReady(editor: Editor): void {
@@ -59,12 +60,6 @@ export class EditorBasicComponent {
       console.log('HTML:', this.editor.getHTML());
       console.log('JSON:', this.editor.getJSON());
       console.log('Text:', this.editor.getText());
-    }
-  }
-
-  clearEditor(): void {
-    if (this.editor) {
-      this.editor.commands.clearContent();
     }
   }
 }

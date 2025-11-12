@@ -68,8 +68,6 @@ export class EditorCapabilities {
   readonly hasFooter: boolean;
 
   constructor(config: Partial<DocumentEngineConfig>) {
-    console.log('config', config);
-
     // History
     this.hasHistory = config.undoRedo !== false;
 

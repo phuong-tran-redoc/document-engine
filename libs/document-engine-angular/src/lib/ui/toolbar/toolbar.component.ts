@@ -13,9 +13,10 @@ import {
   DocumentEngineConfig,
   EditorCapabilities,
   ListStyleType,
-  TextCaseOptions,
+  TextCaseType,
 } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
+import { throttle } from 'lodash-es';
 import {
   ColorBubbleConfig,
   DynamicFieldsBubbleConfig,
@@ -26,14 +27,23 @@ import {
   TableCreateBubbleConfig,
   TemplateBubbleConfig,
 } from '../../configs';
+import {
+  FONT_SIZE_OPTIONS,
+  HEADING_OPTIONS,
+  LINE_HEIGHT_OPTIONS,
+  TEXT_ALIGN_OPTIONS,
+  TEXT_CASE_OPTIONS,
+} from '../../constants';
+import { LIST_STYLE_OPTIONS } from '../../constants/list.constant';
 import { EditorBubbleMenuConfig, ToolbarBubbleMenuConfig } from '../../core';
 import { HeadingLevel } from '../../types';
+import { EditorBubbleMenuComponent, ToolbarBubbleMenuComponent } from '../../views/wrapper';
 import { ButtonDirective } from '../button';
 import { IconComponent } from '../icon';
 import { SelectLabelDirective } from '../select/select-label.directive';
 import { SelectOptionDirective } from '../select/select-option.directive';
 import { SelectComponent } from '../select/select.component';
-import { EditorBubbleMenuComponent, ToolbarBubbleMenuComponent } from '../../views/wrapper';
+import { DEFAULT_TOOLBAR_STATE, ToolbarState, buildToolbarState } from './toolbar.state';
 
 /**
  * Toolbar component for document editor
@@ -69,49 +79,14 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   activeTextAlign: string | null = null;
   activeTextAlignIcon = 'format_align_left';
 
-  readonly fontSizeOptions = [
-    { value: '12px', label: '12px' },
-    { value: '14px', label: '14px' },
-    { value: '16px', label: '16px' },
-    { value: '18px', label: '18px' },
-    { value: '20px', label: '20px' },
-  ];
+  toolbarState: ToolbarState = DEFAULT_TOOLBAR_STATE;
 
-  readonly lineHeightOptions = [
-    { value: null, label: 'Default' },
-    { value: '1', label: '1' },
-    { value: '1.5', label: '1.5' },
-    { value: '2', label: '2' },
-    { value: '2.5', label: '2.5' },
-    { value: '3', label: '3' },
-  ];
-
-  readonly textCaseOptions: { value: TextCaseOptions['type']; label: string }[] = [
-    { value: 'uppercase', label: 'UPPERCASE' },
-    { value: 'lowercase', label: 'lowercase' },
-    { value: 'capitalize', label: 'Capitalize' },
-  ];
-
-  readonly headingOptions = [
-    { value: null, label: 'Normal text', class: '' },
-    { value: 1, label: 'Heading 1', class: 'h1' },
-    { value: 2, label: 'Heading 2', class: 'h2' },
-    { value: 3, label: 'Heading 3', class: 'h3' },
-  ];
-
-  readonly textAlignOptions = [
-    { value: 'left', label: 'Align Left', icon: 'format_align_left' },
-    { value: 'center', label: 'Align Center', icon: 'format_align_center' },
-    { value: 'right', label: 'Align Right', icon: 'format_align_right' },
-    { value: 'justify', label: 'Align Justify', icon: 'format_align_justify' },
-  ];
-
-  readonly listStyleOptions = [
-    { value: 'decimal' as ListStyleType, label: 'Decimal', example: '1.' },
-    { value: 'lower-alpha-dot' as ListStyleType, label: 'Lower Alpha', example: 'a.' },
-    { value: 'lower-alpha-parens' as ListStyleType, label: 'Lower Alpha (Parentheses)', example: '(a)' },
-    { value: 'lower-roman-parens' as ListStyleType, label: 'Lower Roman', example: '(i)' },
-  ];
+  readonly fontSizeOptions = FONT_SIZE_OPTIONS;
+  readonly lineHeightOptions = LINE_HEIGHT_OPTIONS;
+  readonly textCaseOptions = TEXT_CASE_OPTIONS as { value: TextCaseType; label: string }[];
+  readonly headingOptions = HEADING_OPTIONS;
+  readonly textAlignOptions = TEXT_ALIGN_OPTIONS;
+  readonly listStyleOptions = LIST_STYLE_OPTIONS as { value: ListStyleType; label: string; example: string }[];
 
   @ViewChild('colorBubbleMenu') private colorBubbleMenu!: ToolbarBubbleMenuComponent;
   @ViewChild('linkBubbleWrapper') private linkBubbleWrapper!: EditorBubbleMenuComponent;
@@ -131,10 +106,18 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   readonly templateBubbleConfig: ToolbarBubbleMenuConfig = TemplateBubbleConfig;
   readonly tableCreateBubbleConfig: ToolbarBubbleMenuConfig = TableCreateBubbleConfig;
 
+  private throttleUpdateToolbarState = throttle(() => this.updateToolbarState(), 150, {
+    leading: true,
+    trailing: false,
+  });
+
   private updateToolbarState = (): void => {
-    if (!this.editor) {
-      return;
-    }
+    if (!this.editor) return;
+
+    console.log('updateToolbarState');
+
+    // Update toolbar state (can* properties)
+    this.toolbarState = buildToolbarState(this.editor, this.config);
 
     // Update active font size and line height
     const attrs = this.editor.getAttributes('textStyle');
@@ -163,13 +146,9 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
-    if (!this.editor) {
-      return;
-    }
-
     // Subscribe to selectionUpdate to keep toolbar state in sync when cursor/selection changes
     this.editor.on('update', this.updateToolbarState);
-    this.editor.on('transaction', this.updateToolbarState);
+    this.editor.on('transaction', this.throttleUpdateToolbarState);
 
     // Initialize toolbar state once
     this.updateToolbarState();
@@ -177,7 +156,12 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.editor.off('update', this.updateToolbarState);
-    this.editor.off('transaction', this.updateToolbarState);
+    this.editor.off('transaction', this.throttleUpdateToolbarState);
+
+    if (this.throttleUpdateToolbarState) {
+      this.throttleUpdateToolbarState.cancel();
+    }
+
     this.editor.destroy();
   }
 
@@ -300,6 +284,10 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   //   a.click();
   //   URL.revokeObjectURL(url);
   // }
+
+  trackByValue(index: number, item: { value: unknown }): unknown {
+    return item.value;
+  }
 
   printValue(): void {
     console.log('html', this.editor.getHTML());

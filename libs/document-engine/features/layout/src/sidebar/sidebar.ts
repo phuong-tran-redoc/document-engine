@@ -111,7 +111,7 @@ export class DocumentEngineSidebarComponent {
           {
             id: 'editor-restricted-editing',
             name: 'Restricted Editing',
-            url: `${ROUTE.EDITOR}/restricted-editing`,
+            url: `${ROUTE.EDITOR}/restricted`,
             type: 'normal',
           },
           { id: 'editor-readonly', name: 'Readonly', url: `${ROUTE.EDITOR}/readonly`, type: 'normal' },

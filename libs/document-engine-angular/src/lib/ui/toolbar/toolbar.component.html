@@ -6,7 +6,7 @@
         <button
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().undo().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canUndo"
           (click)="editor.chain().focus().undo().run()"
           title="Undo (Ctrl+Z)"
         >
@@ -15,7 +15,7 @@
         <button
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().redo().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canRedo"
           (click)="editor.chain().focus().redo().run()"
           title="Redo"
         >
@@ -35,16 +35,20 @@
           [value]="activeFontSize"
           placeholder="Font Size"
           labelMode="static"
+          [disabled]="toolbarState.isReadOnly"
         >
           <document-engine-icon documentEngineSelectLabel name="format_size"></document-engine-icon>
 
           <button documentEngineSelectOption [value]="null">Default</button>
 
-          @for (option of fontSizeOptions; track option.value) {
-          <button documentEngineSelectOption [value]="option.value" (click)="setFontSize(option.value)">
+          <button
+            *ngFor="let option of fontSizeOptions; trackBy: trackByValue"
+            documentEngineSelectOption
+            [value]="option.value"
+            (click)="setFontSize(option.value)"
+          >
             {{ option.label }}
           </button>
-          }
         </document-engine-select>
 
         <!-- Line Height -->
@@ -53,29 +57,37 @@
           [value]="activeLineHeight"
           placeholder="Line Height"
           labelMode="static"
+          [disabled]="toolbarState.isReadOnly"
         >
           <document-engine-icon documentEngineSelectLabel name="format_line_spacing"></document-engine-icon>
 
-          @for (option of lineHeightOptions; track option.value) {
-          <button documentEngineSelectOption [value]="option.value" (click)="setLineHeight(option.value)">
+          <button
+            *ngFor="let option of lineHeightOptions; trackBy: trackByValue"
+            documentEngineSelectOption
+            [value]="option.value"
+            (click)="setLineHeight(option.value)"
+          >
             {{ option.label }}
           </button>
-          }
         </document-engine-select>
 
         <!-- Text Case -->
-        <document-engine-select *ngIf="capabilities.hasTextCase" placeholder="Text Case" labelMode="static">
+        <document-engine-select
+          *ngIf="capabilities.hasTextCase"
+          placeholder="Text Case"
+          labelMode="static"
+          [disabled]="toolbarState.isReadOnly"
+        >
           <document-engine-icon documentEngineSelectLabel name="match_case"></document-engine-icon>
 
-          @for (option of textCaseOptions; track option.value) {
           <button
+            *ngFor="let option of textCaseOptions; trackBy: trackByValue"
             documentEngineSelectOption
             [value]="option.value"
             (click)="editor.chain().focus().textCase(option.value).run()"
           >
             {{ option.label }}
           </button>
-          }
         </document-engine-select>
 
         <!-- Heading -->
@@ -83,9 +95,10 @@
           *ngIf="capabilities.hasHeading"
           [value]="activeHeading?.toString() || null"
           placeholder="Normal text"
+          [disabled]="toolbarState.isReadOnly"
         >
-          @for (option of headingOptions; track option.value) {
           <button
+            *ngFor="let option of headingOptions; trackBy: trackByValue"
             documentEngineSelectOption
             [value]="option.value?.toString() || null"
             [class]="option.class"
@@ -93,7 +106,6 @@
           >
             {{ option.label }}
           </button>
-          }
         </document-engine-select>
       </div>
 
@@ -109,7 +121,7 @@
           documentEngineButton
           size="icon"
           (click)="editor.chain().focus().resetFormat().run()"
-          [disabled]="!editor.can().chain().focus().resetFormat().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canResetFormat"
           title="Clear Formatting"
         >
           <document-engine-icon name="format_clear"></document-engine-icon>
@@ -121,6 +133,7 @@
           documentEngineButton
           size="icon"
           title="Text Color"
+          [disabled]="toolbarState.isReadOnly"
           (click)="openColorBubble($event, 'text')"
         >
           <document-engine-icon name="format_color_text"></document-engine-icon>
@@ -131,6 +144,7 @@
           documentEngineButton
           size="icon"
           title="Background Color"
+          [disabled]="toolbarState.isReadOnly"
           (click)="openColorBubble($event, 'fill')"
         >
           <document-engine-icon name="format_color_fill"></document-engine-icon>
@@ -147,7 +161,7 @@
           *ngIf="capabilities.hasBold"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleBold().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleBold"
           (click)="editor.chain().focus().toggleBold().run()"
           [class.active]="editor.isActive('bold')"
           title="Bold"
@@ -159,7 +173,7 @@
           *ngIf="capabilities.hasItalic"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleItalic().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleItalic"
           (click)="editor.chain().focus().toggleItalic().run()"
           [class.active]="editor.isActive('italic')"
           title="Italic"
@@ -171,7 +185,7 @@
           *ngIf="capabilities.hasUnderline"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleUnderline().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleUnderline"
           (click)="editor.chain().focus().toggleUnderline().run()"
           [class.active]="editor.isActive('underline')"
           title="Underline"
@@ -183,7 +197,7 @@
           *ngIf="capabilities.hasStrike"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleStrike().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleStrike"
           (click)="editor.chain().focus().toggleStrike().run()"
           [class.active]="editor.isActive('strike')"
           title="Strikethrough"
@@ -202,7 +216,7 @@
           *ngIf="capabilities.hasSubscript"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleSubscript().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleSubscript"
           (click)="editor.chain().focus().toggleSubscript().run()"
           [class.active]="editor.isActive('subscript')"
           title="Subscript"
@@ -214,7 +228,7 @@
           *ngIf="capabilities.hasSuperscript"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleSuperscript().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleSuperscript"
           (click)="editor.chain().focus().toggleSuperscript().run()"
           [class.active]="editor.isActive('superscript')"
           title="Superscript"
@@ -226,7 +240,7 @@
           *ngIf="capabilities.hasCode"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleCode().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleCode"
           (click)="editor.chain().focus().toggleCode().run()"
           [class.active]="editor.isActive('code')"
           title="Code"
@@ -238,7 +252,7 @@
           *ngIf="capabilities.hasLink"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleLink().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleLink"
           (click)="toggleLink()"
           [class.active]="editor.isActive('link')"
           [title]="editor.isActive('link') ? 'Unlink' : 'Link'"
@@ -260,15 +274,18 @@
           (valueChange)="setTextAlign($event)"
           placeholder="Text Align"
           labelMode="static"
+          [disabled]="toolbarState.isReadOnly"
         >
           <document-engine-icon documentEngineSelectLabel [name]="activeTextAlignIcon"></document-engine-icon>
 
-          @for (option of textAlignOptions; track option.value) {
-          <button documentEngineSelectOption [value]="option.value">
+          <button
+            *ngFor="let option of textAlignOptions; trackBy: trackByValue"
+            documentEngineSelectOption
+            [value]="option.value"
+          >
             <document-engine-icon [name]="option.icon"></document-engine-icon>
             <span>{{ option.label }}</span>
           </button>
-          }
         </document-engine-select>
 
         <!-- Indent -->
@@ -276,7 +293,7 @@
           *ngIf="capabilities.hasIndent"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().decreaseIndent().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canDecreaseIndent"
           (click)="editor.chain().focus().decreaseIndent().run()"
           title="Decrease Indent"
         >
@@ -287,7 +304,7 @@
           *ngIf="capabilities.hasIndent"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().increaseIndent().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canIncreaseIndent"
           (click)="editor.chain().focus().increaseIndent().run()"
           title="Increase Indent"
         >
@@ -299,7 +316,7 @@
           *ngIf="capabilities.hasLists"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleBulletList().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleBulletList"
           (click)="editor.chain().focus().toggleBulletList().run()"
           [class.active]="editor.isActive('bulletList')"
           title="Bullet List"
@@ -317,11 +334,12 @@
               ? editor.getAttributes('customOrderedList')['data-list-style-type'] || 'decimal'
               : null
           "
+          [disabled]="toolbarState.isReadOnly"
         >
           <document-engine-icon documentEngineSelectLabel name="format_list_numbered"></document-engine-icon>
 
-          @for (option of listStyleOptions; track option.value) {
           <button
+            *ngFor="let option of listStyleOptions; trackBy: trackByValue"
             documentEngineSelectOption
             [value]="option.value"
             (click)="setListStyle(option.value)"
@@ -333,7 +351,6 @@
             <span>{{ option.example }}</span>
             <span>{{ option.label }}</span>
           </button>
-          }
         </document-engine-select>
       </div>
 
@@ -348,7 +365,7 @@
           *ngIf="capabilities.hasBlockquote"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleBlockquote().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleBlockquote"
           (click)="editor.chain().focus().toggleBlockquote().run()"
           [class.active]="editor.isActive('blockquote')"
           title="Quote"
@@ -367,6 +384,7 @@
           *ngIf="capabilities.hasTable"
           documentEngineButton
           size="icon"
+          [disabled]="toolbarState.isReadOnly"
           (click)="openCreateTableBubble($event)"
           [class.active]="editor.isActive('table')"
           title="Table"
@@ -379,6 +397,7 @@
           documentEngineButton
           size="icon"
           title="Insert Image"
+          [disabled]="toolbarState.isReadOnly"
           (click)="insertImage($event)"
         >
           <document-engine-icon name="photo"></document-engine-icon>
@@ -389,6 +408,7 @@
           documentEngineButton
           size="icon"
           title="Special Character"
+          [disabled]="toolbarState.isReadOnly"
           (click)="openSpecialCharsBubble($event)"
         >
           <document-engine-icon name="special_character"></document-engine-icon>
@@ -398,7 +418,7 @@
           *ngIf="capabilities.hasPageBreak"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().insertPageBreak().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canInsertPageBreak"
           (click)="editor.chain().focus().insertPageBreak().run()"
           title="Insert page break"
         >
@@ -417,6 +437,7 @@
           documentEngineButton
           size="icon"
           title="Dynamic Field"
+          [disabled]="toolbarState.isReadOnly"
           (click)="openDynamicFieldsBubble($event)"
         >
           <document-engine-icon name="dynamic_form"></document-engine-icon>
@@ -427,6 +448,7 @@
           documentEngineButton
           size="icon"
           title="Template"
+          [disabled]="toolbarState.isReadOnly"
           (click)="openTemplateBubble($event)"
         >
           <document-engine-icon name="description"></document-engine-icon>
@@ -436,7 +458,7 @@
           *ngIf="capabilities.hasEditableRegion"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().toggleEditableRegion().run()"
+          [disabled]="!toolbarState.canToggleEditableRegion || toolbarState.isReadOnly"
           (click)="editor.chain().focus().toggleEditableRegion().run()"
           [class.active]="editor.isActive('editableRegion')"
           title="Toggle editable region"
@@ -451,7 +473,7 @@
           *ngIf="capabilities.hasClearContent"
           documentEngineButton
           size="icon"
-          [disabled]="!editor.can().chain().focus().clear().run()"
+          [disabled]="toolbarState.isReadOnly || !toolbarState.canClearContent"
           (click)="editor.chain().focus().clear().run()"
           title="Clear all content"
         >

@@ -11,11 +11,11 @@ export const EDITOR_ROUTES: Route[] = [
     data: { breadcrumb: 'Basic' },
     loadComponent: () => import('./editor-basic').then((m) => m.EditorBasicComponent),
   },
-  // {
-  //   path: 'restricted-editing',
-  //   data: { breadcrumb: 'Restricted Editing' },
-  //   loadComponent: () => import('./editor-minimal').then((m) => m.EditorMinimalComponent),
-  // },
+  {
+    path: 'restricted',
+    data: { breadcrumb: 'Restricted Editing' },
+    loadComponent: () => import('./editor-restricted').then((m) => m.EditorRestrictedComponent),
+  },
   // {
   //   path: 'table',
   //   data: { breadcrumb: 'Table' },
