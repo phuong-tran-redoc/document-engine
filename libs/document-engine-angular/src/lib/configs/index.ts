@@ -1,3 +1,4 @@
+export * from './editor.config';
 export * from './color.config';
 export * from './link.config';
 export * from './image.config';

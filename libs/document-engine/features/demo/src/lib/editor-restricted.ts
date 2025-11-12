@@ -20,12 +20,7 @@ import {
       <!-- Editor (Standard) -->
       <div class="flex-1 flex flex-col gap-4">
         <h2 class="text-2xl font-semibold m-0 text-foreground">Editor (Standard)</h2>
-        <document-engine-editor
-          #standardEditor
-          [showToolbar]="true"
-          [config]="standardConfig"
-          (editorReady)="onStandardEditorReady($event)"
-        >
+        <document-engine-editor #standardEditor [config]="standardConfig" (editorReady)="onStandardEditorReady($event)">
           <tiptap-editor [editor]="standardEditor.editor" [(ngModel)]="standardValue"></tiptap-editor>
         </document-engine-editor>
       </div>
@@ -35,7 +30,6 @@ import {
         <h2 class="text-2xl font-semibold m-0 text-foreground">Editor (Restricted)</h2>
         <document-engine-editor
           #restrictedEditor
-          [showToolbar]="true"
           [config]="restrictedConfig"
           (editorReady)="onRestrictedEditorReady($event)"
         >

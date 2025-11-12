@@ -13,9 +13,9 @@ import {
   inject,
 } from '@angular/core';
 import { DocumentEngineConfig, DocumentEngineKit, EditorCapabilities } from '@phuong-tran-redoc/document-engine-core';
-import { ToolbarComponent } from '../ui/toolbar';
-import { FooterComponent } from '../ui/footer';
 import { Editor } from '@tiptap/core';
+import { DefaultEditorConfig } from '../configs';
+import { FooterComponent, ToolbarComponent } from '../ui';
 
 /**
  * Document Editor Component
@@ -59,8 +59,6 @@ import { Editor } from '@tiptap/core';
 export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
   private readonly ngZone = inject(NgZone);
 
-  @Input() showToolbar = true;
-  @Input() editable = true;
   @Input() config?: Partial<DocumentEngineConfig>;
 
   @Output() editorReady = new EventEmitter<Editor>();
@@ -83,12 +81,13 @@ export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['config'] || changes['editable']) {
-      if (this._mergedConfig) {
-        this._mergedConfig = this.getMergedConfig();
-        this.updateCapabilities();
-      }
-    }
+    if (!changes['config']) return;
+
+    if (!this.editor) return;
+
+    this._mergedConfig = this.getMergedConfig();
+    this.updateCapabilities();
+    this.editor.setEditable(this._mergedConfig.editable ?? true);
   }
 
   ngOnInit(): void {
@@ -110,7 +109,7 @@ export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
       // Initialize editor with config
       // Initial content will be set by TiptapEditorDirective via writeValue
       this.editor = new Editor({
-        editable: this.editable,
+        editable: this._mergedConfig.editable,
         extensions: [DocumentEngineKit.configure(this._mergedConfig)],
       });
 
@@ -128,104 +127,27 @@ export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
    * User config will override defaults
    */
   private getMergedConfig(): Partial<DocumentEngineConfig> {
-    // Default config that enables ALL extensions
-    const defaultConfig: Partial<DocumentEngineConfig> = {
-      // StarterKit with link enabled
+    // Merge user config with defaults, preferring user config when provided
+    return this.mergeConfig(DefaultEditorConfig, this.config);
+  }
 
-      link: {
-        openOnClick: false,
-        defaultProtocol: 'https',
-        enableClickSelection: true,
-        shouldAutoLink: (url) =>
-          url.startsWith('http://') ||
-          url.startsWith('https://') ||
-          url.startsWith('mailto:') ||
-          url.startsWith('tel:'),
-      },
+  /**
+   * Merge two config objects, preferring userConfig values when provided
+   */
+  private mergeConfig(
+    defaultConfig: Partial<DocumentEngineConfig>,
+    userConfig?: Partial<DocumentEngineConfig>
+  ): Partial<DocumentEngineConfig> {
+    if (!userConfig) return defaultConfig;
 
-      blockquote: false,
-      heading: false,
-      bold: false,
-      italic: false,
-      underline: false,
-      strike: false,
-      list: false,
-      codeBlock: false,
-      code: false,
-      undoRedo: false,
+    const merged: Record<string, unknown> = { ...defaultConfig };
+    const keys = Object.keys(userConfig) as Array<keyof DocumentEngineConfig>;
 
-      // Text style for colors
-      textStyleKit: false,
+    for (const key of keys) {
+      const value = userConfig[key];
+      if (value !== undefined) merged[key] = value;
+    }
 
-      // Tables with resizing
-      tables: false,
-
-      // Character count
-      characterCount: false,
-
-      // Subscript and Superscript
-      subscript: false,
-      superscript: false,
-
-      // Text alignment
-      textAlign: false,
-
-      // Image support
-      image: false,
-
-      // Placeholder
-      placeholder: false,
-
-      // Custom extensions - all enabled
-      pageBreak: false,
-      resetFormat: false,
-      indent: false,
-      clearContent: false,
-      textCase: false,
-      dynamicField: false,
-      specialCharacters: false,
-
-      // UI components
-      showFooter: false,
-      fontSize: false,
-      lineHeight: false,
-    };
-
-    // Merge user config with defaults
-    // If user provides a property, use it; otherwise use default
-    return {
-      link: this.config?.link ?? defaultConfig.link,
-      blockquote: this.config?.blockquote ?? defaultConfig.blockquote,
-      heading: this.config?.heading ?? defaultConfig.heading,
-      bold: this.config?.bold ?? defaultConfig.bold,
-      italic: this.config?.italic ?? defaultConfig.italic,
-      underline: this.config?.underline ?? defaultConfig.underline,
-      strike: this.config?.strike ?? defaultConfig.strike,
-      list: this.config?.list ?? defaultConfig.list,
-      codeBlock: this.config?.codeBlock ?? defaultConfig.codeBlock,
-      code: this.config?.code ?? defaultConfig.code,
-      undoRedo: this.config?.undoRedo ?? defaultConfig.undoRedo,
-      textStyleKit: this.config?.textStyleKit ?? defaultConfig.textStyleKit,
-      tables: this.config?.tables ?? defaultConfig.tables,
-      characterCount: this.config?.characterCount ?? defaultConfig.characterCount,
-      subscript: this.config?.subscript ?? defaultConfig.subscript,
-      superscript: this.config?.superscript ?? defaultConfig.superscript,
-      textAlign: this.config?.textAlign ?? defaultConfig.textAlign,
-      image: this.config?.image ?? defaultConfig.image,
-      placeholder: this.config?.placeholder ?? defaultConfig.placeholder,
-      pageBreak: this.config?.pageBreak ?? defaultConfig.pageBreak,
-      resetFormat: this.config?.resetFormat ?? defaultConfig.resetFormat,
-      indent: this.config?.indent ?? defaultConfig.indent,
-      clearContent: this.config?.clearContent ?? defaultConfig.clearContent,
-      textCase: this.config?.textCase ?? defaultConfig.textCase,
-      dynamicField: this.config?.dynamicField ?? defaultConfig.dynamicField,
-      restrictedEditing: this.config?.restrictedEditing ?? false,
-      dynamicFieldsCategories: this.config?.dynamicFieldsCategories ?? defaultConfig.dynamicFieldsCategories,
-      templates: this.config?.templates ?? defaultConfig.templates,
-      showFooter: this.config?.showFooter ?? defaultConfig.showFooter,
-      fontSize: this.config?.fontSize ?? defaultConfig.fontSize,
-      lineHeight: this.config?.lineHeight ?? defaultConfig.lineHeight,
-      specialCharacters: this.config?.specialCharacters ?? defaultConfig.specialCharacters,
-    };
+    return merged;
   }
 }

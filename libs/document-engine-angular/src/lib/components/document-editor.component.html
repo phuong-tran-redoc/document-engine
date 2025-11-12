@@ -1,9 +1,8 @@
 <div class="document-engine-document-editor">
   <document-engine-toolbar
-    *ngIf="showToolbar"
+    *ngIf="mergedConfig.showToolbar"
     [editor]="editor"
     [capabilities]="capabilities"
-    [editable]="editable"
     [config]="mergedConfig"
   ></document-engine-toolbar>
 
@@ -15,6 +14,5 @@
     *ngIf="editor && mergedConfig.showFooter"
     [editor]="editor"
     [config]="mergedConfig"
-    [editable]="editable"
   ></document-engine-footer>
 </div>

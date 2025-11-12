@@ -18,7 +18,7 @@ import { CharacterCountComponent } from '../character-count';
 export class FooterComponent {
   @Input() editor!: Editor;
   @Input() config?: Partial<DocumentEngineConfig>;
-  @Input() editable = true;
+  // @Input() editable = true;
 
   hasCharacterCount(): boolean {
     const config = this.config ?? {};

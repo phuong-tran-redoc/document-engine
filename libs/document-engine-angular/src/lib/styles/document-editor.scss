@@ -10,6 +10,10 @@
 
   &__content {
     padding: 1rem;
-    border-top: 1px solid var(--border, #e5e7eb);
   }
+}
+
+// Only show border-top if toolbar exists as sibling above
+document-engine-toolbar ~ .document-engine-document-editor__content {
+  border-top: 1px solid var(--border, #e5e7eb);
 }

@@ -251,6 +251,18 @@ export interface DocumentEngineConfig {
   // UI Components
   // ============================================
   /**
+   * Hiển thị toolbar
+   * @default true
+   */
+  showToolbar?: boolean;
+
+  /**
+   * Cho phép chỉnh sửa editor
+   * @default true
+   */
+  editable?: boolean;
+
+  /**
    * Hiển thị footer (chứa character count và các component khác)
    * @default false
    */

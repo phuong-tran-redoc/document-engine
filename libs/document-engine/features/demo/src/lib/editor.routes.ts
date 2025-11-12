@@ -16,21 +16,21 @@ export const EDITOR_ROUTES: Route[] = [
     data: { breadcrumb: 'Restricted Editing' },
     loadComponent: () => import('./editor-restricted').then((m) => m.EditorRestrictedComponent),
   },
-  // {
-  //   path: 'table',
-  //   data: { breadcrumb: 'Table' },
-  //   loadComponent: () => import('./editor-table').then((m) => m.EditorTableComponent),
-  // },
+  {
+    path: 'table',
+    data: { breadcrumb: 'Table' },
+    loadComponent: () => import('./editor-table').then((m) => m.EditorTableComponent),
+  },
   // {
   //   path: 'full',
   //   data: { breadcrumb: 'Full Features' },
   //   loadComponent: () => import('./editor-full').then((m) => m.EditorFullComponent),
   // },
-  // {
-  //   path: 'readonly',
-  //   data: { breadcrumb: 'Readonly' },
-  //   loadComponent: () => import('./editor-readonly').then((m) => m.EditorReadonlyComponent),
-  // },
+  {
+    path: 'readonly',
+    data: { breadcrumb: 'Readonly' },
+    loadComponent: () => import('./editor-readonly').then((m) => m.EditorReadonlyComponent),
+  },
   // {
   //   path: 'document-builder',
   //   data: { breadcrumb: 'Document Builder' },

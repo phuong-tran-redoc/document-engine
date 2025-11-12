@@ -74,8 +74,8 @@ function safeCanCheck(editor: Editor, commandFn: () => boolean): boolean {
 export function buildToolbarState(editor: Editor, config?: Partial<DocumentEngineConfig>): ToolbarState {
   return {
     isReadOnly:
-      !editor.isEditable ||
-      (config?.restrictedEditing !== false &&
+      !config?.editable ||
+      (!!config.restrictedEditing &&
         (config?.restrictedEditing as RestrictedEditingOptions).initialMode === 'restricted'),
 
     // History

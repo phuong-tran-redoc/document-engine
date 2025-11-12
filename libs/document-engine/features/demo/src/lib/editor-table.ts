@@ -9,16 +9,16 @@ import {
 } from '@phuong-tran-redoc/document-engine-angular';
 
 /**
- * Basic editor test with minimal DocumentEngineConfig
- * Demonstrates a simple editor configuration
+ * Table editor test with table features enabled
+ * Demonstrates table editing capabilities
  */
 @Component({
-  selector: 'document-engine-editor-basic',
+  selector: 'document-engine-editor-table',
   imports: [CommonModule, FormsModule, DocumentEditorComponent, TiptapEditorDirective],
   template: `
     <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto">
-      <h2 class="text-2xl font-semibold m-0 text-foreground">Basic Feature</h2>
-      <p class="text-sm m-0 text-muted-foreground">Simple configuration with basic features</p>
+      <h2 class="text-2xl font-semibold m-0 text-foreground">Table Feature</h2>
+      <p class="text-sm m-0 text-muted-foreground">Editor configuration with table features enabled</p>
 
       <document-engine-editor #docEditor [config]="editorConfig" (editorReady)="onEditorReady($event)">
         <tiptap-editor [editor]="docEditor.editor" [(ngModel)]="value"></tiptap-editor>
@@ -27,13 +27,13 @@ import {
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditorBasicComponent {
+export class EditorTableComponent {
   docEditor = viewChild<DocumentEditorComponent>('docEditor');
   editor?: Editor; // Store editor instance from editorReady event
 
-  value = `<p>Basic editor with basic <a target="_blank" rel="noopener noreferrer nofollow" href="https://thunderphong.com">extensions</a>.</p><ol><li><p>One</p></li><li><p>Two</p></li><li><p>Three</p></li></ol><p>End.</p>`;
+  value = `<p>Table editor with table features enabled.</p><table><tbody><tr><th>Header 1</th><th>Header 2</th><th>Header 3</th></tr><tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr><tr><td>Cell 4</td><td>Cell 5</td><td>Cell 6</td></tr></tbody></table><p>End.</p>`;
 
-  // Basic editor configuration - minimal features
+  // Editor configuration with table features
   editorConfig: Partial<DocumentEngineConfig> = {
     undoRedo: true,
     bold: true,
@@ -41,6 +41,7 @@ export class EditorBasicComponent {
     underline: true,
     list: true,
     textStyleKit: true,
+    tables: true, // Enable table features
 
     showFooter: true,
     characterCount: true,

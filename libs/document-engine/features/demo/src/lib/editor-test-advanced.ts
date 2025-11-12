@@ -22,12 +22,7 @@ import { DYNAMIC_FIELDS_CATEGORIES } from './misc/common-dynamic-field';
       <h2 class="text-2xl font-semibold m-0 text-foreground">Advanced Document Engine Test</h2>
       <p class="text-sm m-0 text-muted-foreground">Full-featured configuration with ALL extensions enabled</p>
 
-      <document-engine-editor
-        #docEditor
-        [showToolbar]="true"
-        [config]="editorConfig"
-        (editorReady)="onEditorReady($event)"
-      >
+      <document-engine-editor #docEditor [config]="editorConfig" (editorReady)="onEditorReady($event)">
         <tiptap-editor [editor]="docEditor.editor" [(ngModel)]="value"></tiptap-editor>
       </document-engine-editor>
     </div>
@@ -54,47 +49,18 @@ export class EditorTestAdvancedComponent {
 
   // Full-featured editor configuration - ALL extensions enabled
   editorConfig: Partial<DocumentEngineConfig> = {
-    showFooter: false,
+    editable: false,
 
-    // Text style for colors
+    undoRedo: true,
+    bold: true,
+    italic: true,
+    underline: true,
+    list: true,
     textStyleKit: true,
 
-    // Tables with resizing
-    tables: {
-      table: {
-        resizable: true,
-      },
-    },
-
-    // Subscript and superscript
-    subscript: true,
-    superscript: true,
-
-    // Text alignment
-    textAlign: {
-      types: ['paragraph', 'heading'],
-      alignments: ['left', 'center', 'right', 'justify'],
-    },
-
-    // Image support
-    image: true,
-
-    // Placeholder
-    placeholder: false,
-
-    // Dynamic fields
-    dynamicFieldsCategories: DYNAMIC_FIELDS_CATEGORIES,
-
-    // Custom extensions - ALL enabled
-    pageBreak: true,
-    resetFormat: true,
-    indent: true,
-    clearContent: true,
-    textCase: true,
-    heading: true, // Custom NotumHeading
-    dynamicField: true,
-    // restrictedEditing: false, // Optional: enable if needed
-    templates: this.templates,
+    showFooter: false,
+    showToolbar: false,
+    characterCount: true,
   };
 
   onEditorReady(editor: Editor): void {

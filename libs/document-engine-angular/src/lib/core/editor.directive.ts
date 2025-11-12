@@ -31,7 +31,26 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
   protected renderer = inject(Renderer2);
   protected changeDetectorRef = inject(ChangeDetectorRef);
 
-  @Input() editor!: Editor;
+  private _editor?: Editor;
+  private initialEditableState?: boolean;
+
+  @Input()
+  set editor(editor: Editor) {
+    this._editor = editor;
+    // Store initial editable state immediately when editor is set
+    // This ensures we capture the state before any Forms API calls
+    if (this.initialEditableState === undefined && editor) {
+      this.initialEditableState = editor.isEditable;
+    }
+  }
+
+  get editor(): Editor {
+    if (!this._editor) {
+      throw new Error('Editor must be set before use');
+    }
+    return this._editor;
+  }
+
   @Input() outputFormat: 'json' | 'html' = 'html';
 
   protected onChange: (value: Content) => void = () => {
@@ -59,7 +78,18 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
 
   // Called by the forms api to enable or disable the element
   setDisabledState(isDisabled: boolean): void {
-    this.editor.setEditable(!isDisabled);
+    // Ensure we have captured the initial state (fallback in case setter wasn't called)
+    if (this.initialEditableState === undefined && this.editor) {
+      this.initialEditableState = this.editor.isEditable;
+    }
+
+    // Only apply disabled state if editor was initially editable
+    // If editor was configured as readonly (editable: false), preserve that state
+    if (this.initialEditableState === true) {
+      this.editor.setEditable(!isDisabled);
+    }
+    // If initialEditableState === false, do nothing - preserve readonly state
+
     this.renderer.setProperty(this.elRef.nativeElement, 'disabled', isDisabled);
   }
 

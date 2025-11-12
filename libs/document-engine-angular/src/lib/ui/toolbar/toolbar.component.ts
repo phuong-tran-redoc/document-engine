@@ -70,7 +70,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   @Input() editor!: Editor;
   @Input() capabilities!: EditorCapabilities;
-  @Input() editable = true;
   @Input() config?: Partial<DocumentEngineConfig>; // Only for dynamicFieldsCategories and templates
 
   activeFontSize: string | null = null;
@@ -113,8 +112,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   private updateToolbarState = (): void => {
     if (!this.editor) return;
-
-    console.log('updateToolbarState');
 
     // Update toolbar state (can* properties)
     this.toolbarState = buildToolbarState(this.editor, this.config);
@@ -163,6 +160,11 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     }
 
     this.editor.destroy();
+  }
+
+  testDisable() {
+    console.log('fn testDisable called');
+    return true;
   }
 
   setFontSize(size: string | null): void {

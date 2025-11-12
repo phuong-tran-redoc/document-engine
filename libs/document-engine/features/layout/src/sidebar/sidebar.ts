@@ -101,12 +101,12 @@ export class DocumentEngineSidebarComponent {
       // { id: 'assets', name: 'Assets', url: ROUTE.ASSETS, icon: 'diamond', type: 'normal' },
       {
         id: 'editor',
-        name: 'Editor',
+        name: 'Demo',
         url: ROUTE.EDITOR,
         icon: 'edit_note',
         type: 'collapsible',
         items: [
-          { id: 'editor-test', name: 'Test', url: `${ROUTE.EDITOR}/test-advanced`, type: 'normal' },
+          { id: 'editor-test', name: 'Playground', url: `${ROUTE.EDITOR}/test-advanced`, type: 'normal' },
           { id: 'editor-basic', name: 'Basic', url: `${ROUTE.EDITOR}/basic`, type: 'normal' },
           {
             id: 'editor-restricted-editing',

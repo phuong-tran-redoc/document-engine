@@ -1,5 +1,3 @@
-import { TextCaseType } from '@phuong-tran-redoc/document-engine-core';
-
 export const FONT_SIZE_OPTIONS = [
   { value: '12px', label: '12px' },
   { value: '14px', label: '14px' },
