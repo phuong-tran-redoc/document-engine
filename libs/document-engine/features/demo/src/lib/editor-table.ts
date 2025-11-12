@@ -31,7 +31,7 @@ export class EditorTableComponent {
   docEditor = viewChild<DocumentEditorComponent>('docEditor');
   editor?: Editor; // Store editor instance from editorReady event
 
-  value = `<p>Table editor with table features enabled.</p><table><tbody><tr><th>Header 1</th><th>Header 2</th><th>Header 3</th></tr><tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr><tr><td>Cell 4</td><td>Cell 5</td><td>Cell 6</td></tr></tbody></table><p>End.</p>`;
+  value = `<p>Table editor with table features enabled.</p><table data-colwidths="[33.85525400139179,32.81141266527488,33.333333333333336]"><colgroup><col style="width: 33.85525400139179%"><col style="width: 32.81141266527488%"><col style="width: 33.333333333333336%"></colgroup><tbody><tr><td colspan="1" rowspan="1" style="border-style: solid; border-color: #e5e7eb; border-width: 1px; vertical-align: middle"><p>Header 1</p></td><td colspan="1" rowspan="1" style="border-style: solid; border-color: #e5e7eb; border-width: 1px; vertical-align: middle"><p>Header 2</p></td><td colspan="1" rowspan="1" style="border-style: solid; border-color: #e5e7eb; border-width: 1px; vertical-align: middle"><p>Header 3</p></td></tr><tr><td colspan="1" rowspan="1" style="border-style: solid; border-color: #e5e7eb; border-width: 1px; vertical-align: middle"><p>Cell 1</p></td><td colspan="1" rowspan="1" style="border-style: solid; border-color: #e5e7eb; border-width: 1px; vertical-align: middle"><p>Cell 2</p></td><td colspan="1" rowspan="1" style="border-style: solid; border-color: #e5e7eb; border-width: 1px; vertical-align: middle"><p>Cell 3</p></td></tr><tr><td colspan="1" rowspan="1" style="border-style: solid; border-color: #e5e7eb; border-width: 1px; vertical-align: middle"><p>Cell 4</p></td><td colspan="1" rowspan="1" style="border-style: solid; border-color: #e5e7eb; border-width: 1px; vertical-align: middle"><p>Cell 5</p></td><td colspan="1" rowspan="1" style="border-style: solid; border-color: #e5e7eb; border-width: 1px; vertical-align: middle"><p>Cell 6</p></td></tr></tbody></table><p>End.</p>`;
 
   // Editor configuration with table features
   editorConfig: Partial<DocumentEngineConfig> = {
@@ -41,7 +41,7 @@ export class EditorTableComponent {
     underline: true,
     list: true,
     textStyleKit: true,
-    tables: true, // Enable table features
+    tables: { table: { resizable: true } },
 
     showFooter: true,
     characterCount: true,

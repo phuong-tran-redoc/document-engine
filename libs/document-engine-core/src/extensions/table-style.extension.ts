@@ -160,10 +160,12 @@ export const StyledTable = Table.extend({
         renderHTML: (attrs: { border: TableBorder }) => {
           const border = attrs.border;
           if (!border) return {};
+
           const styles = [];
           if (border.style) styles.push(`border-style: ${border.style}`);
           if (border.color) styles.push(`border-color: ${border.color}`);
           if (border.width) styles.push(`border-width: ${border.width}`);
+
           return styles.length ? { style: styles.join('; ') + ';' } : {};
         },
         parseHTML: (element: HTMLElement) => {
@@ -330,7 +332,7 @@ export const StyledTable = Table.extend({
               // Đây là mấu chốt: gán mảng % của chúng ta vào đây
               colwidths: calculatedColWidths,
             },
-            tableRows, // Nội dung (các node 'tableRow')
+            tableRows // Nội dung (các node 'tableRow')
           );
 
           // --- BƯỚC 4: Dispatch transaction (Original code)---

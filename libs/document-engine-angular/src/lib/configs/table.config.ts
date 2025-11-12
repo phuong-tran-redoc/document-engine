@@ -15,6 +15,7 @@ export const TableBubbleConfig: EditorBubbleMenuConfig = {
     kind: 'node',
     name: ['tableCell', 'tableHeader'],
     allowEmptySelection: true,
+    requireFocus: false,
   },
   views: [
     {

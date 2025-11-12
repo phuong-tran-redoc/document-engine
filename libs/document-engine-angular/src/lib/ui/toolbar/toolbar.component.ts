@@ -89,7 +89,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   @ViewChild('colorBubbleMenu') private colorBubbleMenu!: ToolbarBubbleMenuComponent;
   @ViewChild('linkBubbleWrapper') private linkBubbleWrapper!: EditorBubbleMenuComponent;
-  @ViewChild('tableBubbleWrapper') private tableBubbleWrapper!: EditorBubbleMenuComponent;
   @ViewChild('imageBubbleMenu') private imageBubbleMenu!: ToolbarBubbleMenuComponent;
   @ViewChild('specialCharsBubbleMenu') private specialCharsBubbleMenu!: ToolbarBubbleMenuComponent;
   @ViewChild('dynamicFieldsBubbleMenu') private dynamicFieldsBubbleMenu!: ToolbarBubbleMenuComponent;

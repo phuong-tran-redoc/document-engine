@@ -51,6 +51,7 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
 
   @ViewChild('viewContainer', { read: ViewContainerRef }) private viewContainer!: ViewContainerRef;
   @ViewChild('bubbleElement') private bubbleElement!: ElementRef<HTMLElement>;
+
   private cdr = inject(ChangeDetectorRef);
   private document = inject(DOCUMENT);
   private focusTrap = inject(FocusTrapService);
@@ -299,7 +300,7 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
 
     // Mark bubble as visible for transition handling
     const bubbleElement = this.bubbleElement?.nativeElement;
-    if (bubbleElement) {
+    if (bubbleElement && this.config.target?.requireFocus) {
       // Use requestAnimationFrame to ensure the DOM is updated first
       requestAnimationFrame(() => {
         bubbleElement.setAttribute('data-visible', 'true');

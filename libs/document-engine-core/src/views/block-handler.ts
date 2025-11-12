@@ -3,6 +3,8 @@ import { NodeSelection, TextSelection } from '@tiptap/pm/state';
 import { EditorView } from '@tiptap/pm/view';
 import { NodeViewRendererProps } from '@tiptap/core';
 
+type TableBorder = { style?: string | null; color?: string | null; width?: string | null } | null | undefined;
+
 export abstract class HandleNodeView {
   dom: HTMLElement;
   contentDOM!: HTMLElement;
@@ -135,22 +137,36 @@ export abstract class HandleNodeView {
 
     const buttonBefore = document.createElement('div');
     buttonBefore.className = 'widget__type-around__button widget__type-around__button_before';
-    buttonBefore.title = 'Chèn đoạn văn bản phía trước';
+    buttonBefore.title = 'Insert paragraph before';
     buttonBefore.innerHTML = icon;
 
     const buttonAfter = document.createElement('div');
     buttonAfter.className = 'widget__type-around__button widget__type-around__button_after';
-    buttonAfter.title = 'Chèn đoạn văn bản phía sau';
+    buttonAfter.title = 'Insert paragraph after';
     buttonAfter.innerHTML = icon;
 
     // Logic chèn node 'paragraph' mới
     const handleInsert = (position: 'before' | 'after') => {
-      const pos = position === 'before' ? (getPos() ?? 0) : (getPos() ?? 0) + node.nodeSize;
+      const currentPos = getPos();
+      if (currentPos === undefined) return;
+
       const newNode = view.state.schema.nodes['paragraph'].create();
-      const tr = view.state.tr.insert(pos, newNode);
+      let insertPos: number;
+
+      if (position === 'before') {
+        insertPos = currentPos;
+      } else {
+        const tableStartPos = view.state.doc.resolve(currentPos);
+        const tableIndex = tableStartPos.index();
+        insertPos = tableStartPos.posAtIndex(tableIndex + 1);
+      }
+
+      const tr = view.state.tr.insert(insertPos, newNode);
+      const mappedInsertPos = tr.mapping.map(insertPos, -1);
+      const selectionPos = mappedInsertPos + 1;
 
       // Di chuyển con trỏ vào node mới
-      view.dispatch(tr.setSelection(TextSelection.create(tr.doc, pos + 1)));
+      view.dispatch(tr.setSelection(TextSelection.create(tr.doc, selectionPos)));
       view.focus();
     };
 
@@ -258,29 +274,84 @@ export abstract class HandleNodeView {
 }
 
 export class TableNodeView extends HandleNodeView {
-  private table!: HTMLTableElement;
-
   createContentElement(): HTMLElement {
     // Create table element
-    this.table = document.createElement('table');
+    const table = document.createElement('table');
 
-    // Render colgroup
-    this.updateColgroup();
+    // Apply table styles (border and backgroundColor)
+    this.updateTableStyles(table);
 
     // Create tbody - this is the contentDOM where ProseMirror renders <tr>s
     const tbody = document.createElement('tbody');
     this.contentDOM = tbody;
 
-    this.table.appendChild(tbody);
-    return this.table;
+    table.appendChild(tbody);
+
+    // Render colgroup
+    this.updateColgroup(table);
+
+    return table;
   }
 
-  private updateColgroup(): void {
-    // Safety check: ensure table exists
-    if (!this.table) return;
+  /**
+   * Get table element from DOM
+   * Query from this.dom instead of storing reference to avoid stale references
+   */
+  private getTableElement(): HTMLTableElement | null {
+    return this.dom.querySelector('table');
+  }
 
+  update(node: Node): boolean {
+    // Check if node actually changed
+    if (node.type !== this.node.type) {
+      return false;
+    }
+
+    // Update node reference
+    this.node = node;
+
+    // Get table element
+    const table = this.getTableElement();
+    if (!table) {
+      return true;
+    }
+
+    // Update table styles if border or backgroundColor changed
+    this.updateTableStyles(table);
+
+    // Update colgroup if colwidths changed
+    this.updateColgroup(table);
+
+    return true;
+  }
+
+  private updateTableStyles(table: HTMLTableElement): void {
+    const border = this.node.attrs['border'] as TableBorder;
+    const backgroundColor = this.node.attrs['backgroundColor'] as string | null | undefined;
+
+    // Reset styles
+    // (Chúng ta reset để xử lý trường hợp attribute bị xóa)
+    table.style.borderStyle = '';
+    table.style.borderColor = '';
+    table.style.borderWidth = '';
+    table.style.backgroundColor = '';
+
+    // Apply backgroundColor
+    if (backgroundColor) {
+      table.style.backgroundColor = backgroundColor;
+    }
+
+    // Apply border
+    if (border) {
+      if (border.style) table.style.borderStyle = border.style;
+      if (border.color) table.style.borderColor = border.color;
+      if (border.width) table.style.borderWidth = border.width;
+    }
+  }
+
+  private updateColgroup(table: HTMLTableElement): void {
     // Remove existing colgroup if exists
-    const existingColgroup = this.table.querySelector('colgroup');
+    const existingColgroup = table.querySelector('colgroup');
     if (existingColgroup) {
       existingColgroup.remove();
     }
@@ -298,11 +369,11 @@ export class TableNodeView extends HandleNodeView {
       });
 
       // Insert before tbody
-      const tbody = this.table.querySelector('tbody');
+      const tbody = table.querySelector('tbody');
       if (tbody) {
-        this.table.insertBefore(colgroup, tbody);
+        table.insertBefore(colgroup, tbody);
       } else {
-        this.table.appendChild(colgroup);
+        table.appendChild(colgroup);
       }
     }
   }
