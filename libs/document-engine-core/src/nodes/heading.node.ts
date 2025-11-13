@@ -1,4 +1,5 @@
 import { Heading } from '@tiptap/extension-heading';
+import {} from '@tiptap/extension-paragraph';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
