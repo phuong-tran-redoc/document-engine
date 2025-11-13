@@ -1,14 +1,6 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-  inject,
-} from '@angular/core';
-import { DocumentEngineConfig } from '@phuong-tran-redoc/document-engine-core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { DocumentEngineConfig } from '../../core/kit/kit.type';
 import { Editor } from '@tiptap/core';
 
 /**
@@ -102,4 +94,3 @@ export class CharacterCountComponent implements OnInit, OnDestroy {
     return this.count > this.limit;
   }
 }
-

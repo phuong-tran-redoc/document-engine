@@ -7,7 +7,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canUndo"
-          (click)="editor.chain().focus().undo().run()"
+          (click)="runAndEmit('undo', editor.chain().focus().undo().run)"
           title="Undo (Ctrl+Z)"
         >
           <document-engine-icon name="undo"></document-engine-icon>
@@ -17,7 +17,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canRedo"
-          (click)="editor.chain().focus().redo().run()"
+          (click)="runAndEmit('redo', editor.chain().focus().redo().run)"
           title="Redo"
         >
           <document-engine-icon name="redo"></document-engine-icon>
@@ -37,6 +37,7 @@
           placeholder="Font Size"
           labelMode="static"
           [disabled]="toolbarState.isReadOnly"
+          title="Font Size"
         >
           <document-engine-icon documentEngineSelectLabel name="format_size"></document-engine-icon>
 
@@ -59,6 +60,7 @@
           placeholder="Line Height"
           labelMode="static"
           [disabled]="toolbarState.isReadOnly"
+          title="Line Height"
         >
           <document-engine-icon documentEngineSelectLabel name="format_line_spacing"></document-engine-icon>
 
@@ -78,6 +80,7 @@
           placeholder="Text Case"
           labelMode="static"
           [disabled]="toolbarState.isReadOnly"
+          title="Text Case"
         >
           <document-engine-icon documentEngineSelectLabel name="match_case"></document-engine-icon>
 
@@ -85,7 +88,7 @@
             *ngFor="let option of textCaseOptions; trackBy: trackByValue"
             documentEngineSelectOption
             [value]="option.value"
-            (click)="editor.chain().focus().textCase(option.value).run()"
+            (click)="runAndEmit('setTextCase', editor.chain().focus().textCase(option.value).run)"
           >
             {{ option.label }}
           </button>
@@ -97,6 +100,7 @@
           [value]="activeHeading?.toString() || null"
           placeholder="Normal text"
           [disabled]="toolbarState.isReadOnly"
+          title="Heading"
         >
           <button
             *ngFor="let option of headingOptions; trackBy: trackByValue"
@@ -121,7 +125,7 @@
           *ngIf="capabilities.hasResetFormat"
           documentEngineButton
           size="icon"
-          (click)="editor.chain().focus().resetFormat().run()"
+          (click)="runAndEmit('resetFormat', editor.chain().focus().resetFormat().run)"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canResetFormat"
           title="Clear Formatting"
         >
@@ -163,7 +167,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleBold"
-          (click)="editor.chain().focus().toggleBold().run()"
+          (click)="runAndEmit('toggleBold', editor.chain().focus().toggleBold().run)"
           [class.active]="editor.isActive('bold')"
           title="Bold"
         >
@@ -175,7 +179,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleItalic"
-          (click)="editor.chain().focus().toggleItalic().run()"
+          (click)="runAndEmit('toggleItalic', editor.chain().focus().toggleItalic().run)"
           [class.active]="editor.isActive('italic')"
           title="Italic"
         >
@@ -187,7 +191,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleUnderline"
-          (click)="editor.chain().focus().toggleUnderline().run()"
+          (click)="runAndEmit('toggleUnderline', editor.chain().focus().toggleUnderline().run)"
           [class.active]="editor.isActive('underline')"
           title="Underline"
         >
@@ -199,7 +203,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleStrike"
-          (click)="editor.chain().focus().toggleStrike().run()"
+          (click)="runAndEmit('toggleStrike', editor.chain().focus().toggleStrike().run)"
           [class.active]="editor.isActive('strike')"
           title="Strikethrough"
         >
@@ -218,7 +222,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleSubscript"
-          (click)="editor.chain().focus().toggleSubscript().run()"
+          (click)="runAndEmit('toggleSubscript', editor.chain().focus().toggleSubscript().run)"
           [class.active]="editor.isActive('subscript')"
           title="Subscript"
         >
@@ -230,7 +234,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleSuperscript"
-          (click)="editor.chain().focus().toggleSuperscript().run()"
+          (click)="runAndEmit('toggleSuperscript', editor.chain().focus().toggleSuperscript().run)"
           [class.active]="editor.isActive('superscript')"
           title="Superscript"
         >
@@ -242,7 +246,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleCode"
-          (click)="editor.chain().focus().toggleCode().run()"
+          (click)="runAndEmit('toggleCode', editor.chain().focus().toggleCode().run)"
           [class.active]="editor.isActive('code')"
           title="Code"
         >
@@ -276,6 +280,7 @@
           placeholder="Text Align"
           labelMode="static"
           [disabled]="toolbarState.isReadOnly"
+          title="Text Align"
         >
           <document-engine-icon documentEngineSelectLabel [name]="activeTextAlignIcon"></document-engine-icon>
 
@@ -295,7 +300,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canDecreaseIndent"
-          (click)="editor.chain().focus().decreaseIndent().run()"
+          (click)="runAndEmit('decreaseIndent', editor.chain().focus().decreaseIndent().run)"
           title="Decrease Indent"
         >
           <document-engine-icon name="format_indent_decrease"></document-engine-icon>
@@ -306,7 +311,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canIncreaseIndent"
-          (click)="editor.chain().focus().increaseIndent().run()"
+          (click)="runAndEmit('increaseIndent', editor.chain().focus().increaseIndent().run)"
           title="Increase Indent"
         >
           <document-engine-icon name="format_indent_increase"></document-engine-icon>
@@ -318,7 +323,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleBulletList"
-          (click)="editor.chain().focus().toggleBulletList().run()"
+          (click)="runAndEmit('toggleBulletList', editor.chain().focus().toggleBulletList().run)"
           [class.active]="editor.isActive('bulletList')"
           title="Bullet List"
         >
@@ -336,6 +341,7 @@
               : null
           "
           [disabled]="toolbarState.isReadOnly"
+          title="Numbered List"
         >
           <document-engine-icon documentEngineSelectLabel name="format_list_numbered"></document-engine-icon>
 
@@ -367,7 +373,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canToggleBlockquote"
-          (click)="editor.chain().focus().toggleBlockquote().run()"
+          (click)="runAndEmit('toggleBlockquote', editor.chain().focus().toggleBlockquote().run)"
           [class.active]="editor.isActive('blockquote')"
           title="Quote"
         >
@@ -420,7 +426,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canInsertPageBreak"
-          (click)="editor.chain().focus().insertPageBreak().run()"
+          (click)="runAndEmit('insertPageBreak', editor.chain().focus().insertPageBreak().run)"
           title="Insert page break"
         >
           <document-engine-icon name="insert_page_break"></document-engine-icon>
@@ -460,7 +466,7 @@
           documentEngineButton
           size="icon"
           [disabled]="!toolbarState.canToggleEditableRegion || toolbarState.isReadOnly"
-          (click)="editor.chain().focus().toggleEditableRegion().run()"
+          (click)="runAndEmit('toggleEditableRegion', editor.chain().focus().toggleEditableRegion().run)"
           [class.active]="editor.isActive('editableRegion')"
           title="Toggle editable region"
         >
@@ -475,7 +481,7 @@
           documentEngineButton
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canClearContent"
-          (click)="editor.chain().focus().clear().run()"
+          (click)="runAndEmit('clear', editor.chain().focus().clear().run)"
           title="Clear all content"
         >
           <document-engine-icon name="clear_all"></document-engine-icon>
@@ -491,11 +497,58 @@
           <document-engine-icon name="markdown"></document-engine-icon>
         </button> -->
       </div>
+
+      <!-- Custom Toolbar Buttons -->
+      <div
+        *ngIf="customToolbarButtons.length > 0"
+        class="document-engine-document-editor__toolbar-group"
+        data-group="custom-buttons"
+      >
+        <ng-container *ngFor="let button of customToolbarButtons; trackBy: trackByIndex">
+          <!-- Icon Button -->
+          <button
+            *ngIf="button.type === 'icon-button'"
+            documentEngineButton
+            size="icon"
+            [disabled]="toolbarState.isReadOnly"
+            (click)="handleCustomIconButton(button)"
+            [title]="button.label || ''"
+          >
+            <document-engine-icon [name]="button.icon"></document-engine-icon>
+          </button>
+
+          <!-- Select Button -->
+          <document-engine-select
+            *ngIf="button.type === 'select-button'"
+            [value]="null"
+            labelMode="static"
+            [disabled]="toolbarState.isReadOnly"
+            [title]="button.label"
+          >
+            <span documentEngineSelectLabel>{{ button.label }}</span>
+
+            <button
+              *ngFor="let option of button.options; trackBy: trackByValue"
+              documentEngineSelectOption
+              [value]="option.value"
+              (click)="handleCustomSelectButton(button, option.value)"
+            >
+              {{ option.label }}
+            </button>
+          </document-engine-select>
+        </ng-container>
+      </div>
     </div>
 
     <!-- Right side actions -->
     <div class="document-engine-document-editor__toolbar-right">
-      <button documentEngineButton size="icon" (click)="printValue()" title="Print Value">
+      <button
+        *ngIf="capabilities.hasPrintButton"
+        documentEngineButton
+        size="icon"
+        (click)="printValue()"
+        title="Print Value"
+      >
         <document-engine-icon name="print"></document-engine-icon>
       </button>
     </div>

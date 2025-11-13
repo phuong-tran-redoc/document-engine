@@ -1,4 +1,4 @@
-import { DocumentEngineConfig } from '../core';
+import { DocumentEngineConfig } from './kit/kit.type';
 
 /**
  * EditorCapabilities class
@@ -66,6 +66,7 @@ export class EditorCapabilities {
 
   // UI Components
   readonly hasFooter: boolean;
+  readonly hasPrintButton: boolean;
 
   constructor(config: Partial<DocumentEngineConfig>) {
     // History
@@ -128,5 +129,6 @@ export class EditorCapabilities {
 
     // UI Components
     this.hasFooter = config.showFooter !== false;
+    this.hasPrintButton = config.showPrintButton !== false;
   }
 }

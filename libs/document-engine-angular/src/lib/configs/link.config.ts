@@ -1,5 +1,7 @@
-import { EditorBubbleMenuConfig } from '../core';
-import { LinkEditViewComponent, LinkMainViewComponent, LinkPropertiesViewComponent } from '../views/link-views';
+import { EditorBubbleMenuConfig } from '../core/bubble-menu/bubble-menu.type';
+import { LinkEditViewComponent } from '../views/link-views/link-edit-view';
+import { LinkMainViewComponent } from '../views/link-views/link-main-view';
+import { LinkPropertiesViewComponent } from '../views/link-views/link-properties-view';
 
 export const LinkBubbleConfig: EditorBubbleMenuConfig = {
   props: {

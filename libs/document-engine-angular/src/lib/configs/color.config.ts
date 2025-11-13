@@ -1,5 +1,5 @@
-import { ToolbarBubbleMenuConfig } from '../core';
-import { ColorPickerViewComponent } from '../views';
+import { ToolbarBubbleMenuConfig } from '../core/bubble-menu/bubble-menu.type';
+import { ColorPickerViewComponent } from '../views/color-picker-view/color-picker-view';
 
 export const ColorBubbleConfig: ToolbarBubbleMenuConfig = {
   pluginKey: 'ColorBubbleMenu',

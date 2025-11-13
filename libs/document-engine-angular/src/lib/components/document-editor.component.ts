@@ -12,10 +12,13 @@ import {
   SimpleChanges,
   inject,
 } from '@angular/core';
-import { DocumentEngineConfig, DocumentEngineKit, EditorCapabilities } from '@phuong-tran-redoc/document-engine-core';
+import { DocumentEngineConfig } from '../core/kit/kit.type';
+import { DocumentEngineKit } from '../core/kit/kit';
+import { EditorCapabilities } from '../core/capability.model';
 import { Editor } from '@tiptap/core';
-import { DefaultEditorConfig } from '../configs';
-import { FooterComponent, ToolbarComponent } from '../ui';
+import { DefaultEditorConfig } from '../configs/editor.config';
+import { FooterComponent } from '../ui/footer/footer.component';
+import { ToolbarComponent } from '../ui/toolbar/toolbar.component';
 
 /**
  * Document Editor Component

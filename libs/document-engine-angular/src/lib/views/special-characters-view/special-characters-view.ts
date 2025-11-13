@@ -10,10 +10,10 @@ import {
   inject,
 } from '@angular/core';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuViewContent } from '../../core';
+import { BubbleMenuViewContent } from '../../core/bubble-menu/bubble-menu.type';
 import { CharacterCategory, CHARACTERS, SpecialCharacter } from '../../constants/character.constant';
 import { ButtonDirective } from '../../ui/button';
-import { SelectComponent } from '../../ui/select';
+import { SelectComponent } from '../../ui/select/select.component';
 import { SelectOptionDirective } from '../../ui/select/select-option.directive';
 
 /**

@@ -9,18 +9,17 @@ import {
   TableDefaultAttributes,
 } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
-import { COLORS } from '../../constants';
-import { BubbleMenuViewContent, PopoverDirective } from '../../core';
-import {
-  ButtonDirective,
-  ColorPickerComponent,
-  IconComponent,
-  InputDirective,
-  SelectComponent,
-  SelectOptionDirective,
-  ToggleGroupComponent,
-  ToggleOptionDirective,
-} from '../../ui';
+import { COLORS } from '../../constants/color.constant';
+import { BubbleMenuViewContent } from '../../core/bubble-menu/bubble-menu.type';
+import { PopoverDirective } from '../../core/popover.directive';
+import { ButtonDirective } from '../../ui/button';
+import { ColorPickerComponent } from '../../ui/color-picker';
+import { IconComponent } from '../../ui/icon/icon.component';
+import { InputDirective } from '../../ui/input/input';
+import { SelectComponent } from '../../ui/select/select.component';
+import { SelectOptionDirective } from '../../ui/select/select-option.directive';
+import { ToggleGroupComponent } from '../../ui/toggle-button/toggle-button';
+import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
 
 /**
  * Cell style view for table bubble menu

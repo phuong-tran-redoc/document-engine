@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuViewContent } from '../../core';
+import { BubbleMenuViewContent } from '../../core/bubble-menu/bubble-menu.type';
 import { ButtonDirective } from '../../ui/button';
 
 interface LinkAttrs {

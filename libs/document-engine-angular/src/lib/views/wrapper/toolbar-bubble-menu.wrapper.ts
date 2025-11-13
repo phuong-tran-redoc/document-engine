@@ -14,13 +14,9 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { Editor } from '@tiptap/core';
-import {
-  BubbleMenuViewConfig,
-  BubbleMenuViewContent,
-  EventManager,
-  FocusTrapService,
-  ToolbarBubbleMenuConfig,
-} from '../../core';
+import { BubbleMenuViewConfig, BubbleMenuViewContent, ToolbarBubbleMenuConfig } from '../../core/bubble-menu/bubble-menu.type';
+import { EventManager } from '../../core/event-manager';
+import { FocusTrapService } from '../../core/focus-trap.service';
 
 /**
  * A bubble menu wrapper specifically for toolbar buttons

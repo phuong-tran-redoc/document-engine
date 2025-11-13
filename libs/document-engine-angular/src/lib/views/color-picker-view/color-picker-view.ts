@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Color, normalizeColor } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuViewContent } from '../../core';
+import { BubbleMenuViewContent } from '../../core/bubble-menu/bubble-menu.type';
 import { COLORS } from '../../constants/color.constant';
 import { ButtonDirective } from '../../ui/button';
 import { ColorPickerComponent } from '../../ui/color-picker';

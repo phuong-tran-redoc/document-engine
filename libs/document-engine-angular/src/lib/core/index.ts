@@ -8,3 +8,6 @@ export * from './draggable.directive';
 export * from './editor.directive';
 export * from './floating-menu.directive';
 export * from './popover.directive';
+
+export * from './kit';
+export * from './capability.model';

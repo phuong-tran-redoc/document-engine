@@ -1,11 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TemplateItem } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-import { BubbleMenuViewContent } from '../../core';
-import { ButtonDirective, IconComponent, InputDirective, LabelDirective } from '../../ui';
+import { BubbleMenuViewContent } from '../../core/bubble-menu/bubble-menu.type';
+import { TemplateItem } from '../../types/template.type';
+import { ButtonDirective } from '../../ui/button';
+import { IconComponent } from '../../ui/icon/icon.component';
+import { InputDirective } from '../../ui/input/input';
+import { LabelDirective } from '../../ui/input/label';
 
 /**
  * Template view for bubble menu

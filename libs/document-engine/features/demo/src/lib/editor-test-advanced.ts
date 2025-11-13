@@ -5,10 +5,9 @@ import {
   DocumentEditorComponent,
   DocumentEngineConfig,
   Editor,
+  TemplateItem,
   TiptapEditorDirective,
 } from '@phuong-tran-redoc/document-engine-angular';
-import { TemplateItem } from '@phuong-tran-redoc/document-engine-core';
-import { DYNAMIC_FIELDS_CATEGORIES } from './misc/common-dynamic-field';
 
 /**
  * Advanced editor test with custom DocumentEngineConfig

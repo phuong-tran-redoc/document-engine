@@ -6,43 +6,41 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  Output,
   ViewChild,
   inject,
 } from '@angular/core';
-import {
-  DocumentEngineConfig,
-  EditorCapabilities,
-  ListStyleType,
-  TextCaseType,
-} from '@phuong-tran-redoc/document-engine-core';
+import { ListStyleType, TextCaseType } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { throttle } from 'lodash-es';
-import {
-  ColorBubbleConfig,
-  DynamicFieldsBubbleConfig,
-  ImageBubbleConfig,
-  LinkBubbleConfig,
-  SpecialCharactersBubbleConfig,
-  TableBubbleConfig,
-  TableCreateBubbleConfig,
-  TemplateBubbleConfig,
-} from '../../configs';
+import { ColorBubbleConfig } from '../../configs/color.config';
+import { DynamicFieldsBubbleConfig } from '../../configs/dynamic-fields.config';
+import { ImageBubbleConfig } from '../../configs/image.config';
+import { LinkBubbleConfig } from '../../configs/link.config';
+import { SpecialCharactersBubbleConfig } from '../../configs/special-characters.config';
+import { TableBubbleConfig, TableCreateBubbleConfig } from '../../configs/table.config';
+import { TemplateBubbleConfig } from '../../configs/template.config';
 import {
   FONT_SIZE_OPTIONS,
   HEADING_OPTIONS,
   LINE_HEIGHT_OPTIONS,
   TEXT_ALIGN_OPTIONS,
   TEXT_CASE_OPTIONS,
-} from '../../constants';
+} from '../../constants/text-style.constant';
 import { LIST_STYLE_OPTIONS } from '../../constants/list.constant';
-import { EditorBubbleMenuConfig, ToolbarBubbleMenuConfig } from '../../core';
-import { HeadingLevel } from '../../types';
-import { EditorBubbleMenuComponent, ToolbarBubbleMenuComponent } from '../../views/wrapper';
+import { DocumentEngineConfig } from '../../core/kit/kit.type';
+import { EditorBubbleMenuConfig, ToolbarBubbleMenuConfig } from '../../core/bubble-menu/bubble-menu.type';
+import { EditorCapabilities } from '../../core/capability.model';
+import { HeadingLevel } from '../../types/heading.type';
+import { ToolbarButton } from '../../types/button.type';
+import { EditorBubbleMenuComponent } from '../../views/wrapper/editor-bubble-menu.wrapper';
+import { ToolbarBubbleMenuComponent } from '../../views/wrapper/toolbar-bubble-menu.wrapper';
 import { ButtonDirective } from '../button';
 import { IconComponent } from '../icon';
 import { SelectLabelDirective } from '../select/select-label.directive';
 import { SelectOptionDirective } from '../select/select-option.directive';
 import { SelectComponent } from '../select/select.component';
+import { ToolbarService } from './toolbar.service';
 import { DEFAULT_TOOLBAR_STATE, ToolbarState, buildToolbarState } from './toolbar.state';
 
 /**
@@ -67,10 +65,13 @@ import { DEFAULT_TOOLBAR_STATE, ToolbarState, buildToolbarState } from './toolba
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly toolbarService = inject(ToolbarService);
 
   @Input() editor!: Editor;
   @Input() capabilities!: EditorCapabilities;
   @Input() config?: Partial<DocumentEngineConfig>; // Only for dynamicFieldsCategories and templates
+
+  @Output() readonly action = this.toolbarService.action;
 
   activeFontSize: string | null = null;
   activeLineHeight: string | null = null;
@@ -158,40 +159,41 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       this.throttleUpdateToolbarState.cancel();
     }
 
+    this.toolbarService.ngOnDestroy();
     this.editor.destroy();
   }
 
-  testDisable() {
-    console.log('fn testDisable called');
-    return true;
+  runAndEmit(actionName: string, chain: () => void): void {
+    chain();
+    this.toolbarService.emit(actionName);
   }
 
   setFontSize(size: string | null): void {
     if (size) {
       this.editor.chain().focus().setFontSize(size).run();
-      return;
+    } else {
+      this.editor.chain().focus().unsetFontSize().run();
     }
-
-    this.editor.chain().focus().unsetFontSize().run();
+    this.toolbarService.emit('setFontSize', size);
   }
 
   setLineHeight(lineHeight: string | null): void {
     if (lineHeight) {
       this.editor.chain().focus().setLineHeight(lineHeight).run();
-      return;
+    } else {
+      this.editor.chain().focus().unsetLineHeight().run();
     }
-
-    this.editor.chain().focus().unsetLineHeight().run();
+    this.toolbarService.emit('setLineHeight', lineHeight);
   }
 
   setHeading(level: string | null): void {
     if (!level) {
       this.editor.chain().focus().removeHeading().run();
-      return;
+    } else {
+      const levelNumber = parseInt(level, 10) as HeadingLevel;
+      this.editor.chain().focus().toggleHeading({ level: levelNumber }).run();
     }
-
-    const levelNumber = parseInt(level, 10) as HeadingLevel;
-    this.editor.chain().focus().toggleHeading({ level: levelNumber }).run();
+    this.toolbarService.emit('setHeading', level);
   }
 
   setTextAlign(align: string | null): void {
@@ -201,28 +203,29 @@ export class ToolbarComponent implements OnInit, OnDestroy {
         .focus()
         .setTextAlign(align as 'left' | 'center' | 'right' | 'justify')
         .run();
-      return;
+    } else {
+      // Reset to default (left)
+      this.editor.chain().focus().setTextAlign('left').run();
     }
-
-    // Reset to default (left)
-    this.editor.chain().focus().setTextAlign('left').run();
+    this.toolbarService.emit('setTextAlign', align);
   }
 
   setListStyle(listStyleType: ListStyleType): void {
     if (this.editor.isActive('customOrderedList')) {
       // If there's an active ordered list, update its style
       this.editor.chain().focus().setListStyle(listStyleType).run();
-      return;
+    } else {
+      // If no active list, create a new one with the selected style
+      this.editor.chain().focus().toggleOrderedList().run();
+      this.editor.chain().focus().setListStyle(listStyleType).run();
     }
-
-    // If no active list, create a new one with the selected style
-    this.editor.chain().focus().toggleOrderedList().run();
-    this.editor.chain().focus().setListStyle(listStyleType).run();
+    this.toolbarService.emit('setListStyle', listStyleType);
   }
 
   openColorBubble(event: MouseEvent, type: 'text' | 'fill'): void {
     const targetElement = (event.currentTarget || event.target) as HTMLElement;
     this.colorBubbleMenu?.toggleBubble(targetElement, { type });
+    this.toolbarService.emit('openColorBubble', { type });
   }
 
   toggleLink(): void {
@@ -233,16 +236,19 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       // If no link, open the bubble menu
       this.linkBubbleWrapper?.showBubble();
     }
+    this.toolbarService.emit('toggleLink');
   }
 
   insertImage(event: MouseEvent): void {
     const targetElement = (event.currentTarget || event.target) as HTMLElement;
     this.imageBubbleMenu?.toggleBubble(targetElement);
+    this.toolbarService.emit('insertImage');
   }
 
   openSpecialCharsBubble(event: MouseEvent): void {
     const targetElement = (event.currentTarget || event.target) as HTMLElement;
     this.specialCharsBubbleMenu?.toggleBubble(targetElement);
+    this.toolbarService.emit('openSpecialCharsBubble');
   }
 
   openDynamicFieldsBubble(event: MouseEvent): void {
@@ -250,6 +256,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     this.dynamicFieldsBubbleMenu?.toggleBubble(targetElement, {
       categories: this.config?.dynamicFieldsCategories || [],
     });
+    this.toolbarService.emit('openDynamicFieldsBubble');
   }
 
   openTemplateBubble(event: MouseEvent): void {
@@ -257,11 +264,13 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     this.templateBubbleMenu?.toggleBubble(targetElement, {
       templates: this.config?.templates || [],
     });
+    this.toolbarService.emit('openTemplateBubble');
   }
 
   openCreateTableBubble(event: MouseEvent): void {
     const targetElement = (event.currentTarget || event.target) as HTMLElement;
     this.tableCreateBubbleMenu?.toggleBubble(targetElement);
+    this.toolbarService.emit('openCreateTableBubble');
   }
 
   // downloadAsMarkdown(filename?: string): void {
@@ -290,9 +299,32 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     return item.value;
   }
 
+  trackByIndex(index: number): number {
+    return index;
+  }
+
+  get customToolbarButtons(): ToolbarButton[] {
+    return this.config?.customToolbarButtons || [];
+  }
+
+  handleCustomIconButton(button: ToolbarButton): void {
+    if (button.type === 'icon-button') {
+      button.callback();
+      this.toolbarService.emit('customIconButton', { label: button.label, icon: button.icon });
+    }
+  }
+
+  handleCustomSelectButton(button: ToolbarButton, value: string): void {
+    if (button.type === 'select-button') {
+      button.callback();
+      this.toolbarService.emit('customSelectButton', { label: button.label, value });
+    }
+  }
+
   printValue(): void {
     console.log('html', this.editor.getHTML());
     console.log('json', this.editor.getJSON());
     console.log('State', this.editor.state);
+    this.toolbarService.emit('printValue');
   }
 }

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { DocumentEngineConfig } from '@phuong-tran-redoc/document-engine-core';
+import { DocumentEngineConfig } from '../../core/kit/kit.type';
 import { Editor } from '@tiptap/core';
-import { CharacterCountComponent } from '../character-count';
+import { CharacterCountComponent } from '../character-count/character-count.component';
 
 /**
  * Footer component for document editor

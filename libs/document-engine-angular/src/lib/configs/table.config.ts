@@ -1,10 +1,8 @@
-import { EditorBubbleMenuConfig, ToolbarBubbleMenuConfig } from '../core';
-import {
-  TableCellStyleViewComponent,
-  TableCreateViewComponent,
-  TableMainViewComponent,
-  TableStyleViewComponent,
-} from '../views';
+import { EditorBubbleMenuConfig, ToolbarBubbleMenuConfig } from '../core/bubble-menu/bubble-menu.type';
+import { TableCellStyleViewComponent } from '../views/table-views/table-cell-style-view';
+import { TableCreateViewComponent } from '../views/table-views/table-create-view';
+import { TableMainViewComponent } from '../views/table-views/table-main-view';
+import { TableStyleViewComponent } from '../views/table-views/table-style-view';
 
 export const TableBubbleConfig: EditorBubbleMenuConfig = {
   props: {

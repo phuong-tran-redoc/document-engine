@@ -1,3 +1,9 @@
+import {
+  DynamicFieldCategory,
+  DynamicFieldOptions,
+  IndentOptions,
+  RestrictedEditingOptions,
+} from '@phuong-tran-redoc/document-engine-core';
 import { BlockquoteOptions } from '@tiptap/extension-blockquote';
 import { BoldOptions } from '@tiptap/extension-bold';
 import { CodeOptions } from '@tiptap/extension-code';
@@ -14,14 +20,8 @@ import { TextAlignOptions } from '@tiptap/extension-text-align';
 import { TextStyleKitOptions } from '@tiptap/extension-text-style';
 import { UnderlineOptions } from '@tiptap/extension-underline';
 import { CharacterCountOptions, PlaceholderOptions, UndoRedoOptions } from '@tiptap/extensions';
-import { IndentOptions, RestrictedEditingOptions } from '../extensions';
-import { DynamicFieldCategory, DynamicFieldOptions } from '../nodes';
-
-export interface TemplateItem {
-  title: string;
-  data: string;
-  description?: string;
-}
+import { TemplateItem } from '../../types/template.type';
+import { ToolbarButton } from '../../types/button.type';
 
 /**
  * Định nghĩa cấu hình đầy đủ cho DocumentEngineKit (Factory của bạn).
@@ -274,4 +274,17 @@ export interface DocumentEngineConfig {
    * @default false (Thường được bật/tắt bởi client)
    */
   characterCount?: Partial<CharacterCountOptions> | boolean;
+
+  /**
+   * Hiển thị button print
+   * @default false
+   */
+  showPrintButton?: boolean;
+
+  /**
+   * Custom toolbar buttons
+   * Allows clients to define custom actions/buttons in the toolbar
+   * @default undefined
+   */
+  customToolbarButtons?: ToolbarButton[];
 }

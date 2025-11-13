@@ -1,4 +1,5 @@
-import { DocumentEngineConfig, RestrictedEditingOptions } from '@phuong-tran-redoc/document-engine-core';
+import { RestrictedEditingOptions } from '@phuong-tran-redoc/document-engine-core';
+import { DocumentEngineConfig } from '../../core/kit/kit.type';
 import { Editor } from '@tiptap/core';
 
 export interface ToolbarState {

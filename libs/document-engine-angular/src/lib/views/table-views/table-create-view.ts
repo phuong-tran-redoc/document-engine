@@ -2,8 +2,11 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuViewContent } from '../../core';
-import { ButtonDirective, CheckboxComponent, ErrorMessageComponent, InputDirective } from '../../ui';
+import { BubbleMenuViewContent } from '../../core/bubble-menu/bubble-menu.type';
+import { ButtonDirective } from '../../ui/button';
+import { CheckboxComponent } from '../../ui/checkbox/checkbox';
+import { ErrorMessageComponent } from '../../ui/input/error-message';
+import { InputDirective } from '../../ui/input/input';
 
 export interface TableCreateViewData {
   rows?: number;

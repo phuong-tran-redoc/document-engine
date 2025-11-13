@@ -28,10 +28,12 @@ import {
   RestrictedEditing,
   StyledTableKit,
   TextCase,
-} from '../extensions';
-import { EditableRegion } from '../extensions/restricted-editing.extension';
-import { DynamicField, NotumHeading, PageBreak } from '../nodes';
-import { DocumentEngineConfig } from './document-engine-kit.type';
+  EditableRegion,
+  DynamicField,
+  NotumHeading,
+  PageBreak,
+} from '@phuong-tran-redoc/document-engine-core';
+import { DocumentEngineConfig } from './kit.type';
 
 export const DocumentEngineKit = Extension.create<DocumentEngineConfig>({
   name: 'DocumentEngineKit',

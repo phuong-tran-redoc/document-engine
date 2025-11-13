@@ -3,10 +3,12 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { getActiveMarkRange } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuViewContent } from '../../core';
+import { BubbleMenuViewContent } from '../../core/bubble-menu/bubble-menu.type';
 import { urlValidator } from '../../utils';
 import { ButtonDirective } from '../../ui/button';
-import { InputDirective, LabelDirective, ErrorMessageComponent } from '../../ui/input';
+import { InputDirective } from '../../ui/input/input';
+import { LabelDirective } from '../../ui/input/label';
+import { ErrorMessageComponent } from '../../ui/input/error-message';
 
 interface LinkAttrs {
   href?: string;

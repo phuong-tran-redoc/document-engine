@@ -1,5 +1,5 @@
-import { ToolbarBubbleMenuConfig } from '../core';
-import { SpecialCharactersViewComponent } from '../views';
+import { ToolbarBubbleMenuConfig } from '../core/bubble-menu/bubble-menu.type';
+import { SpecialCharactersViewComponent } from '../views/special-characters-view/special-characters-view';
 
 export const SpecialCharactersBubbleConfig: ToolbarBubbleMenuConfig = {
   pluginKey: 'SpecialCharactersBubbleMenu',
@@ -12,4 +12,3 @@ export const SpecialCharactersBubbleConfig: ToolbarBubbleMenuConfig = {
     },
   ],
 };
-

@@ -2,10 +2,12 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuViewContent } from '../../core';
+import { BubbleMenuViewContent } from '../../core/bubble-menu/bubble-menu.type';
 import { urlValidator } from '../../utils';
 import { ButtonDirective } from '../../ui/button';
-import { InputDirective, LabelDirective, ErrorMessageComponent } from '../../ui/input';
+import { InputDirective } from '../../ui/input/input';
+import { LabelDirective } from '../../ui/input/label';
+import { ErrorMessageComponent } from '../../ui/input/error-message';
 
 /**
  * Temporary image insert view for bubble menu

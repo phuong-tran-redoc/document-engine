@@ -1,5 +1,5 @@
-import { ToolbarBubbleMenuConfig } from '../core';
-import { TemplateViewComponent } from '../views';
+import { ToolbarBubbleMenuConfig } from '../core/bubble-menu/bubble-menu.type';
+import { TemplateViewComponent } from '../views/template-view/template-view';
 
 export const TemplateBubbleConfig: ToolbarBubbleMenuConfig = {
   pluginKey: 'TemplateBubbleMenu',
@@ -14,4 +14,3 @@ export const TemplateBubbleConfig: ToolbarBubbleMenuConfig = {
     },
   ],
 };
-

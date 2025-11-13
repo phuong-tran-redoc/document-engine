@@ -15,6 +15,7 @@ import {
   QueryList,
   SimpleChanges,
   ViewChild,
+  forwardRef,
   inject,
 } from '@angular/core';
 import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
@@ -22,6 +23,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { IconComponent } from '../icon';
 import { SelectLabelDirective } from './select-label.directive';
 import { SelectOptionDirective } from './select-option.directive';
+import { ISelectParent, SELECT_PARENT_TOKEN } from './select.contract';
 
 /**
  * Select component with floating dropdown using @floating-ui/dom
@@ -38,8 +40,14 @@ import { SelectOptionDirective } from './select-option.directive';
   imports: [CommonModule, IconComponent],
   templateUrl: './select.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {
+      provide: SELECT_PARENT_TOKEN,
+      useExisting: forwardRef(() => SelectComponent),
+    },
+  ],
 })
-export class SelectComponent implements AfterContentInit, OnChanges, OnDestroy {
+export class SelectComponent implements AfterContentInit, OnChanges, OnDestroy, ISelectParent {
   private readonly cdr = inject(ChangeDetectorRef);
 
   @Input() value: string | null = null;

@@ -1,4 +1,4 @@
-import { DocumentEngineConfig } from '@phuong-tran-redoc/document-engine-core';
+import { DocumentEngineConfig } from '../core/kit/kit.type';
 
 export const DefaultEditorConfig: Partial<DocumentEngineConfig> = {
   link: {
@@ -39,4 +39,5 @@ export const DefaultEditorConfig: Partial<DocumentEngineConfig> = {
   editable: true,
   restrictedEditing: false,
   showToolbar: true,
+  showPrintButton: false,
 };

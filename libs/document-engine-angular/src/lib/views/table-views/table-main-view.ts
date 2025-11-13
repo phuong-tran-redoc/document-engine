@@ -3,8 +3,12 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { getCursorCellInfo } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
 import { CellSelection } from '@tiptap/pm/tables';
-import { BubbleMenuViewContent } from '../../core';
-import { ButtonDirective, IconComponent, SelectComponent, SelectLabelDirective, SelectOptionDirective } from '../../ui';
+import { BubbleMenuViewContent } from '../../core/bubble-menu/bubble-menu.type';
+import { ButtonDirective } from '../../ui/button';
+import { IconComponent } from '../../ui/icon/icon.component';
+import { SelectComponent } from '../../ui/select/select.component';
+import { SelectLabelDirective } from '../../ui/select/select-label.directive';
+import { SelectOptionDirective } from '../../ui/select/select-option.directive';
 
 /**
  * Main view for table bubble menu

@@ -1,5 +1,5 @@
 import { Directive, ElementRef, HostListener, Input, inject } from '@angular/core';
-import { SelectComponent } from './select.component';
+import { SELECT_PARENT_TOKEN } from './select.contract';
 
 /**
  * Directive for select options
@@ -13,16 +13,16 @@ import { SelectComponent } from './select.component';
   standalone: true,
   host: {
     role: 'option',
-    '[attr.aria-selected]': 'select.value === value',
+    '[attr.aria-selected]': 'select?.value === value',
     '[attr.aria-disabled]': 'disabled',
     class: 'document-engine-select-option',
     '[class.document-engine-select-option--disabled]': 'disabled',
-    '[class.document-engine-select-option--selected]': 'select.value === value',
+    '[class.document-engine-select-option--selected]': 'select?.value === value',
   },
 })
 export class SelectOptionDirective {
   readonly elementRef = inject(ElementRef);
-  readonly select = inject(SelectComponent);
+  readonly select = inject(SELECT_PARENT_TOKEN, { optional: true });
 
   @Input() value!: string | null;
   @Input() label?: string;
@@ -33,7 +33,7 @@ export class SelectOptionDirective {
     event.stopPropagation();
 
     if (!this.disabled) {
-      this.select.selectOption(this);
+      this.select?.selectOption(this);
     }
   }
 

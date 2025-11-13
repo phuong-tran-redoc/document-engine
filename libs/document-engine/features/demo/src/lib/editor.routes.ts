@@ -21,11 +21,11 @@ export const EDITOR_ROUTES: Route[] = [
     data: { breadcrumb: 'Table' },
     loadComponent: () => import('./editor-table').then((m) => m.EditorTableComponent),
   },
-  // {
-  //   path: 'full',
-  //   data: { breadcrumb: 'Full Features' },
-  //   loadComponent: () => import('./editor-full').then((m) => m.EditorFullComponent),
-  // },
+  {
+    path: 'full',
+    data: { breadcrumb: 'Full Features' },
+    loadComponent: () => import('./editor-full').then((m) => m.EditorFullComponent),
+  },
   {
     path: 'readonly',
     data: { breadcrumb: 'Readonly' },
