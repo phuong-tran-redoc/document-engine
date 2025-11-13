@@ -30,6 +30,11 @@ export const appRoutes: Route[] = [
         data: { breadcrumb: 'Editor' },
         loadChildren: () => import('@document-engine/demo').then((m) => m.EDITOR_ROUTES),
       },
+      {
+        path: ROUTE.TEMPLATE,
+        data: { breadcrumb: 'Template' },
+        loadChildren: () => import('@document-engine/template').then((m) => m.TEMPLATE_ROUTES),
+      },
       // {
       //   path: ROUTE.PLAYGROUND,
       //   data: { breadcrumb: 'Playground' },

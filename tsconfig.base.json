@@ -29,7 +29,8 @@
       "@document-engine/home": ["libs/document-engine/features/home/src/index.ts"],
       "@document-engine/http-error": ["libs/document-engine/features/http-error/src/index.ts"],
       "@document-engine/demo": ["libs/document-engine/features/demo/src/index.ts"],
-      "@shared/features/theme-system": ["libs/shared/features/theme-system/src/index.ts"]
+      "@shared/features/theme-system": ["libs/shared/features/theme-system/src/index.ts"],
+      "@document-engine/template": ["libs/document-engine/features/template/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

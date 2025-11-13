@@ -2,6 +2,7 @@ export const ROUTE = {
   HOME: 'home',
   EDITOR: 'editor',
   PLAYGROUND: 'playground',
+  TEMPLATE: 'template',
 
   // Auth routes
   LOGIN: 'login',
