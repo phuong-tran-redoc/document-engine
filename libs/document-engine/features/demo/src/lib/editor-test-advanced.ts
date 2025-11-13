@@ -17,7 +17,7 @@ import {
   selector: 'document-engine-editor-test-advanced',
   imports: [CommonModule, FormsModule, DocumentEditorComponent, TiptapEditorDirective],
   template: `
-    <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto">
+    <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto h-full">
       <h2 class="text-2xl font-semibold m-0 text-foreground">Advanced Document Engine Test</h2>
       <p class="text-sm m-0 text-muted-foreground">Full-featured configuration with ALL extensions enabled</p>
 
@@ -48,7 +48,7 @@ export class EditorTestAdvancedComponent {
 
   // Full-featured editor configuration - ALL extensions enabled
   editorConfig: Partial<DocumentEngineConfig> = {
-    editable: false,
+    editable: true,
 
     undoRedo: true,
     bold: true,
@@ -57,8 +57,7 @@ export class EditorTestAdvancedComponent {
     list: true,
     textStyleKit: true,
 
-    showFooter: false,
-    showToolbar: false,
+    showFooter: true,
     characterCount: true,
   };
 

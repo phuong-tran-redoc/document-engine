@@ -194,6 +194,8 @@
   <main class="relative flex flex-col w-full h-full">
     <ng-container [cdkPortalOutlet]="header()"></ng-container>
 
-    <router-outlet></router-outlet>
+    <div class="document-engine-route-content">
+      <router-outlet></router-outlet>
+    </div>
   </main>
 </document-engine-sidebar>

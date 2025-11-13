@@ -16,7 +16,7 @@ import {
   selector: 'document-engine-editor-readonly',
   imports: [CommonModule, FormsModule, DocumentEditorComponent, TiptapEditorDirective],
   template: `
-    <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto">
+    <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto h-full">
       <h2 class="text-2xl font-semibold m-0 text-foreground">Readonly Feature</h2>
       <p class="text-sm m-0 text-muted-foreground">Readonly configuration with basic features</p>
 

@@ -62,6 +62,15 @@ import { DEFAULT_TOOLBAR_STATE, ToolbarState, buildToolbarState } from './toolba
   ],
   templateUrl: './toolbar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styles: [
+    `
+      :host {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+    `,
+  ],
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);

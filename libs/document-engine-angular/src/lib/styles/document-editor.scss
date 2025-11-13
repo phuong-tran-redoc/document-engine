@@ -2,18 +2,18 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  border: 1px solid var(--border, #e5e7eb);
   border-radius: 0.75rem;
-  background-color: var(--card, #fff);
+  // background-color: var(--card, #fff);
   color: var(--card-foreground, #000);
   box-shadow: none;
 
   &__content {
     padding: 1rem;
+    border: 1px solid var(--border, #e5e7eb);
   }
 }
 
 // Only show border-top if toolbar exists as sibling above
-document-engine-toolbar ~ .document-engine-document-editor__content {
-  border-top: 1px solid var(--border, #e5e7eb);
-}
+// document-engine-toolbar ~ .document-engine-document-editor__content {
+//   border-top: 1px solid var(--border, #e5e7eb);
+// }

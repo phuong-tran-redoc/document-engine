@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   DocumentEditorComponent,
@@ -8,6 +8,8 @@ import {
   TiptapEditorDirective,
   ToolbarService,
 } from '@phuong-tran-redoc/document-engine-angular';
+import { ToastService } from '@shared/ui/toast';
+import { DYNAMIC_FIELDS_CATEGORIES } from './misc/common-dynamic-field';
 
 /**
  * Full editor test with complete DocumentEngineConfig
@@ -17,7 +19,7 @@ import {
   selector: 'document-engine-editor-full',
   imports: [CommonModule, FormsModule, DocumentEditorComponent, TiptapEditorDirective],
   template: `
-    <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto">
+    <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto h-full">
       <h2 class="text-2xl font-semibold m-0 text-foreground">Full Features</h2>
       <p class="text-sm m-0 text-muted-foreground">Complete configuration with all features</p>
 
@@ -28,14 +30,16 @@ import {
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditorFullComponent {
+export class EditorFullComponent implements OnInit {
+  private readonly STORAGE_KEY = 'editor-full-value.html';
+
+  private readonly toast = inject(ToastService);
+  private readonly toolbarService = inject(ToolbarService);
+
   docEditor = viewChild<DocumentEditorComponent>('docEditor');
   editor?: Editor; // Store editor instance from editorReady event
 
-  private readonly destroyRef = inject(DestroyRef);
-  toolbarService = inject(ToolbarService);
-
-  value = `<p style="margin-left: nullpx">Hello world.</p><p style="margin-left: nullpx"><strong>This is the end.</strong></p><p style="margin-left: nullpx"><em>Hold your breath and count to ten.</em></p><hr><p style="margin-left: nullpx">List:</p><ol data-list-style-type="decimal"><li><p style="margin-left: nullpx">First Item</p></li><li><p style="margin-left: nullpx">Second Item</p></li><li><p style="margin-left: nullpx">Third Item</p></li></ol><p style="margin-left: nullpx">Another list:</p><ol data-list-style-type="decimal"><li><p style="margin-left: nullpx">One</p></li><li><p style="margin-left: nullpx">Two</p><ol data-list-style-type="decimal"><li><p style="margin-left: nullpx">Two one</p></li><li><p style="margin-left: nullpx">Two two</p></li></ol></li><li><p style="margin-left: nullpx">Three</p></li></ol><p style="margin-left: nullpx"></p>`;
+  value = `Default value`;
 
   // Full editor configuration - all features
   editorConfig: Partial<DocumentEngineConfig> = {
@@ -63,6 +67,7 @@ export class EditorFullComponent {
     clearContent: true,
     pageBreak: true,
     dynamicField: true,
+    dynamicFieldsCategories: DYNAMIC_FIELDS_CATEGORIES,
     image: true,
 
     list: true,
@@ -70,19 +75,26 @@ export class EditorFullComponent {
     showFooter: true,
     characterCount: true,
     showPrintButton: true,
-
     customToolbarButtons: [
       {
+        icon: 'archive',
+        label: 'Save',
         type: 'icon-button',
-        id: 'custom-test-button',
-        icon: 'edit',
-        label: 'Test Custom Button',
-        callback: () => {
-          console.log('Custom button clicked!');
-        },
+        id: 'save',
+        callback: () => this.persistValue(),
       },
     ],
   };
+
+  ngOnInit(): void {
+    // Initialize once
+    try {
+      const saved = localStorage.getItem(this.STORAGE_KEY);
+      if (saved) this.value = saved;
+    } catch {
+      this.toast.show({ type: 'warning', message: 'Failed to initialize value' });
+    }
+  }
 
   onEditorReady(editor: Editor): void {
     this.editor = editor;
@@ -93,6 +105,19 @@ export class EditorFullComponent {
       console.log('HTML:', this.editor.getHTML());
       console.log('JSON:', this.editor.getJSON());
       console.log('Text:', this.editor.getText());
+    }
+  }
+
+  persistValue(): void {
+    const html = this.editor?.getHTML();
+
+    if (!html) return;
+
+    try {
+      localStorage.setItem(this.STORAGE_KEY, html);
+      this.toast.show({ type: 'success', message: 'Value persisted' });
+    } catch {
+      this.toast.show({ type: 'warning', message: 'Failed to persist value' });
     }
   }
 }

@@ -1,5 +1,10 @@
 .document-engine-document-editor__toolbar {
   padding: 0.5rem 1rem;
+  background-color: var(--card);
+
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+  border: 1px solid var(--border);
 
   &-content {
     display: flex;
@@ -15,7 +20,7 @@
     justify-content: flex-start;
     flex: 1;
     gap: 0;
-    max-width: 90%;
+    // max-width: 90%;
   }
 
   &-right {

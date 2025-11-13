@@ -54,6 +54,20 @@ import { DocumentEngineSidebarService } from './sidebar.service';
         --mat-expansion-container-text-color: var(--sidebar-foreground);
         --mat-expansion-container-background-color: transparent;
       }
+
+      .document-engine-route-content {
+        flex: 1;
+        min-height: 0;
+        height: 100%;
+        overflow: auto;
+      }
+
+      // Apply height and overflow to all components rendered via router-outlet
+      // router-outlet renders components as siblings, not children
+      :host ::ng-deep .document-engine-route-content router-outlet ~ * {
+        height: 100%;
+        overflow: auto;
+      }
     `,
   ],
 })
