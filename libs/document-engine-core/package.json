@@ -1,6 +1,8 @@
 {
   "name": "@phuong-tran-redoc/document-engine-core",
   "version": "0.0.5",
+  "license": "UNLICENSED",
+  "private": true,
   "type": "commonjs",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",

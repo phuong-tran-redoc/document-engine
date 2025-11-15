@@ -1,101 +1,225 @@
-# DocumentEngine
+# Document Engine - Demo Application
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A live demonstration of a proprietary **Document Engine** system, built with a decoupled architecture (Core + Angular) to solve real-world enterprise document editing challenges.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+---
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## 📖 Context & Goal
 
-## Run tasks
+### The Problem
 
-To run the dev server for your app, use:
+In many enterprises, especially in Banking/Finance, generating critical documents (like a "Letter of Offer") often relies on third-party rich-text editors (like CKEditor). This dependency creates several significant problems:
 
-```sh
+- **Licensing Costs:** Significant recurring annual fees.
+- **Lack of Flexibility:** Being constrained by the vendor's feature set, making deep business-logic customizations difficult.
+- **Technology Risk:** Reliance on a "black-box" technology introduces strategic risk and complicates deep integrations.
+
+### The Solution
+
+This **Document Engine** was built to solve all of these issues:
+
+- **Business-Focused:** Built with core business features in mind, such as **"Dynamic Fields"** (`{{customer_name}}`, `{{loan_amount}}`).
+- **Technological Autonomy:** Develops a proprietary Intellectual Property (IP) asset, allowing full control over the product roadmap.
+- **Reduced TCO:** Completely eliminates third-party licensing costs.
+
+---
+
+## ✨ Features Showcase
+
+This demo showcases the following key capabilities:
+
+- **Rich Text Editing:** Standard formatting (Bold, Italic, Underline, etc.)
+- **Business Features:**
+  - **Dynamic Fields:** Insert placeholders like `{{customer_name}}` that can be replaced with real data
+  - **Restricted Editing:** Control which parts of the document can be edited
+  - **Read-only Mode:** View-only document presentation
+- **Table Support:** Create and edit tables within documents
+- **Template System:** Pre-built document templates for common use cases
+- **JSON-based Data Model:** Structured document representation (not raw HTML)
+
+---
+
+## 🏗️ Technical Architecture
+
+This demo is built on a **decoupled, multi-package architecture**:
+
+```
+┌─────────────────────────────────────┐
+│   Demo Application (Angular)       │
+│   This Repository                   │
+└──────────────┬──────────────────────┘
+               │
+               ├─── Uses
+               │
+┌──────────────▼──────────────────────┐
+│  document-engine-angular            │
+│  (Angular Wrapper Library)          │
+└──────────────┬──────────────────────┘
+               │
+               ├─── Wraps
+               │
+┌──────────────▼──────────────────────┐
+│  document-engine-core               │
+│  (Framework-Agnostic Core)          │
+│  Built on Tiptap + ProseMirror      │
+└─────────────────────────────────────┘
+```
+
+### Architecture Benefits
+
+- **Reusability:** The core logic can be reused across any future framework (React, Vue, etc.)
+- **Maintainability:** Clear separation of concerns between framework-specific code and business logic
+- **Testability:** Framework-agnostic core is easier to test independently
+- **Flexibility:** Easy to swap or upgrade the Angular wrapper without touching core functionality
+
+### Technology Stack
+
+- **Core Technology:** Built on [Tiptap](https://tiptap.dev/) (a headless editor framework), which is built on top of [ProseMirror](https://prosemirror.net/)
+- **Language:** 100% TypeScript
+- **Framework:** Angular (for the demo application and wrapper)
+- **Monorepo:** Nx workspace for efficient development
+- **Styling:** Tailwind CSS with custom design system
+
+> 💡 **Want to dive deeper into the core library API?** See the [document-engine-core README](libs/document-engine-core/README.md) for detailed documentation on extensions, commands, and architecture.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js:** v18 or higher
+- **Package Manager:** pnpm (recommended) or npm
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone [repository-url]
+cd document-engine
+```
+
+2. Install dependencies:
+
+```bash
+pnpm install
+# or
+npm install
+```
+
+### Running the Application
+
+To run the development server:
+
+```bash
+pnpm nx serve document-engine
+# or
 npx nx serve document-engine
 ```
 
+The application will be available at `http://localhost:4200`
+
+### Building for Production
+
 To create a production bundle:
 
-```sh
+```bash
+pnpm nx build document-engine
+# or
 npx nx build document-engine
 ```
 
-To see all available targets to run for a project, run:
+### Explore the Project Graph
 
-```sh
+To visualize the project structure and dependencies:
+
+```bash
+npx nx graph
+```
+
+---
+
+## 📦 Source Code Structure
+
+This repository contains:
+
+- **Demo Application:** `/apps/document-engine` - The Angular application you see in the demo
+- **Core Library:** `/libs/document-engine-core` - Framework-agnostic document engine _(Private package - contact authorized person for installation)_
+- **Angular Wrapper:** `/libs/document-engine-angular` - Angular-specific components and directives _(Private package - contact authorized person for installation)_
+- **Shared Libraries:** `/libs/shared` - Reusable UI components and utilities
+- **Feature Libraries:** `/libs/document-engine/features` - Feature modules for the demo app
+
+### Key Packages
+
+- **`document-engine-core`** - Core business logic and editor extensions
+  - 📖 [Read the Core Library README](libs/document-engine-core/README.md) for API documentation, usage examples, and extension guides
+- **`document-engine-angular`** - Angular wrapper providing `<document-editor>` component
+  - 📖 [Read the Angular Wrapper README](libs/document-engine-angular/README.md) for component API, Angular Forms integration, and usage examples
+
+---
+
+## 📚 Additional Resources
+
+### Package Documentation
+
+For detailed documentation on the individual packages:
+
+- 📘 **[document-engine-core README](libs/document-engine-core/README.md)** - Framework-agnostic core library documentation
+  - Learn about extensions, commands, and the core API
+  - See usage examples and architecture details
+- 📗 **[document-engine-angular README](libs/document-engine-angular/README.md)** - Angular wrapper library documentation
+  - Component API reference
+  - Angular Forms integration guide
+  - Styling and customization examples
+
+### Nx Workspace
+
+This project uses [Nx](https://nx.dev) for efficient monorepo management.
+
+**Useful Nx Commands:**
+
+```bash
+# See all available targets for a project
 npx nx show project document-engine
+
+# Run tests
+npx nx test document-engine
+
+# Lint the code
+npx nx lint document-engine
+
+# List all projects
+npx nx list
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### Learn More
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- [Nx Documentation](https://nx.dev)
+- [Angular Documentation](https://angular.dev)
+- [Tiptap Documentation](https://tiptap.dev)
+- [ProseMirror Documentation](https://prosemirror.net)
 
-## Add new projects
+---
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+## 👤 About the Author
 
-Use the plugin's generator to create new projects.
+Developed by **Duc Phuong (Jack)** - Senior Frontend Engineer with 4+ years of experience, specializing in Angular and TypeScript.
 
-To generate a new application, use:
+**Learn more about me:**
 
-```sh
-npx nx g @nx/angular:app demo
-```
+- 💼 [LinkedIn](https://www.linkedin.com/in/tdp1999/)
+- 🐙 [GitHub](https://github.com/tdp1999)
+- 📧 [Email](mailto:tdp99.business@gmail.com)
 
-To generate a new library, use:
+---
 
-```sh
-npx nx g @nx/angular:lib mylib
-```
+## 📄 License
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+**UNLICENSED** - Internal use only. This software is proprietary and confidential.
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Set up CI!
+## 🤝 Contributing
 
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+This is a demonstration project. If you have questions or suggestions, feel free to reach out via the contact information above.

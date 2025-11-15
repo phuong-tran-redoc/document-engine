@@ -135,7 +135,7 @@ export class DocumentEngineSidebarComponent {
       },
       {
         id: 'template',
-        name: 'Templates',
+        name: 'Template',
         url: ROUTE.TEMPLATE,
         icon: 'description',
         type: 'collapsible',
@@ -160,6 +160,7 @@ export class DocumentEngineSidebarComponent {
           },
         ],
       },
+      { id: 'contact', name: 'About', url: ROUTE.CONTACT, icon: 'person', type: 'normal' },
       // { id: 'playground', name: 'Playground', url: ROUTE.PLAYGROUND, icon: 'code', type: 'normal' },
     ];
   }

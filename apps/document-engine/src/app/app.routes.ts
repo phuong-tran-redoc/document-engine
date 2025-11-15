@@ -27,13 +27,18 @@ export const appRoutes: Route[] = [
       // },
       {
         path: ROUTE.EDITOR,
-        data: { breadcrumb: 'Editor' },
+        data: { breadcrumb: 'Demo' },
         loadChildren: () => import('@document-engine/demo').then((m) => m.EDITOR_ROUTES),
       },
       {
         path: ROUTE.TEMPLATE,
         data: { breadcrumb: 'Template' },
         loadChildren: () => import('@document-engine/template').then((m) => m.TEMPLATE_ROUTES),
+      },
+      {
+        path: ROUTE.CONTACT,
+        data: { breadcrumb: 'About' },
+        loadComponent: () => import('@document-engine/contact').then((m) => m.ContactPageComponent),
       },
       // {
       //   path: ROUTE.PLAYGROUND,
