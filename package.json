@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "start": "nx serve document-engine"
+    "start": "nx serve document-engine",
+    "build": "nx build document-engine"
   },
   "private": true,
   "dependencies": {
