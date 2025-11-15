@@ -10,6 +10,8 @@
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "baseHref": "/",
+        "deployUrl": "/",
         "outputPath": "dist/apps/document-engine",
         "browser": "apps/document-engine/src/main.ts",
         "polyfills": ["zone.js"],
