@@ -1,11 +1,10 @@
 {
   "name": "@phuong-tran-redoc/document-engine-angular",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "type": "commonjs",
   "license": "UNLICENSED",
   "author": "Duc Phuong (Jack) <tdp99.business@gmail.com>",
   "description": "Angular wrapper for @phuong-tran-redoc/document-engine-core",
-  "private": true,
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "keywords": [
