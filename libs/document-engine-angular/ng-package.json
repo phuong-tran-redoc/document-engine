@@ -4,5 +4,28 @@
   "lib": {
     "entryFile": "src/index.ts"
   },
-  "allowedNonPeerDependencies": ["@phuong-tran-redoc/document-engine-core"]
+  "allowedNonPeerDependencies": [
+    "@phuong-tran-redoc/document-engine-core",
+    "@floating-ui/dom",
+    "@tiptap/extension-bubble-menu",
+    "@tiptap/extension-floating-menu",
+    "@tiptap/extension-image",
+    "@tiptap/extension-subscript",
+    "@tiptap/extension-superscript",
+    "@tiptap/extension-text-align",
+    "@tiptap/extension-text-style",
+    "@tiptap/extensions",
+    "@tiptap/extension-blockquote",
+    "@tiptap/extension-bold",
+    "@tiptap/extension-code",
+    "@tiptap/extension-code-block",
+    "@tiptap/extension-document",
+    "@tiptap/extension-hard-break",
+    "@tiptap/extension-horizontal-rule",
+    "@tiptap/extension-italic",
+    "@tiptap/extension-link",
+    "@tiptap/extension-strike",
+    "@tiptap/extension-text",
+    "@tiptap/extension-underline"
+  ]
 }
