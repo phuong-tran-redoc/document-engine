@@ -1,8 +1,8 @@
 {
   "name": "@phuong-tran-redoc/document-engine-angular",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "type": "commonjs",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "Duc Phuong (Jack) <tdp99.business@gmail.com>",
   "description": "Angular wrapper for @phuong-tran-redoc/document-engine-core",
   "main": "./src/index.js",
@@ -20,7 +20,8 @@
     "url": "https://github.com/phuong-tran-redoc/document-engine"
   },
   "publishConfig": {
-    "directory": "../../dist/libs/document-engine-angular"
+    "directory": "../../dist/libs/document-engine-angular",
+    "access": "public"
   },
   "dependencies": {
     "tslib": "^2.3.0",

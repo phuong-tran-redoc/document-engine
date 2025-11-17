@@ -349,4 +349,6 @@ Developed by **Duc Phuong (Jack)**
 
 ## 📄 License
 
-**UNLICENSED** - Internal use only. This software is proprietary and confidential.
+**MIT License**
+
+See [LICENSE.md](./LICENSE.md) for full license text.
