@@ -120,6 +120,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Clear pnpm cache
+        run: pnpm nx clear-cache
+
       - name: Build document-engine-core
         if: needs.check-changes.outputs.core-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
         run: pnpm nx build document-engine-core
