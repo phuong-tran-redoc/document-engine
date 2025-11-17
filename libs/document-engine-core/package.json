@@ -14,8 +14,7 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
-    "access": "public",
-    "directory": "../../dist/libs/document-engine-core"
+    "access": "public"
   },
   "dependencies": {
     "tslib": "^2.3.0",
