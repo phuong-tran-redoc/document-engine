@@ -1,6 +1,6 @@
 {
   "name": "@phuong-tran-redoc/document-engine-core",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "license": "UNLICENSED",
   "author": "Duc Phuong (Jack) <tdp99.business@gmail.com>",
   "description": "Framework-agnostic core library for Document Engine",
