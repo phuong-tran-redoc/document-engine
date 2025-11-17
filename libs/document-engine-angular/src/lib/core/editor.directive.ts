@@ -46,7 +46,7 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
 
   get editor(): Editor {
     if (!this._editor) {
-      throw new Error('Editor must be set before use');
+      throw new Error('Editor must be set before use.');
     }
     return this._editor;
   }

@@ -9,7 +9,7 @@ export class Color {
     const normalizedColor = normalizeColor(value);
 
     if (!normalizedColor) {
-      throw new Error('Invalid or unsupported color');
+      throw new Error('Invalid or unsupported color.');
     }
 
     this.value = normalizedColor;
