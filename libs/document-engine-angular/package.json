@@ -20,10 +20,6 @@
     "type": "git",
     "url": "https://github.com/phuong-tran-redoc/document-engine"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "public"
-  },
   "dependencies": {
     "tslib": "^2.3.0",
     "@floating-ui/dom": "^1.7.4",
