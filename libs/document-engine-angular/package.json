@@ -1,6 +1,6 @@
 {
   "name": "@phuong-tran-redoc/document-engine-angular",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "type": "commonjs",
   "license": "UNLICENSED",
   "author": "Duc Phuong (Jack) <tdp99.business@gmail.com>",
@@ -18,6 +18,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/phuong-tran-redoc/document-engine"
+  },
+  "publishConfig": {
+    "directory": "../../dist/libs/document-engine-angular"
   },
   "dependencies": {
     "tslib": "^2.3.0",

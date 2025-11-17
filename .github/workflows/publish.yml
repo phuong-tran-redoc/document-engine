@@ -141,12 +141,12 @@ jobs:
 
       - name: Publish document-engine-core
         if: needs.check-changes.outputs.core-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
-        run: pnpm publish --no-git-checks
-        working-directory: dist/libs/document-engine-core
-        # run: pnpm publish --filter @phuong-tran-redoc/document-engine-core --no-git-checks
+        # run: pnpm publish --no-git-checks
+        # working-directory: dist/libs/document-engine-core
+        run: pnpm publish --filter @phuong-tran-redoc/document-engine-core --no-git-checks
 
       - name: Publish document-engine-angular
         if: needs.check-changes.outputs.angular-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
-        run: pnpm publish --no-git-checks
-        working-directory: dist/libs/document-engine-angular
-        # run: pnpm publish --filter @phuong-tran-redoc/document-engine-angular --no-git-checks
+        # run: pnpm publish --no-git-checks
+        # working-directory: dist/libs/document-engine-angular
+        run: pnpm publish --filter @phuong-tran-redoc/document-engine-angular --no-git-checks
