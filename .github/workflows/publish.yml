@@ -131,6 +131,14 @@ jobs:
         if: needs.check-changes.outputs.angular-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
         run: pnpm nx build document-engine-angular
 
+      - name: DEBUG - Check dist/package.json versions
+        run: |
+          echo "--- Checking CORE package version ---"
+          cat dist/libs/document-engine-core/package.json | grep "version"
+
+          echo "--- Checking ANGULAR package version ---"
+          cat dist/libs/document-engine-angular/package.json | grep "version"
+
       - name: Publish document-engine-core
         if: needs.check-changes.outputs.core-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
         # working-directory: dist/libs/document-engine-core
