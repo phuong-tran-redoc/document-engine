@@ -13,21 +13,20 @@
   "tags": ["scope:public"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/angular:package",
+      "outputs": ["{workspaceRoot}/dist/libs/document-engine-angular"],
       "options": {
-        "outputPath": "dist/libs/document-engine-angular",
-        "main": "libs/document-engine-angular/src/index.ts",
-        "tsConfig": "libs/document-engine-angular/tsconfig.lib.json",
-        "assets": [
-          "libs/document-engine-angular/*.md",
-          {
-            "glob": "**/*",
-            "input": "libs/document-engine-angular/src/lib/styles",
-            "output": "styles"
-          }
-        ]
-      }
+        "project": "libs/document-engine-angular/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/document-engine-angular/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/document-engine-angular/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
     },
     "nx-release-publish": {
       "options": {

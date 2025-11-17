@@ -13,13 +13,14 @@
   "tags": ["scope:public"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/js:swc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/document-engine-core",
         "main": "libs/document-engine-core/src/index.ts",
         "tsConfig": "libs/document-engine-core/tsconfig.lib.json",
-        "assets": ["libs/document-engine-core/*.md"]
+        "assets": ["libs/document-engine-core/*.md"],
+        "generatePackageJson": true
       }
     },
     "nx-release-publish": {
