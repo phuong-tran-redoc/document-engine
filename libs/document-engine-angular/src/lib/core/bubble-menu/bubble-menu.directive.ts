@@ -1,6 +1,5 @@
 import { Directive, ElementRef, Input, OnDestroy, OnInit, inject } from '@angular/core';
-import { Editor } from '@tiptap/core';
-import { BubbleMenuPlugin, BubbleMenuPluginProps } from '@tiptap/extension-bubble-menu';
+import { Editor, BubbleMenuPlugin, BubbleMenuPluginProps } from '@phuong-tran-redoc/document-engine-core';
 import { BubbleMenuProps } from './bubble-menu.type';
 
 @Directive({
@@ -39,7 +38,7 @@ export class TiptapBubbleMenuDirective implements OnInit, OnDestroy {
         options: this.getFloatingUiOptions(options ?? {}, bubbleMenuElement),
         shouldShow: this.shouldShow,
         getReferencedVirtualElement: this.mountTo,
-      }),
+      })
     );
   }
 
@@ -71,7 +70,7 @@ export class TiptapBubbleMenuDirective implements OnInit, OnDestroy {
 
   private getFloatingUiOptions(
     userOptions: Partial<Record<string, unknown>>,
-    element: HTMLElement,
+    element: HTMLElement
   ): BubbleMenuPluginProps['options'] {
     // Find arrow element if it exists
     // const arrowElement = element.querySelector('[data-arrow]') as HTMLElement | null;

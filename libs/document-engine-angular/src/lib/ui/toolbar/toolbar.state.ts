@@ -1,6 +1,6 @@
 import { RestrictedEditingOptions } from '@phuong-tran-redoc/document-engine-core';
 import { DocumentEngineConfig } from '../../core/kit/kit.type';
-import { Editor } from '@tiptap/core';
+import { Editor } from '@phuong-tran-redoc/document-engine-core';
 
 export interface ToolbarState {
   isReadOnly: boolean;

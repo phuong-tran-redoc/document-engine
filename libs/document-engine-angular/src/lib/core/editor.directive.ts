@@ -10,7 +10,7 @@ import {
   Input,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Content, Editor, type EditorEvents } from '@tiptap/core';
+import { Content, Editor, type EditorEvents } from '@phuong-tran-redoc/document-engine-core';
 
 @Directive({
   selector: 'tiptap[editor], [tiptap][editor], tiptap-editor[editor], [tiptapEditor][editor]',

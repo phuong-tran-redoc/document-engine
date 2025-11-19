@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import type { NodeViewProps } from '@tiptap/core';
+import type { NodeViewProps } from '@phuong-tran-redoc/document-engine-core';
 
 type Inputs =
   | 'editor'
