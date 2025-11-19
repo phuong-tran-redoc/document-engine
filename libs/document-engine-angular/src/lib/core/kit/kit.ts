@@ -1,34 +1,24 @@
-import {
-  Extension,
-  Blockquote,
-  Bold,
-  Code,
-  CodeBlock,
-  Document,
-  HardBreak,
-  HorizontalRule,
-  Image,
-  Italic,
-  Link,
-  LinkOptions,
-  BulletList,
-  ListItem,
-  ListKeymap,
-  Paragraph,
-  Strike,
-  Subscript,
-  Superscript,
-  Text,
-  TextAlign,
-  TextStyleKit,
-  Underline,
-  CharacterCount,
-  Dropcursor,
-  Gapcursor,
-  Placeholder,
-  TrailingNode,
-  UndoRedo,
-} from '@phuong-tran-redoc/document-engine-core';
+import { Extension } from '@tiptap/core';
+import Blockquote from '@tiptap/extension-blockquote';
+import Bold from '@tiptap/extension-bold';
+import Code from '@tiptap/extension-code';
+import CodeBlock from '@tiptap/extension-code-block';
+import { Document } from '@tiptap/extension-document';
+import { HardBreak } from '@tiptap/extension-hard-break';
+import { HorizontalRule } from '@tiptap/extension-horizontal-rule';
+import { Image } from '@tiptap/extension-image';
+import Italic from '@tiptap/extension-italic';
+import Link, { LinkOptions } from '@tiptap/extension-link';
+import { BulletList, ListItem, ListKeymap } from '@tiptap/extension-list';
+import { Paragraph } from '@tiptap/extension-paragraph';
+import Strike from '@tiptap/extension-strike';
+import { Subscript } from '@tiptap/extension-subscript';
+import { Superscript } from '@tiptap/extension-superscript';
+import { Text } from '@tiptap/extension-text';
+import { TextAlign } from '@tiptap/extension-text-align';
+import { TextStyleKit } from '@tiptap/extension-text-style';
+import Underline from '@tiptap/extension-underline';
+import { CharacterCount, Dropcursor, Gapcursor, Placeholder, TrailingNode, UndoRedo } from '@tiptap/extensions';
 import {
   ClearContent,
   CustomOrderedList,
