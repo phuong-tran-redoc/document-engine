@@ -1,5 +1,7 @@
 # document-engine-core
 
+[![npm core](https://img.shields.io/npm/v/@phuong-tran-redoc/document-engine-core?label=@phuong-tran-redoc/document-engine-core&color=red)](https://www.npmjs.com/package/@phuong-tran-redoc/document-engine-core) ![License](https://img.shields.io/npm/l/@phuong-tran-redoc/document-engine-core)
+
 A **framework-agnostic** document editor core library built on top of [Tiptap](https://tiptap.dev/) and [ProseMirror](https://prosemirror.net/). This library provides the foundation for building rich-text editors with custom business logic and extensions.
 
 ---

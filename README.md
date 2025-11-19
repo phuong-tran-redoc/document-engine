@@ -1,5 +1,7 @@
 # Document Engine - Demo Application
 
+[![npm core](https://img.shields.io/npm/v/@phuong-tran-redoc/document-engine-core?label=@phuong-tran-redoc/document-engine-core&color=red)](https://www.npmjs.com/package/@phuong-tran-redoc/document-engine-core) [![npm angular](https://img.shields.io/npm/v/@phuong-tran-redoc/document-engine-angular?label=@phuong-tran-redoc/document-engine-angular&color=red)](https://www.npmjs.com/package/@phuong-tran-redoc/document-engine-angular) ![License](https://img.shields.io/npm/l/@phuong-tran-redoc/document-engine-core)
+
 A live demonstration of a proprietary **Document Engine** system, built with a decoupled architecture (Core + Angular) to solve real-world enterprise document editing challenges.
 
 ---

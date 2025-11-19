@@ -1,5 +1,7 @@
 # document-engine-angular
 
+[![npm angular](https://img.shields.io/npm/v/@phuong-tran-redoc/document-engine-angular?label=@phuong-tran-redoc/document-engine-angular&color=red)](https://www.npmjs.com/package/@phuong-tran-redoc/document-engine-angular) ![License](https://img.shields.io/npm/l/@phuong-tran-redoc/document-engine-core)
+
 Angular wrapper for [`@phuong-tran-redoc/document-engine-core`](../document-engine-core). This library provides Angular components, directives, and services to integrate the Document Engine into Angular applications.
 
 ---
