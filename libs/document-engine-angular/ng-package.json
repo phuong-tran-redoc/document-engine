@@ -4,6 +4,7 @@
   "lib": {
     "entryFile": "src/index.ts"
   },
+  "assets": ["src/lib/styles"],
   "allowedNonPeerDependencies": [
     "@phuong-tran-redoc/document-engine-core",
     "@floating-ui/dom",
