@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
-  DocumentEditorComponent,
+  DocumentEditorModule,
   DocumentEngineConfig,
   Editor,
   TiptapEditorDirective,
@@ -21,7 +21,7 @@ interface Section {
  */
 @Component({
   selector: 'document-engine-template-b',
-  imports: [CommonModule, FormsModule, DocumentEditorComponent, TiptapEditorDirective],
+  imports: [CommonModule, FormsModule, DocumentEditorModule, TiptapEditorDirective],
   template: `
     <div class="flex flex-col gap-6 p-4 max-w-7xl mx-auto h-full mb-4">
       <div>

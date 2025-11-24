@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   DocumentEditorComponent,
+  DocumentEditorModule,
   DocumentEngineConfig,
   Editor,
   TiptapEditorDirective,
@@ -14,7 +15,7 @@ import {
  */
 @Component({
   selector: 'document-engine-editor-table',
-  imports: [CommonModule, FormsModule, DocumentEditorComponent, TiptapEditorDirective],
+  imports: [CommonModule, FormsModule, DocumentEditorModule, TiptapEditorDirective],
   template: `
     <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto h-full">
       <h2 class="text-2xl font-semibold m-0 text-foreground">Table Feature</h2>
