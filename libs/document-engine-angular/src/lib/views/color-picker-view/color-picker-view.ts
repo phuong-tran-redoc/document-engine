@@ -27,7 +27,7 @@ import { ColorPickerComponent } from '../../ui/color-picker';
         [usedColors]="usedColors"
         (colorSelected)="applyColor($event)"
         (colorRemoved)="removeColor()"
-      />
+      ></document-engine-color-picker>
 
       <!-- Actions -->
       <div class="color-picker-view__actions">

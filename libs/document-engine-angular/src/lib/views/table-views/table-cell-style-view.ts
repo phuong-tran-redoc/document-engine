@@ -115,7 +115,7 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
                   [activeColor]="borderColorObj"
                   (colorSelected)="onBorderColorSelected($event)"
                   (colorRemoved)="onBorderColorRemoved()"
-                />
+                ></document-engine-color-picker>
               </div>
             </div>
           </div>
@@ -166,7 +166,7 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
                 [activeColor]="backgroundColorObj"
                 (colorSelected)="onBackgroundColorSelected($event)"
                 (colorRemoved)="onBackgroundColorRemoved()"
-              />
+              ></document-engine-color-picker>
             </div>
           </div>
         </div>

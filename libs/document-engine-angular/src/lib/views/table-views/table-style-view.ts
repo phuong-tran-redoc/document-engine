@@ -106,7 +106,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
                   [activeColor]="borderColorObj"
                   (colorSelected)="onBorderColorSelected($event)"
                   (colorRemoved)="onBorderColorRemoved()"
-                />
+                ></document-engine-color-picker>
               </div>
             </div>
           </div>
@@ -157,7 +157,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
                 [activeColor]="tableBgObj"
                 (colorSelected)="onTableBgSelected($event)"
                 (colorRemoved)="onTableBgRemoved()"
-              />
+              ></document-engine-color-picker>
             </div>
           </div>
         </div>

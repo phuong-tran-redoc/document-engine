@@ -15,7 +15,11 @@ import {
 } from '@angular/core';
 import { getClosestDomElement } from '@phuong-tran-redoc/document-engine-core';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuViewConfig, BubbleMenuViewContent, EditorBubbleMenuConfig } from '../../core/bubble-menu/bubble-menu.type';
+import {
+  BubbleMenuViewConfig,
+  BubbleMenuViewContent,
+  EditorBubbleMenuConfig,
+} from '../../core/bubble-menu/bubble-menu.type';
 import { FocusTrapService } from '../../core/focus-trap.service';
 import { selectionChangeHandler, shouldShowFnFactory } from '../../core/bubble-menu/bubble-menu.util';
 import { TiptapBubbleMenuDirective } from '../../core/bubble-menu/bubble-menu.directive';
@@ -35,7 +39,7 @@ import { TiptapBubbleMenuDirective } from '../../core/bubble-menu/bubble-menu.di
       [shouldShow]="shouldShowFn"
     >
       <!-- View component will be dynamically inserted here -->
-      <ng-container #viewContainer />
+      <ng-container #viewContainer></ng-container>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
