@@ -1,7 +1,7 @@
 {
   "name": "@phuong-tran-redoc/document-engine-core",
-  "version": "0.0.17",
-  "type": "commonjs",
+  "version": "0.0.18",
+  "type": "module",
   "license": "MIT",
   "author": "Duc Phuong (Jack) <tdp99.business@gmail.com>",
   "description": "Framework-agnostic core library for Document Engine",
