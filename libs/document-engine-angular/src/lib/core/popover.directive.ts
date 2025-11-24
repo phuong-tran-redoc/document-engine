@@ -36,12 +36,12 @@ export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
   /**
    * The trigger element reference (ElementRef or HTMLElement)
    */
-  @Input({ required: true }) popover!: ElementRef<HTMLElement> | HTMLElement;
+  @Input() popover!: ElementRef<HTMLElement> | HTMLElement;
 
   /**
    * Whether the popover is open
    */
-  @Input({ required: true }) isOpen = false;
+  @Input() isOpen = false;
 
   /**
    * Placement of the popover relative to trigger
