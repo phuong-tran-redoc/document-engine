@@ -106,9 +106,9 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
 
   ngAfterViewInit(): void {
     const bubbleElement = this.bubbleElement?.nativeElement;
-    if (bubbleElement) {
-      this.focusTrap.attach(bubbleElement);
-    }
+    // if (bubbleElement) {
+    //   this.focusTrap.attach(bubbleElement);
+    // }
   }
 
   ngOnDestroy(): void {
@@ -238,8 +238,13 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
     //   this.eventManager.detach(this.config.pluginKey);
     // }
 
+    // Reset force open state
+    this.forceOpen.value = false;
+
     this.destroyCurrentView();
     this.currentAttributes = {};
+
+    this.cdr.markForCheck();
   }
 
   /**
@@ -306,7 +311,7 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
       requestAnimationFrame(() => {
         bubbleElement.setAttribute('data-visible', 'true');
         // Re-setup focus trap after view is created (focusable elements may have changed)
-        this.focusTrap.reattach(bubbleElement, true);
+        // this.focusTrap.reattach(bubbleElement, true);
       });
     }
   }
