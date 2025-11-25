@@ -14,7 +14,11 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuViewConfig, BubbleMenuViewContent, ToolbarBubbleMenuConfig } from '../../core/bubble-menu/bubble-menu.type';
+import {
+  BubbleMenuViewConfig,
+  BubbleMenuViewContent,
+  ToolbarBubbleMenuConfig,
+} from '../../core/bubble-menu/bubble-menu.type';
 import { EventManager } from '../../core/event-manager';
 import { FocusTrapService } from '../../core/focus-trap.service';
 
@@ -30,12 +34,11 @@ import { FocusTrapService } from '../../core/focus-trap.service';
   template: `
     <div
       #bubbleElement
-      class="toolbar-bubble-menu rounded border bg-card text-card-foreground border-border shadow-elevation-2 absolute z-50"
+      class="toolbar-bubble-menu rounded border bg-card text-card-foreground border-border shadow-elevation-2 z-50"
       [class.hidden]="!isVisible"
       [style.width]="config.width || 'auto'"
       [style.maxWidth]="config.maxWidth || '320px'"
     >
-      <!-- View component will be dynamically inserted here -->
       <ng-container #viewContainer></ng-container>
     </div>
   `,

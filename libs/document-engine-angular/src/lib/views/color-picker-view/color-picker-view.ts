@@ -18,7 +18,7 @@ import { ColorPickerComponent } from '../../ui/color-picker';
   template: `
     <div class="color-picker-view">
       <!-- Title -->
-      <div class="color-picker-view__title">{{ colorType === 'text' ? 'Text Color' : 'Background Color' }}noôi</div>
+      <div class="color-picker-view__title">{{ colorType === 'text' ? 'Text Color' : 'Background Color' }}</div>
 
       <!-- Color Picker Component -->
       <document-engine-color-picker
