@@ -18,21 +18,29 @@ import { IconRegistryService } from './icon-registry.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class IconComponent implements OnChanges {
-  @Input() name = '';
+export class IconComponent {
+  @Input()
+  set name(value: string) {
+    const svgContent = this.iconRegistry.getIconString(value);
+    const hostElement = this.elementRef.nativeElement;
 
-  private cdr = inject(ChangeDetectorRef);
+    // Set innerHTML to render SVG
+    hostElement.innerHTML = svgContent;
+    // this.cdr.markForCheck();
+  }
+
+  // private cdr = inject(ChangeDetectorRef);
   private elementRef = inject(ElementRef);
   private iconRegistry = inject(IconRegistryService);
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['name']) {
-      const svgContent = this.iconRegistry.getIconString(this.name);
-      const hostElement = this.elementRef.nativeElement;
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   if (changes['name']) {
+  //     const svgContent = this.iconRegistry.getIconString(this.name);
+  //     const hostElement = this.elementRef.nativeElement;
 
-      // Set innerHTML to render SVG
-      hostElement.innerHTML = svgContent;
-      this.cdr.markForCheck();
-    }
-  }
+  //     // Set innerHTML to render SVG
+  //     hostElement.innerHTML = svgContent;
+  //     this.cdr.markForCheck();
+  //   }
+  // }
 }

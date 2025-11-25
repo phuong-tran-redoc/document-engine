@@ -105,7 +105,7 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngAfterViewInit(): void {
-    const bubbleElement = this.bubbleElement?.nativeElement;
+    // const bubbleElement = this.bubbleElement?.nativeElement;
     // if (bubbleElement) {
     //   this.focusTrap.attach(bubbleElement);
     // }
@@ -303,6 +303,10 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
 
     // Activate new view
     this.activateView(this.currentViewRef);
+
+    // Trigger change detection for the child component to render immediately
+    // This is especially important for Angular v14 compatibility
+    this.cdr.markForCheck();
 
     // Mark bubble as visible for transition handling
     const bubbleElement = this.bubbleElement?.nativeElement;
