@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
+  NgZone,
   OnDestroy,
   OnInit,
   Output,
@@ -74,6 +75,7 @@ import { DEFAULT_TOOLBAR_STATE, ToolbarState, buildToolbarState } from './toolba
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly ngZone = inject(NgZone);
   private readonly toolbarService = inject(ToolbarService);
 
   @Input() editor!: Editor;
@@ -120,35 +122,37 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   });
 
   private updateToolbarState = (): void => {
-    if (!this.editor) return;
+    this.ngZone.run(() => {
+      if (!this.editor) return;
 
-    // Update toolbar state (can* properties)
-    this.toolbarState = buildToolbarState(this.editor, this.config);
+      // Update toolbar state (can* properties)
+      this.toolbarState = buildToolbarState(this.editor, this.config);
 
-    // Update active font size and line height
-    const attrs = this.editor.getAttributes('textStyle');
-    const size = (attrs?.['fontSize'] as string | undefined) || null;
-    this.activeFontSize = size;
+      // Update active font size and line height
+      const attrs = this.editor.getAttributes('textStyle');
+      const size = (attrs?.['fontSize'] as string | undefined) || null;
+      this.activeFontSize = size;
 
-    const lineHeight = (attrs?.['lineHeight'] as string | undefined) || null;
-    this.activeLineHeight = lineHeight;
+      const lineHeight = (attrs?.['lineHeight'] as string | undefined) || null;
+      this.activeLineHeight = lineHeight;
 
-    // Update active heading
-    let headingLevel: number | null = null;
-    for (const option of this.headingOptions) {
-      if (this.editor.isActive('heading', { level: option.value })) {
-        headingLevel = option.value;
-        break;
+      // Update active heading
+      let headingLevel: number | null = null;
+      for (const option of this.headingOptions) {
+        if (this.editor.isActive('heading', { level: option.value })) {
+          headingLevel = option.value;
+          break;
+        }
       }
-    }
-    this.activeHeading = headingLevel;
+      this.activeHeading = headingLevel;
 
-    // Update active text align
-    const alignOption = this.textAlignOptions.find((option) => this.editor.isActive({ textAlign: option.value }));
-    this.activeTextAlign = alignOption?.value || null;
-    this.activeTextAlignIcon = alignOption?.icon || 'format_align_left';
+      // Update active text align
+      const alignOption = this.textAlignOptions.find((option) => this.editor.isActive({ textAlign: option.value }));
+      this.activeTextAlign = alignOption?.value || null;
+      this.activeTextAlignIcon = alignOption?.icon || 'format_align_left';
 
-    this.cdr.markForCheck();
+      this.cdr.markForCheck();
+    });
   };
 
   ngOnInit(): void {

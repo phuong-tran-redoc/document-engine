@@ -8,6 +8,7 @@ import {
   ElementRef,
   inject,
   Input,
+  NgZone,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -52,6 +53,7 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
   @ViewChild('bubbleElement') private bubbleElement!: ElementRef<HTMLElement>;
 
   private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
   private document = inject(DOCUMENT);
   private focusTrap = inject(FocusTrapService);
   private currentViewRef: ComponentRef<BubbleMenuViewContent> | null = null;
@@ -95,8 +97,8 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
     this.cleanupSelection = selectionChangeHandler({
       editor,
       target: config.target,
-      onActive: (attrs) => this.handleActivate(attrs),
-      onInactive: () => this.handleDeactivate(),
+      onActive: (attrs) => this.ngZone.run(() => this.handleActivate(attrs)),
+      onInactive: () => this.ngZone.run(() => this.handleDeactivate()),
     });
 
     this.addDocumentClickHandler();
