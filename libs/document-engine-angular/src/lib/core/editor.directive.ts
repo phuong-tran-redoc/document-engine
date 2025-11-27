@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Content, Editor, type EditorEvents } from '@tiptap/core';
+import { EDITOR_HTML_PREPROCESSOR } from './editor-tokens';
 
 @Directive({
   selector: 'tiptap[editor], [tiptap][editor], tiptap-editor[editor], [tiptapEditor][editor]',
@@ -30,6 +31,7 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
   protected elRef = inject<ElementRef<HTMLElement>>(ElementRef);
   protected renderer = inject(Renderer2);
   protected changeDetectorRef = inject(ChangeDetectorRef);
+  protected htmlPreprocessor = inject(EDITOR_HTML_PREPROCESSOR, { optional: true });
 
   private _editor?: Editor;
   private initialEditableState?: boolean;
@@ -63,7 +65,12 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
   // Writes a new value to the element.
   // This methods is called when programmatic changes from model to view are requested.
   writeValue(value: Content): void {
-    this.editor.chain().setContent(value, { emitUpdate: false }).run();
+    // Apply preprocessor if value is a string (HTML) and preprocessor is available
+    let processedValue = value;
+    if (typeof value === 'string' && this.htmlPreprocessor) {
+      processedValue = this.htmlPreprocessor(value);
+    }
+    this.editor.chain().setContent(processedValue, { emitUpdate: false }).run();
   }
 
   // Registers a callback function that is called when the control's value changes in the UI.
@@ -126,7 +133,9 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
 
     // update content to the editor
     if (innerHTML) {
-      editor.chain().setContent(innerHTML, { emitUpdate: false }).run();
+      // Apply preprocessor to initial content if available
+      const processedContent = this.htmlPreprocessor ? this.htmlPreprocessor(innerHTML) : innerHTML;
+      editor.chain().setContent(processedContent, { emitUpdate: false }).run();
     }
 
     // register blur handler to update `touched` property

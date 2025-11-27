@@ -11,3 +11,4 @@ export * from './popover.directive';
 
 export * from './kit';
 export * from './capability.model';
+export * from './editor-tokens';

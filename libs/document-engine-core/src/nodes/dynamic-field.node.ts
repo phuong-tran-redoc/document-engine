@@ -102,7 +102,41 @@ export const DynamicField = Node.create<DynamicFieldOptions>({
    * Parse HTML to recognize dynamic field spans when loading/pasting content
    */
   parseHTML() {
-    return [{ tag: 'span[data-field-id]' }];
+    return [
+      // ----------------------------------------------------------
+      // RULE 1: Standard Tiptap Format (Ưu tiên cao nhất)
+      // ----------------------------------------------------------
+      { tag: 'span[data-field-id]' },
+
+      // ----------------------------------------------------------
+      // RULE 2: Legacy CKEditor Format (Migration Layer)
+      // ----------------------------------------------------------
+      {
+        // Selector CSS để nhận diện node của CKEditor
+        tag: 'span.red-dynamic-field',
+
+        // Hàm này chạy khi Tiptap tìm thấy tag trên
+        getAttrs: (node) => {
+          if (typeof node === 'string') return false;
+          const element = node as HTMLElement;
+
+          // 1. Trích xuất ID từ nội dung text: "{{ref}}" -> "ref"
+          const rawText = element.innerText || element.textContent || '';
+          // Regex để xóa dấu {{ và }} và khoảng trắng thừa
+          const id = rawText.replace(/{{|}}/g, '').trim();
+
+          // 2. Trích xuất Label từ attribute cũ
+          // CKEditor dùng 'dynamicfieldname' hoặc 'name'
+          const label = element.getAttribute('dynamicfieldname') || element.getAttribute('name') || id; // Fallback nếu không tìm thấy label
+
+          // Trả về object khớp với cấu trúc 'addAttributes' ở trên
+          return {
+            fieldId: id,
+            label: label,
+          };
+        },
+      },
+    ];
   },
 
   /**
