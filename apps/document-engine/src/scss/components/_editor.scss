@@ -145,7 +145,7 @@ tiptap-editor {
     position: static;
   }
 
-  .widget:hover .type-around {
+  .widget:hover > .type-around {
     opacity: 1;
     pointer-events: auto;
   }
@@ -245,9 +245,9 @@ tiptap-editor {
   }
 
   /* Hiển thị handle khi hover vào table */
-  .ProseMirror table:hover .pm-col-resizer {
-    opacity: 0.3;
-  }
+  // .ProseMirror table:hover .pm-col-resizer {
+  //   opacity: 0.3;
+  // }
 
   /* Làm handle rõ hơn khi hover vào chính nó */
   .pm-col-resizer:hover {

@@ -126,8 +126,12 @@ export const DynamicField = Node.create<DynamicFieldOptions>({
           const id = rawText.replace(/{{|}}/g, '').trim();
 
           // 2. Trích xuất Label từ attribute cũ
-          // CKEditor dùng 'dynamicfieldname' hoặc 'name'
-          const label = element.getAttribute('dynamicfieldname') || element.getAttribute('name') || id; // Fallback nếu không tìm thấy label
+          // CKEditor dùng 'value', 'dynamicfieldname' hoặc 'name'
+          const label =
+            element.getAttribute('value') ||
+            element.getAttribute('dynamicfieldname') ||
+            element.getAttribute('name') ||
+            id; // Fallback nếu không tìm thấy label
 
           // Trả về object khớp với cấu trúc 'addAttributes' ở trên
           return {
