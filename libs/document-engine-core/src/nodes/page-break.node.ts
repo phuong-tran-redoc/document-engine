@@ -14,8 +14,22 @@ export const PageBreak = Node.create({
   atom: true,
   selectable: true,
 
+  // addNodeView() {
+  //   return createPageBreakNodeView;
+  // },
+
   parseHTML() {
-    return [{ tag: 'div[data-page-break]' }];
+    return [
+      // ----------------------------------------------------------
+      // RULE 1: Standard Tiptap Format (Ưu tiên cao nhất)
+      // ----------------------------------------------------------
+      { tag: 'div[data-page-break]' },
+
+      // ----------------------------------------------------------
+      // RULE 2: CKEditor Format (Ưu tiên thấp nhất)
+      // ----------------------------------------------------------
+      { tag: 'div.page-break' },
+    ];
   },
 
   renderHTML({ HTMLAttributes }) {
@@ -24,7 +38,7 @@ export const PageBreak = Node.create({
       mergeAttributes(HTMLAttributes, {
         'data-page-break': 'true',
         class: 'document-engine-page-break',
-        style: 'break-before: page;',
+        style: 'break-before: page; page-break-before: always;',
       }),
       ['span', { class: 'document-engine-page-break-label' }, 'Page break'],
     ];

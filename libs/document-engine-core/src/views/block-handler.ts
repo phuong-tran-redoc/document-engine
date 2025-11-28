@@ -383,3 +383,29 @@ export class TableNodeView extends HandleNodeView {
 export const createTableNodeView = (props: NodeViewRendererProps) => {
   return new TableNodeView(props.node, props.view, props.getPos as () => number | undefined);
 };
+
+export class PageBreakNodeView extends HandleNodeView {
+  createContentElement(): HTMLElement {
+    // Create page break container
+    const pageBreakDiv = document.createElement('div');
+    pageBreakDiv.className = 'document-engine-page-break';
+    pageBreakDiv.setAttribute('data-page-break', 'true');
+    pageBreakDiv.style.cssText = 'break-before: page;';
+    pageBreakDiv.contentEditable = 'false';
+
+    // Create label
+    const label = document.createElement('span');
+    label.className = 'document-engine-page-break-label';
+    label.textContent = 'Page break';
+    label.contentEditable = 'false';
+
+    pageBreakDiv.appendChild(label);
+
+    return pageBreakDiv;
+  }
+}
+
+// Factory function for PageBreak NodeView
+export const createPageBreakNodeView = (props: NodeViewRendererProps) => {
+  return new PageBreakNodeView(props.node, props.view, props.getPos as () => number | undefined);
+};

@@ -150,6 +150,13 @@ export const StyledTable = Table.extend({
 
   // draggable: true,
 
+  addOptions() {
+    return {
+      ...this.parent?.(),
+      enableNodeView: true,
+    };
+  },
+
   addAttributes() {
     const parent = this.parent?.() ?? {};
     return {
@@ -512,12 +519,17 @@ export const StyledTable = Table.extend({
   },
 
   addNodeView() {
+    const options: TableOptions & { enableNodeView?: boolean } = this.options;
+    if (options.enableNodeView === false) {
+      return undefined;
+    }
+
     // Only use custom NodeView (with handle) when editor is editable
     return (props: NodeViewRendererProps) => {
       // Check if editor is editable
       if (!props.editor.isEditable) {
         // Return undefined to use default table rendering (no widget wrapper)
-        return null;
+        return undefined;
       }
 
       // Editor is editable → use custom NodeView with handle

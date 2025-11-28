@@ -1,3 +1,4 @@
+import { TableOptions } from '@tiptap/extension-table';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -42,7 +43,7 @@ export class EditorTableComponent {
     underline: true,
     list: true,
     textStyleKit: true,
-    tables: { table: { resizable: true } },
+    tables: { table: { resizable: true, enableNodeView: false } as unknown as TableOptions },
 
     showFooter: true,
     characterCount: true,
