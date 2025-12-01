@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, viewChild } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, inject, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   DocumentEditorComponent,
@@ -9,7 +8,7 @@ import {
   Editor,
   TiptapEditorDirective,
 } from '@phuong-tran-redoc/document-engine-angular';
-import { BP1, BP_Multi, BP_Single } from './misc/biz-prop';
+import { BP_Multi } from './misc/biz-prop';
 
 /**
  * Editor Form demo - demonstrates usage with Angular Reactive Forms
@@ -134,7 +133,6 @@ import { BP1, BP_Multi, BP_Single } from './misc/biz-prop';
 })
 export class EditorFormComponent {
   private fb = inject(FormBuilder);
-  private destroyRef = inject(DestroyRef);
   docEditor = viewChild<DocumentEditorComponent>('docEditor');
   editor?: Editor;
 
@@ -169,15 +167,6 @@ export class EditorFormComponent {
 
     list: true,
   };
-
-  constructor() {
-    console.log('Finish form constructor');
-    // Subscribe to form value changes to display in template
-    this.editorForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
-      // Trigger change detection for formValueJson
-      console.log('Form value changed:', value);
-    });
-  }
 
   get formValueJson(): string {
     return JSON.stringify(this.editorForm.value, null, 2);
