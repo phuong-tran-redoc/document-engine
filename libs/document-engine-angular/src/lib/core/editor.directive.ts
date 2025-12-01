@@ -38,6 +38,7 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
 
   @Input()
   set editor(editor: Editor) {
+    console.log('set editor', editor);
     this._editor = editor;
     // Store initial editable state immediately when editor is set
     // This ensures we capture the state before any Forms API calls
@@ -70,6 +71,7 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
     if (typeof value === 'string' && this.htmlPreprocessor) {
       processedValue = this.htmlPreprocessor(value);
     }
+    console.log('writeValue', value);
     this.editor.chain().setContent(processedValue, { emitUpdate: false }).run();
   }
 
@@ -101,9 +103,9 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
   }
 
   protected handleChange = ({ editor, transaction }: EditorEvents['transaction']): void => {
-    if (!transaction.docChanged) {
-      return;
-    }
+    console.log('handleChange', transaction.docChanged);
+
+    if (!transaction.docChanged) return;
 
     // Needed for ChangeDetectionStrategy.OnPush to get notified about changes
     this.changeDetectorRef.markForCheck();
@@ -121,6 +123,7 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
 
     // take the inner contents and clear the block
     const { innerHTML } = this.elRef.nativeElement;
+    console.log('inner html', innerHTML);
     this.elRef.nativeElement.innerHTML = '';
 
     // insert the editor in the dom
@@ -142,6 +145,8 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
     editor.on('blur', () => {
       this.onTouched();
     });
+
+    console.log('Update change!');
 
     // register update handler to listen to changes on update
     editor.on('update', this.handleChange);

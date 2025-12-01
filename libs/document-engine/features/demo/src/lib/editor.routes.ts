@@ -12,6 +12,16 @@ export const EDITOR_ROUTES: Route[] = [
     loadComponent: () => import('./editor-basic').then((m) => m.EditorBasicComponent),
   },
   {
+    path: 'form',
+    data: { breadcrumb: 'Form Integration' },
+    loadComponent: () => import('./editor-form').then((m) => m.EditorFormComponent),
+  },
+  {
+    path: 'template-editor',
+    data: { breadcrumb: 'Template Editor' },
+    loadComponent: () => import('./editor-template').then((m) => m.EditorTemplateComponent),
+  },
+  {
     path: 'restricted',
     data: { breadcrumb: 'Restricted Editing' },
     loadComponent: () => import('./editor-restricted').then((m) => m.EditorRestrictedComponent),

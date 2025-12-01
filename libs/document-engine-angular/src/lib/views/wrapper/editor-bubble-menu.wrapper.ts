@@ -62,6 +62,7 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
   private cleanupSelection: (() => void) | null = null;
   private shouldShowImpl: (() => boolean) | null = null;
 
+  private viewReady = false;
   private keyToSignal = new Map<string, { value: boolean }>();
   private forceOpen: { value: boolean } = { value: false };
   private documentClickHandler!: (event: MouseEvent) => void;
@@ -105,6 +106,7 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngAfterViewInit(): void {
+    this.viewReady = true;
     // const bubbleElement = this.bubbleElement?.nativeElement;
     // if (bubbleElement) {
     //   this.focusTrap.attach(bubbleElement);
@@ -195,6 +197,10 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
    * Handle when target mark/node becomes active
    */
   private handleActivate(attrs: Record<string, unknown>): void {
+    if (!this.viewReady) {
+      return;
+    }
+
     this.currentAttributes = attrs;
 
     // Select which view to show
