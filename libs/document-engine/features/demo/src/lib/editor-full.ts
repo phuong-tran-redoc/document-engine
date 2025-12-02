@@ -6,7 +6,6 @@ import {
   DocumentEditorModule,
   DocumentEngineConfig,
   Editor,
-  TiptapEditorDirective,
   ToolbarService,
 } from '@phuong-tran-redoc/document-engine-angular';
 import { ToastService } from '@shared/ui/toast';
@@ -18,7 +17,7 @@ import { DYNAMIC_FIELDS_CATEGORIES } from './misc/common-dynamic-field';
  */
 @Component({
   selector: 'document-engine-editor-full',
-  imports: [CommonModule, FormsModule, DocumentEditorModule, TiptapEditorDirective],
+  imports: [CommonModule, FormsModule, DocumentEditorModule],
   template: `
     <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto h-full">
       <h2 class="text-2xl font-semibold m-0 text-foreground">Full Features</h2>

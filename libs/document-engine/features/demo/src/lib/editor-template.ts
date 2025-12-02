@@ -8,11 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import {
-  DocumentEditorModule,
-  DocumentEngineConfig,
-  TiptapEditorDirective,
-} from '@phuong-tran-redoc/document-engine-angular';
+import { DocumentEditorModule, DocumentEngineConfig } from '@phuong-tran-redoc/document-engine-angular';
 import { Subject } from 'rxjs';
 import { BP1, BP_2, BP_Multi, BP_Single } from './misc/biz-prop';
 
@@ -34,7 +30,6 @@ import { BP1, BP_2, BP_Multi, BP_Single } from './misc/biz-prop';
     MatCardModule,
     MatInputModule,
     DocumentEditorModule,
-    TiptapEditorDirective,
   ],
   template: `
     <div class="template-editor-container">
@@ -321,6 +316,7 @@ export class EditorTemplateComponent {
     tables: true,
     pageBreak: true,
     dynamicField: true,
+    heading: true,
   };
 
   // Form Groups

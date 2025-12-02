@@ -6,7 +6,6 @@ import {
   DocumentEditorModule,
   DocumentEngineConfig,
   Editor,
-  TiptapEditorDirective,
 } from '@phuong-tran-redoc/document-engine-angular';
 
 /**
@@ -15,7 +14,7 @@ import {
  */
 @Component({
   selector: 'document-engine-editor-restricted',
-  imports: [CommonModule, FormsModule, DocumentEditorModule, TiptapEditorDirective],
+  imports: [CommonModule, FormsModule, DocumentEditorModule],
   template: `
     <div class="flex gap-4 p-4 h-screen max-w-7xl mx-auto">
       <!-- Editor (Standard) -->

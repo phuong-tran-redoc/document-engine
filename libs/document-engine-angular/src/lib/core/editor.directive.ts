@@ -107,7 +107,9 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
     this.changeDetectorRef.markForCheck();
 
     if (this.outputFormat === 'html') {
-      this.onChange(editor.getHTML());
+      const htmlContent = editor.getHTML();
+      const finalContent = `<div class="notum-editor">${htmlContent}</div>`;
+      this.onChange(finalContent);
       return;
     }
 

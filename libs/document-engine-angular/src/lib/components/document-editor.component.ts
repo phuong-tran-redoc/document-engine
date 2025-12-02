@@ -110,6 +110,7 @@ export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
       this.editor = new Editor({
         editable: this._mergedConfig.editable,
         extensions: [DocumentEngineKit.configure(this._mergedConfig)],
+        editorProps: { attributes: { class: 'notum-editor' } },
       });
 
       // Emit editorReady event back inside Angular zone

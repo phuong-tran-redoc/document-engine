@@ -131,13 +131,13 @@ export class DocumentEngineSidebarComponent {
           { id: 'editor-readonly', name: 'Readonly', url: `${ROUTE.EDITOR}/readonly`, type: 'normal' },
           { id: 'editor-table', name: 'Table', url: `${ROUTE.EDITOR}/table`, type: 'normal' },
           { id: 'editor-form', name: 'Form Integration', url: `${ROUTE.EDITOR}/form`, type: 'normal' },
-          { id: 'editor-full', name: 'Full Features', url: `${ROUTE.EDITOR}/full`, type: 'normal' },
           {
             id: 'template-editor',
             name: 'Template Editor',
             url: `${ROUTE.EDITOR}/template-editor`,
             type: 'normal',
           },
+          { id: 'editor-full', name: 'Full Features', url: `${ROUTE.EDITOR}/full`, type: 'normal' },
         ],
       },
       {

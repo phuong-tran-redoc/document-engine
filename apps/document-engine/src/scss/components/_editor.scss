@@ -66,6 +66,14 @@ tiptap-editor {
       opacity: 1;
     }
 
+    &:first-child {
+      margin-top: 0;
+    }
+
+    .ck p:first-child {
+      margin-top: 0;
+    }
+
     // // Dragging state
     // &.widget-dragging {
     //   opacity: 0.4;
@@ -206,7 +214,7 @@ tiptap-editor {
 
     th,
     td {
-      padding: 8px;
+      padding: 6px;
       position: relative;
     }
 

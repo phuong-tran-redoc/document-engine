@@ -6,7 +6,6 @@ import {
   DocumentEditorModule,
   DocumentEngineConfig,
   Editor,
-  TiptapEditorDirective,
 } from '@phuong-tran-redoc/document-engine-angular';
 import { BP_Multi } from './misc/biz-prop';
 
@@ -16,7 +15,7 @@ import { BP_Multi } from './misc/biz-prop';
  */
 @Component({
   selector: 'document-engine-editor-form',
-  imports: [CommonModule, ReactiveFormsModule, DocumentEditorModule, TiptapEditorDirective],
+  imports: [CommonModule, ReactiveFormsModule, DocumentEditorModule],
   template: `
     <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto h-full">
       <h2 class="text-2xl font-semibold m-0 text-foreground">Form Integration Demo</h2>

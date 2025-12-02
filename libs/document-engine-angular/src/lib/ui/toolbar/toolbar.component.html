@@ -266,7 +266,7 @@
         </button>
       </div>
 
-      <!-- Alignment & Layout: Text Align, Indent, Lists -->
+      <!-- Alignment & Layout: Text Align, Indent -->
       <div
         *ngIf="capabilities.hasAlignmentLayout"
         class="document-engine-document-editor__toolbar-group"
@@ -316,7 +316,14 @@
         >
           <document-engine-icon name="format_indent_increase"></document-engine-icon>
         </button>
+      </div>
 
+      <!-- Lists -->
+      <div
+        *ngIf="capabilities.hasAlignmentLayout"
+        class="document-engine-document-editor__toolbar-group"
+        data-group="alignment-layout"
+      >
         <!-- Lists: Bullet, Numbered (with style) -->
         <button
           *ngIf="capabilities.hasLists"

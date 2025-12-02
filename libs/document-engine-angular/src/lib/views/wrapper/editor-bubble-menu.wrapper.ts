@@ -32,7 +32,7 @@ import { TiptapBubbleMenuDirective } from '../../core/bubble-menu/bubble-menu.di
   template: `
     <div
       #bubbleElement
-      class="bubble-menu-wrapper rounded border bg-card text-card-foreground border-border shadow-elevation-2 z-10"
+      class="bubble-menu-wrapper rounded border bg-card text-card-foreground border-border shadow-elevation-2 z-30"
       tiptapBubbleMenu
       [editor]="editor"
       [props]="config.props!"

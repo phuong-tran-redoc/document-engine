@@ -11,7 +11,17 @@ export const EditableRegion = Node.create({
   selectable: false,
 
   parseHTML() {
-    return [{ tag: 'span[data-editable-region]' }];
+    return [
+      // ----------------------------------------------------------
+      // RULE 1: Standard Tiptap Format (Ưu tiên cao nhất)
+      // ----------------------------------------------------------
+      { tag: 'span[data-editable-region]' },
+
+      // ----------------------------------------------------------
+      // RULE 2: CKEditor Format (Ưu tiên thấp nhất)
+      // ----------------------------------------------------------
+      { tag: 'span.restricted-editing-exception' },
+    ];
   },
 
   renderHTML({ HTMLAttributes }) {

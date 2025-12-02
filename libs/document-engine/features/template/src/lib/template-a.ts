@@ -1,12 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  DocumentEditorModule,
-  DocumentEngineConfig,
-  Editor,
-  TiptapEditorDirective,
-} from '@phuong-tran-redoc/document-engine-angular';
+import { DocumentEditorModule, DocumentEngineConfig, Editor } from '@phuong-tran-redoc/document-engine-angular';
 import { T1, T2, T3 } from './content/lo-bizgrow-content';
 
 interface Section {
@@ -21,7 +16,7 @@ interface Section {
  */
 @Component({
   selector: 'document-engine-template-a',
-  imports: [CommonModule, FormsModule, DocumentEditorModule, TiptapEditorDirective],
+  imports: [CommonModule, FormsModule, DocumentEditorModule],
   template: `
     <div class="flex flex-col gap-6 p-4 max-w-7xl mx-auto h-full">
       <div>

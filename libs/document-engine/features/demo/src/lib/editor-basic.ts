@@ -6,7 +6,6 @@ import {
   DocumentEditorModule,
   DocumentEngineConfig,
   Editor,
-  TiptapEditorDirective,
 } from '@phuong-tran-redoc/document-engine-angular';
 
 /**
@@ -15,7 +14,7 @@ import {
  */
 @Component({
   selector: 'document-engine-editor-basic',
-  imports: [CommonModule, FormsModule, DocumentEditorModule, TiptapEditorDirective],
+  imports: [CommonModule, FormsModule, DocumentEditorModule],
   template: `
     <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto h-full">
       <h2 class="text-2xl font-semibold m-0 text-foreground">Basic Feature</h2>
@@ -42,9 +41,10 @@ export class EditorBasicComponent {
     underline: true,
     list: true,
     textStyleKit: true,
-
+    heading: true,
     showFooter: true,
     characterCount: true,
+    textAlign: true,
   };
 
   onEditorReady(editor: Editor): void {

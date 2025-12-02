@@ -36,11 +36,11 @@
     box-shadow: 0 0 0 3px var(--destructive, hsl(0 84.2% 60.2% / 0.2));
   }
 
-  @media (prefers-color-scheme: dark) {
-    &[aria-invalid='true'] {
-      box-shadow: 0 0 0 3px var(--destructive, hsl(0 84.2% 60.2% / 0.4));
-    }
-  }
+  // @media (prefers-color-scheme: dark) {
+  //   &[aria-invalid='true'] {
+  //     box-shadow: 0 0 0 3px var(--destructive, hsl(0 84.2% 60.2% / 0.4));
+  //   }
+  // }
 }
 
 // Variant: default (primary)
@@ -68,13 +68,13 @@
     box-shadow: 0 0 0 3px var(--destructive, hsl(0 84.2% 60.2% / 0.2));
   }
 
-  @media (prefers-color-scheme: dark) {
-    background-color: var(--destructive, hsl(0 84.2% 60.2% / 0.6));
+  // @media (prefers-color-scheme: dark) {
+  //   background-color: var(--destructive, hsl(0 84.2% 60.2% / 0.6));
 
-    &:focus-visible {
-      box-shadow: 0 0 0 3px var(--destructive, hsl(0 84.2% 60.2% / 0.4));
-    }
-  }
+  //   &:focus-visible {
+  //     box-shadow: 0 0 0 3px var(--destructive, hsl(0 84.2% 60.2% / 0.4));
+  //   }
+  // }
 }
 
 // Variant: outline
@@ -88,14 +88,14 @@
     color: var(--accent-foreground, hsl(222.2 47.4% 11.2%));
   }
 
-  @media (prefers-color-scheme: dark) {
-    background-color: var(--input, hsl(214.3 31.8% 91.4% / 0.3));
-    border-color: var(--input, hsl(214.3 31.8% 91.4%));
+  // @media (prefers-color-scheme: dark) {
+  //   background-color: var(--input, hsl(214.3 31.8% 91.4% / 0.3));
+  //   border-color: var(--input, hsl(214.3 31.8% 91.4%));
 
-    &:hover:not(:disabled) {
-      background-color: var(--input, hsl(214.3 31.8% 91.4% / 0.5));
-    }
-  }
+  //   &:hover:not(:disabled) {
+  //     background-color: var(--input, hsl(214.3 31.8% 91.4% / 0.5));
+  //   }
+  // }
 }
 
 // Variant: secondary
@@ -120,11 +120,11 @@
     color: var(--accent-foreground, hsl(222.2 47.4% 11.2%));
   }
 
-  @media (prefers-color-scheme: dark) {
-    &:hover:not(:disabled) {
-      background-color: var(--accent, hsl(210 40% 96.1% / 0.5));
-    }
-  }
+  // @media (prefers-color-scheme: dark) {
+  //   &:hover:not(:disabled) {
+  //     background-color: var(--accent, hsl(210 40% 96.1% / 0.5));
+  //   }
+  // }
 }
 
 // Variant: link

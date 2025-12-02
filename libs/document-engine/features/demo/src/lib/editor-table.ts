@@ -1,4 +1,3 @@
-import { TableOptions } from '@tiptap/extension-table';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -7,8 +6,8 @@ import {
   DocumentEditorModule,
   DocumentEngineConfig,
   Editor,
-  TiptapEditorDirective,
 } from '@phuong-tran-redoc/document-engine-angular';
+import { TableOptions } from '@tiptap/extension-table';
 
 /**
  * Table editor test with table features enabled
@@ -16,7 +15,7 @@ import {
  */
 @Component({
   selector: 'document-engine-editor-table',
-  imports: [CommonModule, FormsModule, DocumentEditorModule, TiptapEditorDirective],
+  imports: [CommonModule, FormsModule, DocumentEditorModule],
   template: `
     <div class="flex flex-col gap-4 p-4 max-w-5xl mx-auto h-full">
       <h2 class="text-2xl font-semibold m-0 text-foreground">Table Feature</h2>
