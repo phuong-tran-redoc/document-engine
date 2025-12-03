@@ -153,7 +153,11 @@ export const DynamicField = Node.create<DynamicFieldOptions>({
 
     return [
       'span',
-      mergeAttributes(HTMLAttributes, { class: 'dynamic-field', 'data-field-id': fieldId, 'data-label': label }),
+      mergeAttributes(HTMLAttributes, {
+        class: 'dynamic-field red-dynamic-field',
+        'data-field-id': fieldId,
+        'data-label': label,
+      }),
       label || '',
     ];
   },

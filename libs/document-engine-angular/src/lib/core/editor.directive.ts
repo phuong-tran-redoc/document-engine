@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Content, Editor, type EditorEvents } from '@tiptap/core';
-import { EDITOR_HTML_PREPROCESSOR } from './editor-tokens';
+import { EDITOR_CONTENT_WRAPPER_CLASS, EDITOR_HTML_PREPROCESSOR } from './editor-tokens';
 
 @Directive({
   selector: 'tiptap[editor], [tiptap][editor], tiptap-editor[editor], [tiptapEditor][editor]',
@@ -31,7 +31,9 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
   protected elRef = inject<ElementRef<HTMLElement>>(ElementRef);
   protected renderer = inject(Renderer2);
   protected changeDetectorRef = inject(ChangeDetectorRef);
+
   protected htmlPreprocessor = inject(EDITOR_HTML_PREPROCESSOR, { optional: true });
+  protected contentWrapperClass = inject(EDITOR_CONTENT_WRAPPER_CLASS, { optional: true });
 
   private _editor?: Editor;
   private initialEditableState?: boolean;
@@ -108,7 +110,13 @@ export class TiptapEditorDirective implements OnInit, AfterViewInit, ControlValu
 
     if (this.outputFormat === 'html') {
       const htmlContent = editor.getHTML();
-      const finalContent = `<div class="notum-editor">${htmlContent}</div>`;
+
+      let finalContent = htmlContent;
+
+      if (this.contentWrapperClass) {
+        finalContent = `<div class="${this.contentWrapperClass}">${htmlContent}</div>`;
+      }
+
       this.onChange(finalContent);
       return;
     }

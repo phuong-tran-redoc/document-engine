@@ -16,6 +16,7 @@ import { DocumentEngineKit } from '../core/kit/kit';
 import { EditorCapabilities } from '../core/capability.model';
 import { Editor } from '@tiptap/core';
 import { DefaultEditorConfig } from '../configs/editor.config';
+import { EDITOR_CONTENT_WRAPPER_CLASS } from '../core';
 
 /**
  * Document Editor Component
@@ -57,6 +58,7 @@ import { DefaultEditorConfig } from '../configs/editor.config';
 })
 export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
   private readonly ngZone = inject(NgZone);
+  private readonly contentWrapperClass = inject(EDITOR_CONTENT_WRAPPER_CLASS, { optional: true });
 
   @Input() config?: Partial<DocumentEngineConfig>;
 
@@ -110,7 +112,7 @@ export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
       this.editor = new Editor({
         editable: this._mergedConfig.editable,
         extensions: [DocumentEngineKit.configure(this._mergedConfig)],
-        editorProps: { attributes: { class: 'notum-editor' } },
+        editorProps: { attributes: { class: this.contentWrapperClass ?? '' } },
       });
 
       // Emit editorReady event back inside Angular zone

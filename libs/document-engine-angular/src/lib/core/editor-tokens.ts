@@ -37,3 +37,21 @@ export type EditorHtmlPreprocessor = (html: string) => string;
  * ```
  */
 export const EDITOR_HTML_PREPROCESSOR = new InjectionToken<EditorHtmlPreprocessor>('EDITOR_HTML_PREPROCESSOR');
+
+/**
+ * Injection token for content wrapper class.
+ * Use this token to provide a custom class name for the content wrapper element.
+ *
+ * @example
+ * ```typescript
+ * // In your component or module providers
+ * {
+ *   provide: EDITOR_CONTENT_WRAPPER_CLASS,
+ *   useValue: 'my-content-wrapper'
+ * }
+ * ```
+ */
+export const EDITOR_CONTENT_WRAPPER_CLASS = new InjectionToken<string | null>('EDITOR_CONTENT_WRAPPER_CLASS', {
+  providedIn: 'root',
+  factory: () => null,
+});
