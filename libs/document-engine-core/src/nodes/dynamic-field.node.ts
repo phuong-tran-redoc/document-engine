@@ -158,8 +158,30 @@ export const DynamicField = Node.create<DynamicFieldOptions>({
         'data-field-id': fieldId,
         'data-label': label,
       }),
-      label || '',
+      // label || '',
+      fieldId ? `{{${fieldId}}}` : '',
     ];
+  },
+
+  /**
+   * NODE VIEW: Đây là phần giúp hiển thị giao diện giống CKEditor Widget
+   * Thay vì render ra text thuần, ta render ra một DOM element được style sẵn
+   */
+  addNodeView() {
+    return ({ node }) => {
+      // 1. Tạo thẻ bao bọc (Wrapper)
+      const dom = document.createElement('span');
+
+      // 2. Thêm class để style (Dùng Tailwind như techstack của bạn )
+      // Bạn có thể thêm class 'ck-widget' nếu muốn dùng lại CSS cũ
+      dom.classList.add('dynamic-field', 'red-dynamic-field');
+
+      // 3. Gán dữ liệu label vào nội dung hiển thị
+      const { label, fieldId } = node.attrs as DynamicFieldAttributes;
+      dom.textContent = label || fieldId || 'Unknown Field';
+
+      return { dom };
+    };
   },
 
   /**

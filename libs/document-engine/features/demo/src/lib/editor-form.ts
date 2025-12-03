@@ -164,6 +164,7 @@ export class EditorFormComponent {
     pageBreak: true,
     dynamicField: true,
 
+    showPrintButton: true,
     list: true,
   };
 
