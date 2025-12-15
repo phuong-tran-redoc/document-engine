@@ -1,0 +1,21 @@
+{
+  "name": "test-bench",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/document-engine/features/test-bench/src",
+  "prefix": "document-engine",
+  "projectType": "library",
+  "tags": ["scope:document-engine", "type:feature"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/document-engine/features/test-bench/jest.config.ts",
+        "tsConfig": "libs/document-engine/features/test-bench/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

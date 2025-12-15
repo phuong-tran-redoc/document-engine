@@ -31,7 +31,8 @@
       "@document-engine/demo": ["libs/document-engine/features/demo/src/index.ts"],
       "@shared/features/theme-system": ["libs/shared/features/theme-system/src/index.ts"],
       "@document-engine/template": ["libs/document-engine/features/template/src/index.ts"],
-      "@document-engine/contact": ["libs/document-engine/features/contact/src/index.ts"]
+      "@document-engine/contact": ["libs/document-engine/features/contact/src/index.ts"],
+      "@document-engine/test-bench": ["libs/document-engine/features/test-bench/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

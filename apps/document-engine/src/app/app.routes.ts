@@ -61,6 +61,18 @@ export const appRoutes: Route[] = [
   //   ],
   // },
 
+  // Testing routes (empty layout for E2E tests)
+  {
+    path: '',
+    data: { layout: 'empty' },
+    children: [
+      {
+        path: 'test-bench',
+        loadComponent: () => import('@document-engine/test-bench').then((m) => m.TestBenchComponent),
+      },
+    ],
+  },
+
   // Error routes
   {
     path: '',
