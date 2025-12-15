@@ -6,39 +6,44 @@ import { isEqual } from 'lodash-es';
 
 export function getCursorCellInfo(state: EditorState) {
   // 1. Dùng selectionCell để tìm vị trí bắt đầu của ô chứa con trỏ
-  const cellInfo = selectionCell(state);
+  try {
+    const cellInfo = selectionCell(state);
 
-  // Nếu không tìm thấy (con trỏ không nằm trong ô nào), trả về null
-  if (!cellInfo) return null;
+    // Nếu không tìm thấy (con trỏ không nằm trong ô nào), trả về null
+    if (!cellInfo) return null;
 
-  // cellInfo.$pos là một ResolvedPos trỏ tới vị trí bắt đầu của ô
-  const table = findTable(cellInfo);
-  if (!table) return null;
+    // cellInfo.$pos là một ResolvedPos trỏ tới vị trí bắt đầu của ô
+    const table = findTable(cellInfo);
+    if (!table) return null;
 
-  const map = TableMap.get(table.node);
+    const map = TableMap.get(table.node);
 
-  // 2. Lấy vị trí tương đối của ô so với bảng
-  const cellOffset = cellInfo.pos - table.start;
+    // 2. Lấy vị trí tương đối của ô so với bảng
+    const cellOffset = cellInfo.pos - table.start;
 
-  // 3. Tìm chỉ số (index) của ô này trong "bản đồ" của bảng
-  const cellIndex = map.map.indexOf(cellOffset);
+    // 3. Tìm chỉ số (index) của ô này trong "bản đồ" của bảng
+    const cellIndex = map.map.indexOf(cellOffset);
 
-  if (cellIndex === -1) {
+    if (cellIndex === -1) {
+      return null;
+    }
+
+    // 4. Từ chỉ số, tính ra rowIndex và colIndex
+    const rowIndex = Math.floor(cellIndex / map.width);
+    const colIndex = cellIndex % map.width;
+
+    return {
+      rowIndex,
+      colIndex,
+      cellIndex,
+      tableStart: table.start,
+      tableNode: table.node,
+      map,
+    };
+  } catch {
+    // selectionCell throws RangeError when cursor is not in a table
     return null;
   }
-
-  // 4. Từ chỉ số, tính ra rowIndex và colIndex
-  const rowIndex = Math.floor(cellIndex / map.width);
-  const colIndex = cellIndex % map.width;
-
-  return {
-    rowIndex,
-    colIndex,
-    cellIndex,
-    tableStart: table.start,
-    tableNode: table.node,
-    map,
-  };
 }
 
 /**
@@ -81,7 +86,7 @@ export function getSelectedCells(state: EditorState): SelectedCell[] {
 export function getCombinedCellAttributeValue(
   cells: SelectedCell[],
   attributeName: string,
-  fallbackValue?: unknown,
+  fallbackValue?: unknown
 ): unknown {
   // Không có cell nào được chọn
   if (cells.length === 0) return fallbackValue;

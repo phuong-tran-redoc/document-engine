@@ -4,7 +4,11 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "nx serve document-engine",
-    "build": "nx build document-engine"
+    "build": "nx build document-engine",
+    "test": "nx test",
+    "test:core": "nx test document-engine-core",
+    "test:watch": "nx test document-engine-core --watch",
+    "test:coverage": "nx test document-engine-core --coverage"
   },
   "private": true,
   "dependencies": {

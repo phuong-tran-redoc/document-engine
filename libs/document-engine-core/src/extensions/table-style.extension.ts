@@ -2,11 +2,10 @@ import { Extension, Node, NodeViewRendererProps } from '@tiptap/core';
 import { Table, TableCell, TableHeader, TableKitOptions, TableOptions, TableRow } from '@tiptap/extension-table';
 import { TextSelection } from '@tiptap/pm/state';
 import { addColumnAfter, addColumnBefore, deleteColumn, selectionCell, TableMap } from '@tiptap/pm/tables';
+import { MIN_NEW_COL_WIDTH } from '../constants/table.constant';
 import { getCursorCellInfo } from '../utils';
 import { createTableNodeView } from '../views';
 import { PercentageColumnResizing } from './table-resizing.extension';
-
-export const MIN_NEW_COL_WIDTH = 5.0;
 
 /**
  * Calculate new column widths when adding a column, ensuring no column goes below MIN_NEW_COL_WIDTH
