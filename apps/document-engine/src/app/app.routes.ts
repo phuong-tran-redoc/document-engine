@@ -70,6 +70,22 @@ export const appRoutes: Route[] = [
         path: 'test-bench',
         loadComponent: () => import('@document-engine/test-bench').then((m) => m.TestBenchComponent),
       },
+      {
+        path: 'test-bench/table',
+        loadComponent: () => import('@document-engine/test-bench').then((m) => m.TableTestBenchComponent),
+      },
+      {
+        path: 'test-bench/dynamic-field',
+        loadComponent: () => import('@document-engine/test-bench').then((m) => m.DynamicFieldTestBenchComponent),
+      },
+      {
+        path: 'test-bench/toolbar',
+        loadComponent: () => import('@document-engine/test-bench').then((m) => m.ToolbarTestBenchComponent),
+      },
+      {
+        path: 'test-bench/template',
+        loadComponent: () => import('@document-engine/test-bench').then((m) => m.TemplateTestBenchComponent),
+      },
     ],
   },
 

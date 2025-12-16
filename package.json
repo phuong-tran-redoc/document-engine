@@ -4,11 +4,20 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "nx serve document-engine",
-    "build": "nx build document-engine",
-    "test": "nx test",
+    "build": "nx run-many --target=build --all",
+    "build:libs": "nx run-many --target=build --projects=@phuong-tran-redoc/document-engine-core,@phuong-tran-redoc/document-engine-angular",
+    "rebuild": "nx reset && pnpm install && pnpm run build:libs",
     "test:core": "nx test document-engine-core",
-    "test:watch": "nx test document-engine-core --watch",
-    "test:coverage": "nx test document-engine-core --coverage"
+    "test:core:watch": "nx test document-engine-core --watch",
+    "test:core:coverage": "nx test document-engine-core --coverage",
+    "test:angular": "nx test document-engine-angular",
+    "test:angular:watch": "nx test document-engine-angular --watch",
+    "test:all": "nx run-many --target=test --all",
+    "e2e": "nx e2e document-engine-e2e",
+    "e2e:ui": "nx e2e document-engine-e2e --ui",
+    "e2e:headed": "nx e2e document-engine-e2e -- --headed",
+    "affected:test": "nx affected --target=test",
+    "affected:build": "nx affected --target=build"
   },
   "private": true,
   "dependencies": {

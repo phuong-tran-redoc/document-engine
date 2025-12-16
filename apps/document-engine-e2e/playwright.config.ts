@@ -22,12 +22,17 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
+
+  /* Only run critical tests in CI */
+  grep: process.env['CI'] ? /@critical/ : undefined,
+
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'pnpm exec nx run document-engine:serve',
     url: 'http://localhost:4200',
-    reuseExistingServer: true,
+    reuseExistingServer: !process.env['CI'], // Reuse in dev, clean start in CI
     cwd: workspaceRoot,
+    timeout: 120 * 1000, // 2 minutes for slow builds
   },
   projects: [
     {

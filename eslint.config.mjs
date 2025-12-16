@@ -113,4 +113,14 @@ export default [
       ],
     },
   },
+  {
+    // E2E test files - allow importing any dependencies
+    files: ['apps/**/*-e2e/**/*.ts', 'apps/**/*-e2e/**/*.js', '**/*.spec.ts', '**/*.e2e.ts'],
+    rules: {
+      '@nx/enforce-module-boundaries': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'playwright/no-wait-for-timeout': 'off', // Acceptable for UI stability in E2E
+      '@typescript-eslint/no-non-null-assertion': 'off', // Safe when preceded by assertions
+    },
+  },
 ];

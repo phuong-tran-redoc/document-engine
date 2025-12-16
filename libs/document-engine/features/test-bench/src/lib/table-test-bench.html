@@ -1,0 +1,5 @@
+<div class="test-bench-container">
+  <document-engine-editor #docEditor [config]="editorConfig" (editorReady)="onEditorReady($event)">
+    <tiptap-editor [editor]="docEditor.editor" [(ngModel)]="value"></tiptap-editor>
+  </document-engine-editor>
+</div>
