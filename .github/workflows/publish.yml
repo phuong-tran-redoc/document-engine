@@ -40,13 +40,14 @@ jobs:
   publish:
     needs: check-changes
     runs-on: ubuntu-latest
-    # Logic: Luôn chạy nếu có bất kỳ thay đổi nào hoặc trigger thủ công
+    # Logic: Chạy nếu có thay đổi hoặc kích hoạt thủ công
     if: |
       needs.check-changes.outputs.core-changed == 'true' ||
       needs.check-changes.outputs.angular-changed == 'true' ||
       needs.check-changes.outputs.is-manual == 'true'
 
     # 🔴 QUAN TRỌNG: Cấp quyền cho Trusted Publishing (OIDC)
+    # Nếu thiếu dòng này -> Lỗi 404 PUT / Access token expired
     permissions:
       contents: read
       id-token: write
@@ -64,7 +65,7 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
           scope: '@phuong-tran-redoc'
-          # Không cần NODE_AUTH_TOKEN ở đây nữa vì dùng OIDC
+          # LƯU Ý: Không khai báo 'token' hay 'cache' ở đây để tránh conflict auth
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -78,12 +79,11 @@ jobs:
         run: pnpm nx clear-cache
 
       # --- BƯỚC 1: BUILD CORE ---
-      # Core luôn được build trước
       - name: Build document-engine-core
         run: pnpm nx build document-engine-core
 
-      # --- BƯỚC 2: BUILD ANGULAR (STANDARD NX BUILD) ---
-      # Quay lại dùng lệnh chuẩn của Nx, không dùng legacy-builder nữa
+      # --- BƯỚC 2: BUILD ANGULAR (STANDARD NX) ---
+      # Quay về cách build thông thường như bạn yêu cầu
       - name: Build document-engine-angular
         if: |
           needs.check-changes.outputs.angular-changed == 'true' ||
@@ -96,7 +96,6 @@ jobs:
         if: |
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
-        # Dùng --provenance cho Trusted Publishing
         run: pnpm publish --filter @phuong-tran-redoc/document-engine-core --no-git-checks --provenance --access public
 
       # --- BƯỚC 4: PUBLISH ANGULAR ---
@@ -105,7 +104,4 @@ jobs:
           needs.check-changes.outputs.angular-changed == 'true' ||
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
-        # Trỏ về thư mục dist chuẩn của Nx
-        working-directory: dist/libs/document-engine-angular
-        # Dùng npm publish trực tiếp
-        run: npm publish --provenance --access public
+        run: pnpm publish --filter @phuong-tran-redoc/document-engine-angular --no-git-checks --provenance --access public
