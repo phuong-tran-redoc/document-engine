@@ -96,7 +96,9 @@ jobs:
         if: |
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
-        run: npm publish --filter @phuong-tran-redoc/document-engine-core --no-git-checks --provenance --access public
+        # Dùng npm publish trực tiếp trong dist để ổn định nhất với OIDC
+        working-directory: dist/libs/document-engine-core
+        run: npm publish --provenance --access public
 
       # --- BƯỚC 4: PUBLISH ANGULAR ---
       - name: Publish document-engine-angular
@@ -104,4 +106,6 @@ jobs:
           needs.check-changes.outputs.angular-changed == 'true' ||
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
-        run: npm publish --filter @phuong-tran-redoc/document-engine-angular --no-git-checks --provenance --access public
+        # Trỏ về folder dist chuẩn của Nx
+        working-directory: dist/libs/document-engine-angular
+        run: npm publish --provenance --access public
