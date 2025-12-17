@@ -1,0 +1,9 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/libs/document-engine-angular-legacy",
+  "lib": {
+    "entryFile": "../../libs/document-engine-angular/src/index.ts"
+  },
+  "assets": ["../../libs/document-engine-angular/src/lib/styles"],
+  "allowedNonPeerDependencies": ["@phuong-tran-redoc/document-engine-core", "@floating-ui/dom"]
+}
