@@ -81,10 +81,11 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.check-changes.outputs.skip-publish == 'false'
     permissions:
+      id-token: write
       contents: read
       packages: write
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+    # env:
+    #   NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
     steps:
       - name: Checkout code
@@ -141,12 +142,8 @@ jobs:
 
       - name: Publish document-engine-core
         if: needs.check-changes.outputs.core-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
-        # run: pnpm publish --no-git-checks
-        # working-directory: dist/libs/document-engine-core
-        run: pnpm publish --filter @phuong-tran-redoc/document-engine-core --no-git-checks
+        run: pnpm publish --filter @phuong-tran-redoc/document-engine-core --no-git-checks --provenance --access public
 
       - name: Publish document-engine-angular
         if: needs.check-changes.outputs.angular-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
-        # run: pnpm publish --no-git-checks
-        # working-directory: dist/libs/document-engine-angular
-        run: pnpm publish --filter @phuong-tran-redoc/document-engine-angular --no-git-checks
+        run: pnpm publish --filter @phuong-tran-redoc/document-engine-angular --no-git-checks --provenance --access public

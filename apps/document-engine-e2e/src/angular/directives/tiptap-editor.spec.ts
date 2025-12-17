@@ -1,68 +1,132 @@
 import { test, expect } from '@playwright/test';
-import { createEditorHelper } from '../../helpers/editor-helpers';
 
-test.describe('TiptapEditor Directive E2E @critical', () => {
+/**
+ * E2E tests for TiptapEditor Directive (editor.directive.ts)
+ * Tests ngModel binding, disabled state, and value synchronization
+ * @critical - Core directive functionality
+ */
+test.describe('TiptapEditor Directive - ngModel Binding @critical', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/test-bench');
+    await page.goto('/test-bench/tiptap-editor');
     await page.waitForFunction(() => (window as any).__EDITOR__ !== undefined, {
       timeout: 10000,
     });
   });
 
-  test('should bind ngModel correctly', async ({ page }) => {
-    const editor = await createEditorHelper(page);
+  test('should bind initial value from ngModel', async ({ page }) => {
+    // Verify initial content is displayed in editor
+    const editorContent = await page.locator('.tiptap-editor p').textContent();
+    expect(editorContent).toBe('Initial content');
 
-    // Set content via editor
-    await editor.setContent('<p>ngModel test content</p>');
-    await page.waitForTimeout(500);
-
-    // Verify content is in editor
-    const html = await editor.getHTML();
-    expect(html).toContain('ngModel test content');
-
-    // Verify ngModel binding works (content should be synced)
-    // This is tested by verifying editor content matches what we set
-    const text = await editor.getText();
-    expect(text).toContain('ngModel test content');
+    // Verify model value is displayed
+    const modelValue = await page.locator('[data-testid="model-value"]').textContent();
+    expect(modelValue).toContain('Initial content');
   });
 
-  test('should update on value change', async ({ page }) => {
-    const editor = await createEditorHelper(page);
+  test('should update model when editor content changes', async ({ page }) => {
+    // Type in editor
+    await page.locator('.tiptap-editor').click();
+    await page.keyboard.type(' - Added text');
 
-    // Set initial content
-    await editor.setContent('<p>Initial value</p>');
-    await page.waitForTimeout(300);
+    // Wait for model to update
+    await page.waitForTimeout(200);
 
-    // Change content
-    await editor.setContent('<p>Updated value</p>');
-    await page.waitForTimeout(300);
-
-    // Verify update is reflected
-    const html = await editor.getHTML();
-    expect(html).toContain('Updated value');
-    expect(html).not.toContain('Initial value');
+    // Verify model value updated
+    const modelValue = await page.locator('[data-testid="model-value"]').textContent();
+    expect(modelValue).toContain('Initial content - Added text');
   });
 
-  test('should emit events on content change', async ({ page }) => {
-    const editor = await createEditorHelper(page);
+  test('should update editor when model changes externally', async ({ page }) => {
+    // Click button to change model externally
+    await page.locator('[data-testid="btn-change-model"]').click();
 
-    // Set initial content
-    await editor.setContent('<p>Event test</p>');
-    await page.waitForTimeout(300);
+    // Wait for editor to update
+    await page.waitForTimeout(200);
 
-    // Make a change by typing
-    const editorContent = page.locator('.ProseMirror').first();
-    await editorContent.click();
-    await page.keyboard.type(' - modified');
-    await page.waitForTimeout(500);
+    // Verify editor content updated
+    const editorContent = await page.locator('.tiptap-editor p').textContent();
+    expect(editorContent).toBe('Changed from Outside');
+
+    // Verify model value updated
+    const modelValue = await page.locator('[data-testid="model-value"]').textContent();
+    expect(modelValue).toContain('Changed from Outside');
+  });
+});
+
+test.describe('TiptapEditor Directive - Disabled State @critical', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/test-bench/tiptap-editor');
+    await page.waitForFunction(() => (window as any).__EDITOR__ !== undefined, {
+      timeout: 10000,
+    });
+  });
+
+  test('should disable editor when disabled is true', async ({ page }) => {
+    // Click toggle disable button
+    await page.locator('[data-testid="btn-disable"]').click();
+    await page.waitForTimeout(200);
+
+    // Try to type in editor
+    await page.locator('.tiptap-editor').click();
+    const initialContent = await page.locator('.tiptap-editor p').textContent();
+
+    await page.keyboard.type(' - Should not appear');
+    await page.waitForTimeout(200);
+
+    // Verify content didn't change
+    const finalContent = await page.locator('.tiptap-editor p').textContent();
+    expect(finalContent).toBe(initialContent);
+  });
+
+  test('should re-enable editor when disabled is toggled back', async ({ page }) => {
+    // Disable editor
+    await page.locator('[data-testid="btn-disable"]').click();
+    await page.waitForTimeout(200);
+
+    // Re-enable editor
+    await page.locator('[data-testid="btn-disable"]').click();
+    await page.waitForTimeout(200);
+
+    // Type in editor
+    await page.locator('.tiptap-editor').click();
+    await page.keyboard.type(' - Enabled again');
+    await page.waitForTimeout(200);
 
     // Verify content changed
-    const text = await editor.getText();
-    expect(text).toContain('modified');
+    const editorContent = await page.locator('.tiptap-editor p').textContent();
+    expect(editorContent).toContain('Enabled again');
+  });
+});
 
-    // Events should have been emitted (verified by content update)
-    const html = await editor.getHTML();
-    expect(html).toContain('Event test');
-    expect(html).toContain('modified');
+test.describe('TiptapEditor Directive - Value Synchronization @critical', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/test-bench/tiptap-editor');
+    await page.waitForFunction(() => (window as any).__EDITOR__ !== undefined, {
+      timeout: 10000,
+    });
+  });
+
+  test('should maintain sync between editor and model', async ({ page }) => {
+    // Change model externally
+    await page.locator('[data-testid="btn-change-model"]').click();
+    await page.waitForTimeout(200);
+
+    // Verify editor updated
+    let editorContent = await page.locator('.tiptap-editor p').textContent();
+    expect(editorContent).toBe('Changed from Outside');
+
+    // Type in editor
+    await page.locator('.tiptap-editor').click();
+    await page.keyboard.press('End');
+    await page.keyboard.type(' - More text');
+    await page.waitForTimeout(200);
+
+    // Verify model updated
+    const modelValue = await page.locator('[data-testid="model-value"]').textContent();
+    expect(modelValue).toContain('Changed from Outside - More text');
+
+    // Verify editor still has correct content
+    editorContent = await page.locator('.tiptap-editor p').textContent();
+    expect(editorContent).toContain('Changed from Outside - More text');
   });
 });

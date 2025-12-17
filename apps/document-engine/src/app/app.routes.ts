@@ -86,6 +86,10 @@ export const appRoutes: Route[] = [
         path: 'test-bench/template',
         loadComponent: () => import('@document-engine/test-bench').then((m) => m.TemplateTestBenchComponent),
       },
+      {
+        path: 'test-bench/tiptap-editor',
+        loadComponent: () => import('@document-engine/test-bench').then((m) => m.TiptapEditorTestBenchComponent),
+      },
     ],
   },
 
