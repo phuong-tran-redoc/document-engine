@@ -27,22 +27,34 @@ test.describe('PageBreak NodeView E2E @critical', () => {
     await expect(pageBreak).toHaveClass(/page-break/);
   });
 
+  /**
+   * Helper function to setup page break scenario:
+   * - Create 2 paragraphs
+   * - Position cursor between them
+   * - Insert page break via toolbar
+   * - Add 3rd paragraph after page break
+   */
+  async function setupPageBreakScenario(page: any, editor: any) {
+    // Insert page break via toolbar button
+    const pageBreakButton = page.locator('button[title="Insert page break"]');
+    await pageBreakButton.click();
+
+    return page.locator('[data-page-break="true"]');
+  }
+
   test('should be selectable', async ({ page }) => {
     const editor = await createEditorHelper(page);
 
-    // Insert page break
-    await page.evaluate(() => {
-      (window as any).__EDITOR__.commands.insertPageBreak();
-    });
+    // Setup scenario
+    const pageBreak = await setupPageBreakScenario(page, editor);
 
-    await page.waitForTimeout(300);
+    // Verify page break exists
+    await expect(pageBreak).toBeVisible();
 
     // Click on page break to select it
-    const pageBreak = page.locator('[data-page-break="true"]');
     await pageBreak.click();
 
-    // Verify it's selected (implementation-specific, may need adjustment)
-    // Check if editor has selection on page break node
+    // Verify it's selected
     const isSelected = await page.evaluate(() => {
       const editor = (window as any).__EDITOR__;
       return editor.isActive('pageBreak');
@@ -54,24 +66,22 @@ test.describe('PageBreak NodeView E2E @critical', () => {
   test('should delete on backspace', async ({ page }) => {
     const editor = await createEditorHelper(page);
 
-    // Insert page break
-    await page.evaluate(() => {
-      (window as any).__EDITOR__.commands.insertPageBreak();
-    });
-
-    await page.waitForTimeout(300);
+    // Setup scenario
+    const pageBreak = await setupPageBreakScenario(page, editor);
 
     // Verify page break exists
+    await expect(pageBreak).toBeVisible();
     let pageBreakCount = await page.locator('[data-page-break="true"]').count();
     expect(pageBreakCount).toBe(1);
 
-    // Select page break
-    const pageBreak = page.locator('[data-page-break="true"]');
+    // Select page break by clicking
     await pageBreak.click();
 
-    // Press backspace
+    // Press backspace to delete
     await page.keyboard.press('Backspace');
-    await page.waitForTimeout(300);
+
+    // Wait for deletion to complete
+    await expect(pageBreak).toBeHidden();
 
     // Verify page break is deleted
     pageBreakCount = await page.locator('[data-page-break="true"]').count();

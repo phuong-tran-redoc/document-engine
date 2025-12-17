@@ -8,6 +8,10 @@ export const TEST_DATA = {
   tables: {
     simple2x2: `
       <table>
+        <colgroup>
+          <col style="width: 50%">
+          <col style="width: 50%">
+        </colgroup>
         <tr><td>Cell 1-1</td><td>Cell 1-2</td></tr>
         <tr><td>Cell 2-1</td><td>Cell 2-2</td></tr>
       </table>
@@ -15,6 +19,11 @@ export const TEST_DATA = {
 
     simple3x3: `
       <table>
+        <colgroup>
+          <col style="width: 33.33%">
+          <col style="width: 33.33%">
+          <col style="width: 33.34%">
+        </colgroup>
         <tr><td>A1</td><td>B1</td><td>C1</td></tr>
         <tr><td>A2</td><td>B2</td><td>C2</td></tr>
         <tr><td>A3</td><td>B3</td><td>C3</td></tr>
@@ -23,6 +32,10 @@ export const TEST_DATA = {
 
     withHeader: `
       <table>
+        <colgroup>
+          <col style="width: 50%">
+          <col style="width: 50%">
+        </colgroup>
         <thead>
           <tr><th>Header 1</th><th>Header 2</th></tr>
         </thead>
@@ -35,10 +48,17 @@ export const TEST_DATA = {
 
     nested: `
       <table>
+        <colgroup>
+          <col style="width: 40%">
+          <col style="width: 60%">
+        </colgroup>
         <tr>
           <td>Outer cell</td>
           <td>
             <table>
+              <colgroup>
+                <col style="width: 100%">
+              </colgroup>
               <tr><td>Inner cell 1</td></tr>
               <tr><td>Inner cell 2</td></tr>
             </table>
@@ -49,6 +69,10 @@ export const TEST_DATA = {
 
     withFormatting: `
       <table>
+        <colgroup>
+          <col style="width: 50%">
+          <col style="width: 50%">
+        </colgroup>
         <tr>
           <td><strong>Bold cell</strong></td>
           <td><em>Italic cell</em></td>

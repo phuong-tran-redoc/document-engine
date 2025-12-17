@@ -21,6 +21,19 @@ export default defineConfig({
     baseURL,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    // trace: 'retain-on-failure',
+    // headless: false, // hoặc true vẫn được, nhưng nên test cả 2
+    // viewport: { width: 1920, height: 1080 },
+    // userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)...',
+    // actionTimeout: 30000,
+    // video: {
+    //   mode: 'retain-on-failure',
+    //   size: {
+    //     width: 1920,
+    //     height: 1080,
+    //   },
+    // },
   },
 
   /* Only run critical tests in CI */

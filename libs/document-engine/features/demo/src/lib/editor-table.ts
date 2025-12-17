@@ -42,10 +42,11 @@ export class EditorTableComponent {
     underline: true,
     list: true,
     textStyleKit: true,
-    tables: { table: { resizable: true, enableNodeView: false } as unknown as TableOptions },
+    tables: { table: { resizable: true, enableNodeView: true } as unknown as TableOptions },
 
     showFooter: true,
     characterCount: true,
+    showPrintButton: true,
   };
 
   onEditorReady(editor: Editor): void {

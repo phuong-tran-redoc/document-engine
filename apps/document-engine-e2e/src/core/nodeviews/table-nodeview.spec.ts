@@ -1,7 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { createEditorHelper } from '../../helpers/editor-helpers';
 import { TEST_DATA } from '../../helpers/test-data';
 
+/**
+ * E2E tests for TableNodeView (block-handler.ts)
+ * Tests the NodeView wrapper that provides handle and typearound functionality
+ */
 test.describe('Table NodeView E2E @critical', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/test-bench/table');
@@ -10,136 +14,196 @@ test.describe('Table NodeView E2E @critical', () => {
     });
   });
 
-  test('should show hover icons when mouse enters table', async ({ page }) => {
-    // Table is pre-loaded in test bench
+  // ============================================================================
+  // HANDLE & TYPEAROUND TESTS (HandleNodeView functionality)
+  // ============================================================================
+
+  test('should render table with handle wrapper', async ({ page }) => {
+    const table = page.locator('table').first();
+    await expect(table).toBeVisible();
+
+    const handleWrapper = page.locator('.type-around');
+    await expect(handleWrapper).toBeAttached();
+  });
+
+  test('should show typearound buttons on hover', async ({ page }) => {
+    // Select .widget element that has direct table child
+    const widget = page.locator('.widget').first();
+    await expect(widget).toBeVisible();
+
+    const handleWrapper = page.locator('[title="Insert paragraph before"]');
+
+    // Hover over widget
+    await widget.hover();
+
+    // Wait a bit for hover effects
+    await page.waitForTimeout(500);
+
+    await expect(handleWrapper).toBeVisible();
+  });
+
+  // ============================================================================
+  // COLGROUP RENDERING TESTS (TableNodeView.updateColgroup)
+  // ============================================================================
+
+  test('should render table with colgroup', async ({ page }) => {
     const table = page.locator('table').first();
 
-    // Hover over table
-    await table.hover();
+    // Verify table has colgroup (rendered by TableNodeView.updateColgroup)
+    const colgroup = table.locator('colgroup');
+    await expect(colgroup).toBeVisible();
 
-    // Verify icons appear (using CSS selectors since data-testid not added yet)
-    const addRowButton = page
-      .locator('button')
-      .filter({ hasText: /add.*row/i })
-      .first();
-    await expect(addRowButton).toBeVisible({ timeout: 2000 });
+    // Verify col elements exist
+    const cols = colgroup.locator('col');
+    const colCount = await cols.count();
+    expect(colCount).toBeGreaterThan(0);
   });
 
-  test('should add row before when clicking add row before button', async ({ page }) => {
-    // Get initial row count
-    const initialRows = await page.locator('table tr').count();
+  test('should render col elements with width styles', async ({ page }) => {
+    const table = page.locator('table').first();
+    const colgroup = table.locator('colgroup');
+    const cols = colgroup.locator('col');
 
-    // Hover over first row
-    await page.locator('table tr').first().hover();
-    await page.waitForTimeout(300);
+    // Verify each col has width style (from colwidths attribute)
+    const colCount = await cols.count();
+    for (let i = 0; i < colCount; i++) {
+      const col = cols.nth(i);
+      const style = await col.getAttribute('style');
 
-    // Click add row before button (using text content for now)
-    const addRowBeforeBtn = page
-      .locator('button')
-      .filter({ hasText: /before/i })
-      .first();
-    await addRowBeforeBtn.click();
-
-    // Verify row count increased
-    const newRows = await page.locator('table tr').count();
-    expect(newRows).toBe(initialRows + 1);
+      // TableNodeView.updateColgroup sets width as percentage
+      expect(style).toContain('width');
+      expect(style).toMatch(/\d+(\.\d+)?%/); // Should be percentage
+    }
   });
 
-  test('should add row after when clicking add row after button', async ({ page }) => {
-    // Get initial row count
-    const initialRows = await page.locator('table tr').count();
+  test('should update colgroup when table structure changes', async ({ page }) => {
+    const table = page.locator('table').first();
 
-    // Hover over first row
-    await page.locator('table tr').first().hover();
-    await page.waitForTimeout(300);
-
-    // Click add row after button
-    const addRowAfterBtn = page.locator('button').filter({ hasText: /after/i }).first();
-    await addRowAfterBtn.click();
-
-    // Verify row count increased
-    const newRows = await page.locator('table tr').count();
-    expect(newRows).toBe(initialRows + 1);
-  });
-
-  test('should delete row when clicking delete row button', async ({ page }) => {
-    // Get initial row count
-    const initialRows = await page.locator('table tr').count();
-
-    // Hover over first row
-    await page.locator('table tr').first().hover();
-    await page.waitForTimeout(300);
-
-    // Click delete row button
-    const deleteRowBtn = page
-      .locator('button')
-      .filter({ hasText: /delete.*row/i })
-      .first();
-    await deleteRowBtn.click();
-
-    // Verify row count decreased
-    const newRows = await page.locator('table tr').count();
-    expect(newRows).toBe(initialRows - 1);
-  });
-
-  test('should add column before when clicking add column before button', async ({ page }) => {
     // Get initial column count
-    const initialCols = await page.locator('table tr').first().locator('td, th').count();
+    const initialCols = await table.locator('colgroup col').count();
 
-    // Hover over first cell
-    await page.locator('table td').first().hover();
+    // Click on first cell to show bubble menu
+    const firstCell = table.locator('td').first();
+    await firstCell.click();
+
+    // Wait for bubble menu to appear
+    await expect(page.locator('document-engine-table-main-view')).toBeVisible();
+
+    // Click on column dropdown icon
+    const columnDropdown = page
+      .locator('document-engine-select')
+      .filter({ has: page.locator('document-engine-icon[name="table_column"]') });
+    await columnDropdown.locator('button.document-engine-select__trigger').click();
+
+    // Click "Insert column right" option
+    const insertRightBtn = page.locator('button[role="option"]').filter({ hasText: 'Insert column right' });
+    await insertRightBtn.click();
+
     await page.waitForTimeout(300);
 
-    // Click add column before button
-    const addColBeforeBtn = page
-      .locator('button')
-      .filter({ hasText: /column.*before/i })
-      .first();
-    await addColBeforeBtn.click();
-
-    // Verify column count increased
-    const newCols = await page.locator('table tr').first().locator('td, th').count();
+    // Verify colgroup updated (TableNodeView.update should be called)
+    const newCols = await table.locator('colgroup col').count();
     expect(newCols).toBe(initialCols + 1);
   });
 
-  test('should add column after when clicking add column after button', async ({ page }) => {
-    // Get initial column count
-    const initialCols = await page.locator('table tr').first().locator('td, th').count();
+  // ============================================================================
+  // TABLE STRUCTURE TESTS (TableNodeView.createContentElement)
+  // ============================================================================
 
-    // Hover over first cell
-    await page.locator('table td').first().hover();
-    await page.waitForTimeout(300);
+  test('should render table with tbody as contentDOM', async ({ page }) => {
+    const table = page.locator('table').first();
 
-    // Click add column after button
-    const addColAfterBtn = page
-      .locator('button')
-      .filter({ hasText: /column.*after/i })
-      .first();
-    await addColAfterBtn.click();
+    // Verify table has tbody (created by TableNodeView.createContentElement)
+    const tbody = table.locator('tbody');
+    await expect(tbody).toBeVisible();
 
-    // Verify column count increased
-    const newCols = await page.locator('table tr').first().locator('td, th').count();
-    expect(newCols).toBe(initialCols + 1);
+    // Verify tbody contains rows
+    const rows = tbody.locator('tr');
+    const rowCount = await rows.count();
+    expect(rowCount).toBeGreaterThan(0);
   });
 
-  test('should delete column when clicking delete column button', async ({ page }) => {
-    // Get initial column count
-    const initialCols = await page.locator('table tr').first().locator('td, th').count();
+  test('should render cells as editable', async ({ page }) => {
+    const table = page.locator('table').first();
+    const firstCell = table.locator('td').first();
 
-    // Hover over first cell
-    await page.locator('table td').first().hover();
+    // Verify cells are editable (contentDOM allows editing)
+    await expect(firstCell).toBeEditable();
+
+    // Click and type to verify editability
+    await firstCell.click();
+    await page.keyboard.type('Test');
+
+    // Verify text was added
+    await expect(firstCell).toContainText('Test');
+  });
+
+  // BUG
+  test('should maintain table structure after content changes', async ({ page }) => {
+    const editor = await createEditorHelper(page);
+    const table = page.locator('table').first();
+
+    // Modify cell content
+    const firstCell = table.locator('td').first();
+    await firstCell.click();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.type('Modified content');
+
+    await page.waitForTimeout(200);
+
+    // Verify table structure is maintained
+    await expect(table.locator('colgroup')).toBeVisible();
+    await expect(table.locator('tbody')).toBeVisible();
+    await expect(firstCell).toContainText('Modified content');
+  });
+
+  // ============================================================================
+  // TABLE STYLES TESTS (TableNodeView.updateTableStyles)
+  // ============================================================================
+
+  test('should apply table border styles from attributes', async ({ page }) => {
+    const editor = await createEditorHelper(page);
+
+    // Set table with border attributes
+    await editor.setContent(`
+      <table style='border-color: blue; border-width: 2px; border-style: solid'>
+        <colgroup><col style="width: 50%"><col style="width: 50%"></colgroup>
+        <tr><td>Cell 1</td><td>Cell 2</td></tr>
+      </table>
+    `);
+
     await page.waitForTimeout(300);
 
-    // Click delete column button
-    const deleteColBtn = page
-      .locator('button')
-      .filter({ hasText: /delete.*column/i })
-      .first();
-    await deleteColBtn.click();
+    const table = page.locator('table').first();
 
-    // Verify column count decreased
-    const newCols = await page.locator('table tr').first().locator('td, th').count();
-    expect(newCols).toBe(initialCols - 1);
+    // Verify border styles are applied (by TableNodeView.updateTableStyles)
+    const borderStyle = await table.evaluate((el) => el.style.borderStyle);
+    const borderColor = await table.evaluate((el) => el.style.borderColor);
+    const borderWidth = await table.evaluate((el) => el.style.borderWidth);
+
+    expect(borderStyle).toBe('solid');
+    expect(borderColor).toContain('blue'); // Should contain blue color
+    expect(borderWidth).toBe('2px');
+  });
+
+  test('should apply table background color from attributes', async ({ page }) => {
+    const editor = await createEditorHelper(page);
+
+    // Set table with backgroundColor attribute
+    await editor.setContent(`
+      <table style='background-color: #f0f0f0'>
+        <colgroup><col style="width: 50%"><col style="width: 50%"></colgroup>
+        <tr><td>Cell 1</td><td>Cell 2</td></tr>
+      </table>
+    `);
+
+    await page.waitForTimeout(300);
+
+    const table = page.locator('table').first();
+
+    // Verify background color is applied
+    const bgColor = await table.evaluate((el) => el.style.backgroundColor);
+    expect(bgColor).toContain('240'); // Should contain #f0f0f0 (rgb(240, 240, 240))
   });
 
   test('should not show hover icons on nested table when hovering parent', async ({ page }) => {
@@ -177,26 +241,6 @@ test.describe('Table NodeView E2E @critical', () => {
     }
   });
 
-  test('should hide icons when mouse leaves table', async ({ page }) => {
-    const table = page.locator('table').first();
-
-    // Hover to show icons
-    await table.hover();
-    await page.waitForTimeout(500);
-
-    // Verify icons are visible
-    const visibleButtons = await page.locator('button:visible').count();
-    expect(visibleButtons).toBeGreaterThan(0);
-
-    // Move mouse away from table
-    await page.mouse.move(0, 0);
-    await page.waitForTimeout(500);
-
-    // Icons should be hidden
-    const buttonsAfter = await page.locator('button:visible').count();
-    expect(buttonsAfter).toBe(0);
-  });
-
   test('should position icons correctly relative to table', async ({ page }) => {
     const table = page.locator('table').first();
 
@@ -212,14 +256,17 @@ test.describe('Table NodeView E2E @critical', () => {
     const firstButton = page.locator('button:visible').first();
     const buttonBox = await firstButton.boundingBox();
 
-    if (tableBox && buttonBox) {
-      // Button should be positioned near the table
-      // Either above, below, or to the side
-      const isNearTable =
-        Math.abs(buttonBox.x - tableBox.x) < 200 || // Near horizontally
-        Math.abs(buttonBox.y - tableBox.y) < 200; // Near vertically
+    expect(buttonBox).not.toBeNull();
 
-      expect(isNearTable).toBe(true);
-    }
+    console.log('Button box: ', buttonBox);
+    console.log('Table box: ', tableBox);
+
+    // Button should be positioned near the table
+    // Either above, below, or to the side
+    const isNearTable =
+      Math.abs(buttonBox!.x - tableBox!.x) < 200 || // Near horizontally
+      Math.abs(buttonBox!.y - tableBox!.y) < 200; // Near vertically
+
+    expect(isNearTable).toBe(true);
   });
 });

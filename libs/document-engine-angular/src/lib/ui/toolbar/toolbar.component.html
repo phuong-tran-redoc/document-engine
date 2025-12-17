@@ -434,6 +434,7 @@
           size="icon"
           [disabled]="toolbarState.isReadOnly || !toolbarState.canInsertPageBreak"
           (click)="runAndEmit('insertPageBreak', editor.chain().focus().insertPageBreak().run)"
+          [class.active]="editor.isActive('pageBreak')"
           title="Insert page break"
         >
           <document-engine-icon name="insert_page_break"></document-engine-icon>

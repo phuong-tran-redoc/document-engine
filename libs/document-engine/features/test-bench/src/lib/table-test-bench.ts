@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DocumentEditorModule, Editor } from '@phuong-tran-redoc/document-engine-angular';
+import { TableOptions } from '@tiptap/extension-table';
 
 /**
  * Table test bench component for Playwright E2E testing
@@ -15,25 +16,21 @@ import { DocumentEditorModule, Editor } from '@phuong-tran-redoc/document-engine
 })
 export class TableTestBenchComponent implements OnInit {
   editor?: Editor;
-  value = `
-    <table>
-      <tr>
-        <td>Cell 1-1</td>
-        <td>Cell 1-2</td>
-      </tr>
-      <tr>
-        <td>Cell 2-1</td>
-        <td>Cell 2-2</td>
-      </tr>
-    </table>
-  `;
+  value = `<table>
+        <colgroup>
+          <col style="width: 50%">
+          <col style="width: 50%">
+        </colgroup>
+        <tr><td>Cell 1-1</td><td>Cell 1-2</td></tr>
+        <tr><td>Cell 2-1</td><td>Cell 2-2</td></tr>
+      </table>`;
 
   editorConfig = {
+    undoRedo: true,
     bold: true,
     italic: true,
     underline: true,
-    table: true,
-    undoRedo: true,
+    tables: { table: { resizable: true, enableNodeView: true } as unknown as TableOptions },
   };
 
   ngOnInit(): void {
