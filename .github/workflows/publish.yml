@@ -40,14 +40,12 @@ jobs:
   publish:
     needs: check-changes
     runs-on: ubuntu-latest
-    # Logic: Chạy nếu có thay đổi hoặc kích hoạt thủ công
     if: |
       needs.check-changes.outputs.core-changed == 'true' ||
       needs.check-changes.outputs.angular-changed == 'true' ||
       needs.check-changes.outputs.is-manual == 'true'
 
-    # 🔴 QUAN TRỌNG: Cấp quyền cho Trusted Publishing (OIDC)
-    # Nếu thiếu dòng này -> Lỗi 404 PUT / Access token expired
+    # Quyền bắt buộc cho Trusted Publishing
     permissions:
       contents: read
       id-token: write
@@ -59,13 +57,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 🔴 SỬA TẠI ĐÂY: Xóa registry-url và scope
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org/'
-          scope: '@phuong-tran-redoc'
-          # LƯU Ý: Không khai báo 'token' hay 'cache' ở đây để tránh conflict auth
+          # registry-url: ... (XÓA DÒNG NÀY)
+          # scope: ... (XÓA DÒNG NÀY)
+          # Để setup-node sạch sẽ, không tạo .npmrc gây nhiễu
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -82,8 +81,7 @@ jobs:
       - name: Build document-engine-core
         run: pnpm nx build document-engine-core
 
-      # --- BƯỚC 2: BUILD ANGULAR (STANDARD NX) ---
-      # Quay về cách build thông thường như bạn yêu cầu
+      # --- BƯỚC 2: BUILD ANGULAR ---
       - name: Build document-engine-angular
         if: |
           needs.check-changes.outputs.angular-changed == 'true' ||
@@ -96,8 +94,8 @@ jobs:
         if: |
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
-        # Dùng npm publish trực tiếp trong dist để ổn định nhất với OIDC
         working-directory: dist/libs/document-engine-core
+        # npm publish sẽ tự động dùng OIDC để lấy token
         run: npm publish --provenance --access public
 
       # --- BƯỚC 4: PUBLISH ANGULAR ---
@@ -106,6 +104,5 @@ jobs:
           needs.check-changes.outputs.angular-changed == 'true' ||
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
-        # Trỏ về folder dist chuẩn của Nx
         working-directory: dist/libs/document-engine-angular
         run: npm publish --provenance --access public
