@@ -96,7 +96,7 @@ jobs:
         if: |
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
-        run: pnpm publish --filter @phuong-tran-redoc/document-engine-core --no-git-checks --provenance --access public
+        run: npm publish --filter @phuong-tran-redoc/document-engine-core --no-git-checks --provenance --access public
 
       # --- BƯỚC 4: PUBLISH ANGULAR ---
       - name: Publish document-engine-angular
@@ -104,4 +104,4 @@ jobs:
           needs.check-changes.outputs.angular-changed == 'true' ||
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
-        run: pnpm publish --filter @phuong-tran-redoc/document-engine-angular --no-git-checks --provenance --access public
+        run: npm publish --filter @phuong-tran-redoc/document-engine-angular --no-git-checks --provenance --access public
