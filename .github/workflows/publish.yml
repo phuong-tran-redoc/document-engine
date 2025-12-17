@@ -7,7 +7,6 @@ on:
     paths:
       - 'libs/document-engine-core/**'
       - 'libs/document-engine-angular/**'
-      - 'tools/legacy-builder/**' # <-- Quan trọng: Trigger khi sửa builder
       - '.github/workflows/publish.yml'
   workflow_dispatch:
     inputs:
@@ -22,7 +21,7 @@ jobs:
     outputs:
       core-changed: ${{ steps.filter.outputs.core }}
       angular-changed: ${{ steps.filter.outputs.angular }}
-      skip-publish: 'false' # Mặc định là không skip
+      skip-publish: 'false'
       is-manual: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Checkout code
@@ -37,20 +36,20 @@ jobs:
               - 'libs/document-engine-core/**'
             angular:
               - 'libs/document-engine-angular/**'
-              - 'tools/legacy-builder/**'
 
   publish:
     needs: check-changes
     runs-on: ubuntu-latest
-    # Chạy nếu có thay đổi HOẶC là chạy thủ công
+    # Logic: Luôn chạy nếu có bất kỳ thay đổi nào hoặc trigger thủ công
     if: |
       needs.check-changes.outputs.core-changed == 'true' ||
       needs.check-changes.outputs.angular-changed == 'true' ||
       needs.check-changes.outputs.is-manual == 'true'
 
+    # 🔴 QUAN TRỌNG: Cấp quyền cho Trusted Publishing (OIDC)
     permissions:
       contents: read
-      id-token: write # Bắt buộc cho Trusted Publishing
+      id-token: write
       packages: write
 
     steps:
@@ -65,6 +64,7 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
           scope: '@phuong-tran-redoc'
+          # Không cần NODE_AUTH_TOKEN ở đây nữa vì dùng OIDC
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -77,35 +77,19 @@ jobs:
       - name: Clear Nx Cache
         run: pnpm nx clear-cache
 
-      # --- BƯỚC 1: BUILD CORE (QUAN TRỌNG: LUÔN CHẠY KHI CẦN PUBLISH BẤT CỨ CÁI GÌ) ---
-      # Lý do: Angular cần Core trong dist/ để build.
+      # --- BƯỚC 1: BUILD CORE ---
+      # Core luôn được build trước
       - name: Build document-engine-core
         run: pnpm nx build document-engine-core
 
-      # --- DEBUG: Kiểm tra xem Core đã build xong chưa ---
-      - name: Verify Core Build
-        run: |
-          echo "--- Checking CORE dist folder ---"
-          ls -la dist/libs/document-engine-core
-          cat dist/libs/document-engine-core/package.json
-
-      # --- BƯỚC 2: BUILD ANGULAR (LEGACY) ---
-      # Chỉ chạy khi Angular thay đổi HOẶC Core thay đổi (để đồng bộ version) HOẶC Manual
-      - name: Build document-engine-angular (Legacy v14 Support)
+      # --- BƯỚC 2: BUILD ANGULAR (STANDARD NX BUILD) ---
+      # Quay lại dùng lệnh chuẩn của Nx, không dùng legacy-builder nữa
+      - name: Build document-engine-angular
         if: |
           needs.check-changes.outputs.angular-changed == 'true' ||
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
-        run: |
-          echo "📦 Installing Legacy Builder dependencies..."
-          cd tools/legacy-builder
-          npm ci
-
-          echo "🔨 Building Angular Library with Legacy Compiler..."
-          npm run build
-
-          echo "✅ Build complete. Checking output..."
-          ls -la ../../dist/libs/document-engine-angular-legacy
+        run: pnpm nx build document-engine-angular
 
       # --- BƯỚC 3: PUBLISH CORE ---
       - name: Publish document-engine-core
@@ -121,6 +105,7 @@ jobs:
           needs.check-changes.outputs.angular-changed == 'true' ||
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
-        working-directory: dist/libs/document-engine-angular-legacy
-        # Dùng npm publish trực tiếp trong folder dist
+        # Trỏ về thư mục dist chuẩn của Nx
+        working-directory: dist/libs/document-engine-angular
+        # Dùng npm publish trực tiếp
         run: npm publish --provenance --access public
