@@ -7,85 +7,51 @@ on:
     paths:
       - 'libs/document-engine-core/**'
       - 'libs/document-engine-angular/**'
+      - 'tools/legacy-builder/**' # <-- Quan trọng: Trigger khi sửa builder
       - '.github/workflows/publish.yml'
-
   workflow_dispatch:
+    inputs:
+      force_publish:
+        description: 'Force publish both packages?'
+        required: true
+        default: 'true'
 
 jobs:
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      core-changed: ${{ steps.set-changes.outputs.core }}
-      angular-changed: ${{ steps.set-changes.outputs.angular }}
-      skip-publish: ${{ steps.set-skip.outputs.skip }}
-      is-manual: ${{ steps.check-trigger.outputs.is-manual }}
+      core-changed: ${{ steps.filter.outputs.core }}
+      angular-changed: ${{ steps.filter.outputs.angular }}
+      skip-publish: 'false' # Mặc định là không skip
+      is-manual: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Check for file changes
+        uses: dorny/paths-filter@v2
+        id: filter
         with:
-          fetch-depth: 0
-
-      - name: Check if manual trigger
-        id: check-trigger
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "is-manual=true" >> $GITHUB_OUTPUT
-            echo "Manual trigger detected, will publish both packages"
-          else
-            echo "is-manual=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Set skip-publish output
-        id: set-skip
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "skip=false" >> $GITHUB_OUTPUT
-            echo "Manual trigger: skip-publish=false"
-          else
-            COMMIT_MSG=$(git log -1 --pretty=%B)
-            if echo "$COMMIT_MSG" | grep -q "NO_PUBLISH"; then
-              echo "skip=true" >> $GITHUB_OUTPUT
-              echo "Found NO_PUBLISH in commit message, skipping publish"
-            else
-              echo "skip=false" >> $GITHUB_OUTPUT
-            fi
-          fi
-
-      - name: Set changed packages
-        id: set-changes
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "core=true" >> $GITHUB_OUTPUT
-            echo "angular=true" >> $GITHUB_OUTPUT
-            echo "Manual trigger: will publish both packages"
-          else
-            echo "Checking for changes between ${{ github.event.before }} and ${{ github.event.after }}"
-
-            if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q "^libs/document-engine-core/"; then
-              echo "core=true" >> $GITHUB_OUTPUT
-              echo "Found changes in document-engine-core"
-            else
-              echo "core=false" >> $GITHUB_OUTPUT
-            fi
-
-            if git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep -q "^libs/document-engine-angular/"; then
-              echo "angular=true" >> $GITHUB_OUTPUT
-              echo "Found changes in document-engine-angular"
-            else
-              echo "angular=false" >> $GITHUB_OUTPUT
-            fi
-          fi
+          filters: |
+            core:
+              - 'libs/document-engine-core/**'
+            angular:
+              - 'libs/document-engine-angular/**'
+              - 'tools/legacy-builder/**'
 
   publish:
     needs: check-changes
     runs-on: ubuntu-latest
-    if: needs.check-changes.outputs.skip-publish == 'false'
+    # Chạy nếu có thay đổi HOẶC là chạy thủ công
+    if: |
+      needs.check-changes.outputs.core-changed == 'true' ||
+      needs.check-changes.outputs.angular-changed == 'true' ||
+      needs.check-changes.outputs.is-manual == 'true'
+
     permissions:
-      id-token: write
       contents: read
+      id-token: write # Bắt buộc cho Trusted Publishing
       packages: write
-    # env:
-    #   NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
     steps:
       - name: Checkout code
@@ -97,53 +63,64 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: 'https://registry.npmjs.org/'
           scope: '@phuong-tran-redoc'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 9
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
+      - name: Install Root Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Clear pnpm cache
+      - name: Clear Nx Cache
         run: pnpm nx clear-cache
 
+      # --- BƯỚC 1: BUILD CORE (QUAN TRỌNG: LUÔN CHẠY KHI CẦN PUBLISH BẤT CỨ CÁI GÌ) ---
+      # Lý do: Angular cần Core trong dist/ để build.
       - name: Build document-engine-core
-        if: needs.check-changes.outputs.core-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
         run: pnpm nx build document-engine-core
 
-      - name: Build document-engine-angular
-        if: needs.check-changes.outputs.angular-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
-        run: pnpm nx build document-engine-angular
+      # --- DEBUG: Kiểm tra xem Core đã build xong chưa ---
+      - name: Verify Core Build
+        run: |
+          echo "--- Checking CORE dist folder ---"
+          ls -la dist/libs/document-engine-core
+          cat dist/libs/document-engine-core/package.json
 
-      # - name: DEBUG - Check dist/package.json versions
-      #   run: |
-      #     echo "--- Checking CORE package version ---"
-      #     cat dist/libs/document-engine-core/package.json | grep "version"
+      # --- BƯỚC 2: BUILD ANGULAR (LEGACY) ---
+      # Chỉ chạy khi Angular thay đổi HOẶC Core thay đổi (để đồng bộ version) HOẶC Manual
+      - name: Build document-engine-angular (Legacy v14 Support)
+        if: |
+          needs.check-changes.outputs.angular-changed == 'true' ||
+          needs.check-changes.outputs.core-changed == 'true' ||
+          needs.check-changes.outputs.is-manual == 'true'
+        run: |
+          echo "📦 Installing Legacy Builder dependencies..."
+          cd tools/legacy-builder
+          npm ci
 
-      #     echo "--- Checking ANGULAR package version ---"
-      #     cat dist/libs/document-engine-angular/package.json | grep "version"
+          echo "🔨 Building Angular Library with Legacy Compiler..."
+          npm run build
 
+          echo "✅ Build complete. Checking output..."
+          ls -la ../../dist/libs/document-engine-angular-legacy
+
+      # --- BƯỚC 3: PUBLISH CORE ---
       - name: Publish document-engine-core
-        if: needs.check-changes.outputs.core-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
+        if: |
+          needs.check-changes.outputs.core-changed == 'true' ||
+          needs.check-changes.outputs.is-manual == 'true'
+        # Dùng --provenance cho Trusted Publishing
         run: pnpm publish --filter @phuong-tran-redoc/document-engine-core --no-git-checks --provenance --access public
 
+      # --- BƯỚC 4: PUBLISH ANGULAR ---
       - name: Publish document-engine-angular
-        if: needs.check-changes.outputs.angular-changed == 'true' || needs.check-changes.outputs.is-manual == 'true'
-        run: pnpm publish --filter @phuong-tran-redoc/document-engine-angular --no-git-checks --provenance --access public
+        if: |
+          needs.check-changes.outputs.angular-changed == 'true' ||
+          needs.check-changes.outputs.core-changed == 'true' ||
+          needs.check-changes.outputs.is-manual == 'true'
+        working-directory: dist/libs/document-engine-angular-legacy
+        # Dùng npm publish trực tiếp trong folder dist
+        run: npm publish --provenance --access public
