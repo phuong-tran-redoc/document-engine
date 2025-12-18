@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Editor Basic Tests', () => {
+test.describe('@ci Editor Basic Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to test bench
     await page.goto('/test-bench');

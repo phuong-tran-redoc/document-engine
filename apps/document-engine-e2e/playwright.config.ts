@@ -36,8 +36,8 @@ export default defineConfig({
     // },
   },
 
-  /* Only run critical tests in CI */
-  grep: process.env['CI'] ? /@critical/ : undefined,
+  /* Only run tests with @ci tag in CI environment */
+  grep: process.env['CI'] ? /@ci/ : undefined,
 
   /* Run your local dev server before starting the tests */
   webServer: {
@@ -48,39 +48,28 @@ export default defineConfig({
     timeout: 120 * 1000, // 2 minutes for slow builds
   },
   projects: [
+    // CI Project: Only runs tests tagged with @ci
     {
-      name: 'chromium',
+      name: 'ci',
+      grep: /@ci/,
       use: { ...devices['Desktop Chrome'] },
     },
 
+    // Local Project: Runs all tests
     {
+      name: 'local',
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    // Optional: Other browsers for comprehensive testing
+    // Uncomment if needed for cross-browser testing
+    /* {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
-
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
-    },
-
-    // Uncomment for mobile browsers support
-    /* {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
     }, */
-
-    // Uncomment for branded browsers
-    /* {
-      name: 'Microsoft Edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    },
-    {
-      name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    } */
   ],
 });
