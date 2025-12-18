@@ -43,10 +43,11 @@ export default defineConfig({
   webServer: process.env['CI']
     ? {
         // CI: Serve static build (faster and more reliable)
-        command: 'npx serve dist/apps/document-engine -l 4200',
+        command: 'serve dist/apps/document-engine -l 4200',
         url: 'http://localhost:4200',
         reuseExistingServer: false,
-        timeout: 60 * 1000, // 1 minute should be enough for static server
+        cwd: workspaceRoot,
+        timeout: 120 * 1000, // 2 minutes to allow serve package install
       }
     : {
         // Local: Use dev server
