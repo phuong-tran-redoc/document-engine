@@ -40,13 +40,22 @@ export default defineConfig({
   grep: process.env['CI'] ? /@ci/ : undefined,
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'pnpm exec nx run document-engine:serve',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env['CI'], // Reuse in dev, clean start in CI
-    cwd: workspaceRoot,
-    timeout: 120 * 1000, // 2 minutes for slow builds
-  },
+  webServer: process.env['CI']
+    ? {
+        // CI: Serve static build (faster and more reliable)
+        command: 'npx serve dist/apps/document-engine -l 4200',
+        url: 'http://localhost:4200',
+        reuseExistingServer: false,
+        timeout: 60 * 1000, // 1 minute should be enough for static server
+      }
+    : {
+        // Local: Use dev server
+        command: 'pnpm exec nx run document-engine:serve',
+        url: 'http://localhost:4200',
+        reuseExistingServer: true, // Reuse existing server in dev
+        cwd: workspaceRoot,
+        timeout: 120 * 1000, // 2 minutes for slow builds
+      },
   projects: [
     // CI Project: Only runs tests tagged with @ci
     {
