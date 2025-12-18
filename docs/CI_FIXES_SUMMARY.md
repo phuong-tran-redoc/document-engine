@@ -32,7 +32,7 @@ Added `working-directory` to E2E test step in `.github/workflows/ci.yml`:
 - 194 warnings in various E2E test files
 
 **Root Cause:**
-E2E test files were being linted with strict rules meant for production code
+E2E test files were being linted with strict rules meant for production code.
 
 **Fix:**
 Excluded E2E test directories from ESLint in `eslint.config.mjs`:
