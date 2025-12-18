@@ -11,15 +11,16 @@ Error: Project(s) "ci" not found. Available projects: ""
 ```
 
 **Root Cause:**
-Playwright command was running from root directory instead of E2E project directory
+`working-directory` trong GitHub Actions không ảnh hưởng đến cách `pnpm exec` resolve playwright binary. Playwright được resolve từ root `node_modules` và tìm config từ root directory thay vì working-directory.
 
 **Fix:**
-Added `working-directory` to E2E test step in `.github/workflows/ci.yml`:
+Use full path to config file in `.github/workflows/ci.yml`:
 
 ```yaml
 - name: Run E2E Tests (CI Suite)
-  working-directory: apps/document-engine-e2e # ← Added this
-  run: pnpm exec playwright test --project=ci
+  run: pnpm exec playwright test --config=apps/document-engine-e2e/playwright.config.ts --project=ci
+  env:
+    CI: true
 ```
 
 ---
