@@ -11,7 +11,7 @@ Error: Project(s) "ci" not found. Available projects: ""
 ```
 
 **Root Cause:**
-Playwright command was running from root directory instead of E2E project directory.
+Playwright command was running from root directory instead of E2E project directory
 
 **Fix:**
 Added `working-directory` to E2E test step in `.github/workflows/ci.yml`:
