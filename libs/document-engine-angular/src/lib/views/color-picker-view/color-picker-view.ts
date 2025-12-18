@@ -58,7 +58,6 @@ export class ColorPickerViewComponent implements BubbleMenuViewContent<Record<st
     this.activeColor = this.getActiveColor(this.colorType);
   }
 
-  /* Sample */
   applyColor(color: Color | null): void {
     if (!this.editor || !color) return;
 
