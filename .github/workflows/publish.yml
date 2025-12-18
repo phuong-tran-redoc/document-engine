@@ -61,7 +61,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          # Không dùng registry-url ở đây - sẽ cấu hình riêng cho OIDC
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -86,15 +86,12 @@ jobs:
           needs.check-changes.outputs.is-manual == 'true'
         run: pnpm nx build document-engine-angular
 
-      # --- DEBUG: Kiểm tra auth và registry ---
-      - name: Debug npm config
+      # --- Cấu hình npm cho OIDC Trusted Publisher ---
+      - name: Configure npm for OIDC
         run: |
-          echo "=== npm config ==="
-          npm config list
-          echo "=== npm whoami ==="
-          npm whoami || echo "Not logged in (expected for OIDC)"
-          echo "=== Check .npmrc ==="
-          cat ~/.npmrc || echo "No .npmrc found"
+          npm config set registry https://registry.npmjs.org/
+          # Xóa token cũ nếu có (từ các step trước)
+          npm config delete //registry.npmjs.org/:_authToken 2>/dev/null || true
 
       # --- BƯỚC 3: PUBLISH CORE ---
       - name: Publish document-engine-core
@@ -102,9 +99,7 @@ jobs:
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
         working-directory: dist/libs/document-engine-core
-        run: |
-          echo "Publishing @phuong-tran-redoc/document-engine-core..."
-          npm publish --provenance --access public
+        run: npm publish --provenance --access public
 
       # --- BƯỚC 4: PUBLISH ANGULAR ---
       - name: Publish document-engine-angular
