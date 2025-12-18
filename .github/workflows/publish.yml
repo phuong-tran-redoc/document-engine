@@ -86,14 +86,25 @@ jobs:
           needs.check-changes.outputs.is-manual == 'true'
         run: pnpm nx build document-engine-angular
 
+      # --- DEBUG: Kiểm tra auth và registry ---
+      - name: Debug npm config
+        run: |
+          echo "=== npm config ==="
+          npm config list
+          echo "=== npm whoami ==="
+          npm whoami || echo "Not logged in (expected for OIDC)"
+          echo "=== Check .npmrc ==="
+          cat ~/.npmrc || echo "No .npmrc found"
+
       # --- BƯỚC 3: PUBLISH CORE ---
       - name: Publish document-engine-core
         if: |
           needs.check-changes.outputs.core-changed == 'true' ||
           needs.check-changes.outputs.is-manual == 'true'
         working-directory: dist/libs/document-engine-core
-        # npm publish sẽ tự động dùng OIDC để lấy token
-        run: npm publish --provenance --access public
+        run: |
+          echo "Publishing @phuong-tran-redoc/document-engine-core..."
+          npm publish --provenance --access public
 
       # --- BƯỚC 4: PUBLISH ANGULAR ---
       - name: Publish document-engine-angular
