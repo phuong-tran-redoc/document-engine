@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { createEditorHelper } from '../../helpers/editor-helpers';
 
+// Verified
+
 test.describe('DynamicField NodeView E2E @critical', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/test-bench/dynamic-field');

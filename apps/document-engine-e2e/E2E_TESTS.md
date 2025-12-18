@@ -1,8 +1,8 @@
 # E2E Test Documentation
 
-**Last Updated:** 2025-12-17  
-**Total Test Files:** 21  
-**Total Tests:** ~177 (32 implemented, 145 planned)
+**Last Updated:** 2025-12-18  
+**Total Test Files:** 28  
+**Total Tests:** ~235 (71 implemented, 164 planned)
 
 ---
 
@@ -10,16 +10,61 @@
 
 | Priority      | Files  | Tests   | Implemented | Planned |
 | ------------- | ------ | ------- | ----------- | ------- |
-| **@critical** | 6      | 58      | 32          | 26      |
-| **@high**     | 7      | 77      | 0           | 77      |
-| **@medium**   | 8      | 42      | 0           | 42      |
-| **TOTAL**     | **21** | **177** | **32**      | **145** |
+| **@critical** | 7      | 64      | 52          | 12      |
+| **@high**     | 11     | 115     | 46          | 69      |
+| **@medium**   | 10     | 56      | 11          | 45      |
+| **TOTAL**     | **28** | **235** | **109**     | **126** |
+
+---
+
+## 📁 Directory Structure
+
+```
+apps/document-engine-e2e/src/
+├── core/
+│   ├── nodeviews/
+│   │   ├── table-nodeview.spec.ts (@critical) ✅ 12 tests
+│   │   ├── page-break-nodeview.spec.ts (@critical) ✅ 3 tests
+│   │   └── dynamic-field-nodeview.spec.ts (@critical) ✅ 11 tests
+│   └── extensions/
+│       ├── table-bubble-menu.spec.ts (@critical) ✅ 6 tests
+│       ├── restricted-editing.spec.ts (@critical) 🟡 8 tests
+│       ├── table-resizing.spec.ts (@high) ✅ 6 tests
+│       ├── reset-on-enter.spec.ts (@medium) ✅ 4 tests
+│       ├── clear-content.spec.ts (@medium) ✅ 3 tests
+│       └── text-case.spec.ts (@medium) ✅ 4 tests
+└── angular/
+    ├── directives/
+    │   └── tiptap-editor.spec.ts (@critical) ✅ 6 tests
+    ├── components/
+    │   ├── toolbar.spec.ts (@critical) ✅ 8 tests (planned)
+    │   └── document-editor.spec.ts (@critical) ✅ 4 tests (planned)
+    └── views/
+        ├── table-main-view.spec.ts (@critical) ✅ 14 tests
+        ├── table-cell-style-view.spec.ts (@high) ✅ 19 tests
+        ├── table-style-view.spec.ts (@high) ✅ 13 tests
+        ├── table-create-view.spec.ts (@high) ✅ 8 tests
+        ├── link-main-view.spec.ts (@high) 🟡 10 tests
+        ├── link-edit-view.spec.ts (@high) 🟡 8 tests
+        ├── link-properties-view.spec.ts (@medium) 🟡 6 tests
+        ├── image-insert-view.spec.ts (@high) 🟡 12 tests
+        ├── dynamic-fields-view.spec.ts (@medium) 🟡 6 tests
+        ├── special-characters-view.spec.ts (@medium) 🟡 5 tests
+        ├── template-view.spec.ts (@medium) 🟡 6 tests
+        └── color-picker-view.spec.ts (@medium) 🟡 8 tests
+```
+
+**Legend:**
+
+- ✅ **IMPLEMENTED** - Tests written and working
+- 🟡 **PLACEHOLDER** - File created with TODO placeholders
+- 🔴 **TODO** - File needs to be created
 
 ---
 
 ## 🎯 Test Organization by Priority
 
-### 🔴 @critical - Core Functionality (6 files, 58 tests)
+### 🔴 @critical - Core Functionality (7 files, 64 tests)
 
 #### 1. Table NodeView (12 tests) ✅ IMPLEMENTED
 
@@ -83,30 +128,62 @@
 
 ---
 
-#### 5. Table Main View (18 tests) 🟡 PLACEHOLDER
+#### 5. TiptapEditor Directive (6 tests) ✅ IMPLEMENTED
+
+**File:** `angular/directives/tiptap-editor.spec.ts`  
+**Source:** `libs/document-engine-angular/src/lib/core/editor.directive.ts`
+
+**ngModel Binding (3 tests):**
+
+1. should bind initial value from ngModel
+2. should update model when editor content changes
+3. should update editor when model changes externally
+
+**Disabled State (2 tests):**
+
+4. should disable editor when disabled is true
+5. should re-enable editor when disabled is toggled back
+
+**Value Synchronization (1 test):**
+
+6. should maintain sync between editor and model
+
+---
+
+#### 6. Table Main View (14 tests) ✅ IMPLEMENTED
 
 **File:** `angular/views/table-main-view.spec.ts`  
 **Source:** `libs/document-engine-angular/src/lib/views/table-views/table-main-view.ts`
 
 **Column Actions (4 tests):**
 
-1. should insert column left when selecting add-before option
-2. should insert column right when selecting add-after option
-3. should delete column when selecting delete option
-4. should select entire column when selecting select option
+1. should insert column left when clicking insert left button
+2. should insert column right when clicking insert right button
+3. should delete column when clicking delete button
+4. should select entire column when clicking select button
 
-**Row Actions (4 tests):** 5. should insert row above when selecting add-before option 6. should insert row below when selecting add-after option 7. should delete row when selecting delete option 8. should select entire row when selecting select option
+**Row Actions (4 tests):**
 
-**Cell Actions (4 tests):** 9. should merge cells when multiple cells are selected 10. should split cell when merged cell is selected 11. should disable merge button when single cell is selected 12. should disable split button when non-merged cell is selected
+5. should insert row above when clicking insert above button
+6. should insert row below when clicking insert below button
+7. should delete row when clicking delete button
+8. should select entire row when clicking select button
 
-**Navigation (2 tests):** 13. should navigate to Table Properties view when clicking table properties button 14. should navigate to Cell Properties view when clicking cell properties button
+**Cell Actions (4 tests):**
 
-**Remaining (4 tests):**
-15-18. Additional table manipulation tests
+9. should merge cells when multiple cells are selected
+10. should split cell when merged cell is selected
+11. should disable merge button when single cell is selected
+12. should disable split button when non-merged cell is selected
+
+**Navigation (2 tests):**
+
+13. should navigate to Table Properties view when clicking table properties button
+14. should navigate to Cell Properties view when clicking cell properties button
 
 ---
 
-#### 6. Restricted Editing Extension (8 tests) 🟡 PLACEHOLDER
+#### 7. Restricted Editing Extension (8 tests) 🟡 PLACEHOLDER
 
 **File:** `core/extensions/restricted-editing.spec.ts`  
 **Source:** `libs/document-engine-core/src/extensions/restricted-editing.extension.ts`
@@ -124,9 +201,9 @@
 
 ---
 
-### 🟠 @high - Important Features (7 files, 77 tests)
+### 🟠 @high - Important Features (11 files, 115 tests)
 
-#### 7. Table Cell Style View (20 tests) 🟡 PLACEHOLDER
+#### 8. Table Cell Style View (19 tests) ✅ IMPLEMENTED
 
 **File:** `angular/views/table-cell-style-view.spec.ts`  
 **Source:** `libs/document-engine-angular/src/lib/views/table-views/table-cell-style-view.ts`
@@ -141,17 +218,33 @@
 6. should set border color using color picker
 7. should clear border color
 
-**Background Styling (2 tests):** 8. should set background color using color picker 9. should clear background color
+**Background Styling (2 tests):**
 
-**Text Alignment (4 tests):** 10. should set text alignment to left 11. should set text alignment to center 12. should set text alignment to right 13. should set text alignment to justify
+8. should set background color using color picker
+9. should clear background color
 
-**Vertical Alignment (3 tests):** 14. should set vertical alignment to top 15. should set vertical alignment to middle 16. should set vertical alignment to bottom
+**Text Alignment (4 tests):**
 
-**Actions (4 tests):** 17. should save cell styles when clicking Save button 18. should cancel and return to main view when clicking Cancel button 19. should apply multiple style changes together 20. Additional cell styling test
+10. should set text alignment to left
+11. should set text alignment to center
+12. should set text alignment to right
+13. should set text alignment to justify
+
+**Vertical Alignment (3 tests):**
+
+14. should set vertical alignment to top
+15. should set vertical alignment to middle
+16. should set vertical alignment to bottom
+
+**Actions (3 tests):**
+
+17. should save cell styles when clicking Save button
+18. should cancel and return to main view when clicking Cancel button
+19. should apply multiple style changes together
 
 ---
 
-#### 8. Table Style View (13 tests) 🟡 PLACEHOLDER
+#### 9. Table Style View (13 tests) ✅ IMPLEMENTED
 
 **File:** `angular/views/table-style-view.spec.ts`  
 **Source:** `libs/document-engine-angular/src/lib/views/table-views/table-style-view.ts`
@@ -167,13 +260,20 @@
 7. should set table border color using color picker
 8. should clear table border color
 
-**Background Styling (2 tests):** 9. should set table background color using color picker 10. should clear table background color
+**Background Styling (2 tests):**
 
-**Actions (3 tests):** 11. should save table styles when clicking Save button 12. should cancel and return to main view when clicking Cancel button 13. should apply multiple style changes together
+9. should set table background color using color picker
+10. should clear table background color
+
+**Actions (3 tests):**
+
+11. should save table styles when clicking Save button
+12. should cancel and return to main view when clicking Cancel button
+13. should apply multiple style changes together
 
 ---
 
-#### 9. Table Resizing Extension (6 tests) 🟡 PLACEHOLDER
+#### 10. Table Resizing Extension (6 tests) ✅ IMPLEMENTED
 
 **File:** `core/extensions/table-resizing.spec.ts`  
 **Source:** `libs/document-engine-core/src/extensions/table-resizing.extension.ts`
@@ -187,18 +287,88 @@
 
 ---
 
-#### 10-13. Additional @high Files (38 tests) 🔴 TODO
+#### 11. Link Main View (10 tests) 🟡 PLACEHOLDER
 
-- **link-main-view.spec.ts** (~10 tests)
-- **link-edit-view.spec.ts** (~8 tests)
-- **image-insert-view.spec.ts** (~12 tests)
-- **table-create-view.spec.ts** (~8 tests)
+**File:** `angular/views/link-main-view.spec.ts`  
+**Source:** `libs/document-engine-angular/src/lib/views/link-views/link-main-view.ts`
+
+**Link Creation (4 tests):**
+
+1. should show link input field
+2. should create link with URL
+3. should create link with text
+4. should validate URL format
+
+**Link Editing (3 tests):** 5. should show edit options for existing link 6. should update link URL 7. should remove link
+
+**Navigation (3 tests):** 8. should navigate to link properties view 9. should open link in new tab 10. Additional link test
 
 ---
 
-### 🟡 @medium - Nice-to-Have (8 files, 42 tests)
+#### 12. Link Edit View (8 tests) � PLACEHOLDER
 
-#### 14. Reset on Enter Extension (4 tests) 🟡 PLACEHOLDER
+**File:** `angular/views/link-edit-view.spec.ts`  
+**Source:** `libs/document-engine-angular/src/lib/views/link-views/link-edit-view.ts`
+
+**URL Editing (3 tests):**
+
+1. should edit link URL
+2. should edit link text
+3. should validate URL on edit
+
+**Link Attributes (2 tests):** 4. should set link to open in new tab 5. should set link title attribute
+
+**Actions (3 tests):** 6. should save link changes 7. should cancel link editing 8. should delete link
+
+---
+
+#### 13. Image Insert View (12 tests) 🟡 PLACEHOLDER
+
+**File:** `angular/views/image-insert-view.spec.ts`  
+**Source:** `libs/document-engine-angular/src/lib/views/image-insert-view/image-insert-view.ts`
+
+**Image Upload (4 tests):**
+
+1. should show file upload button
+2. should upload image file
+3. should validate file type
+4. should validate file size
+
+**Image URL (3 tests):** 5. should insert image from URL 6. should validate image URL 7. should show preview of URL image
+
+**Image Properties (3 tests):** 8. should set image alt text 9. should set image dimensions 10. should set image alignment
+
+**Actions (2 tests):** 11. should insert image with properties 12. should cancel image insertion
+
+---
+
+#### 14. Table Create View (8 tests) ✅ IMPLEMENTED
+
+**File:** `angular/views/table-create-view.spec.ts`  
+**Source:** Uses `insertTable` command via `/test-bench/table`
+
+**Table Dimensions (4 tests):**
+
+1. should show row and column inputs
+2. should create table with specified dimensions
+3. should validate minimum dimensions
+4. should validate maximum dimensions
+
+**Table Options (2 tests):**
+
+5. should toggle header row option
+6. should set initial table width
+
+**Actions (2 tests):**
+
+7. should create table on confirm
+8. should cancel table creation
+
+---
+
+### 🟡 @medium - Nice-to-Have (10 files, 56 tests)
+
+#### 15. Reset on Enter Extension (4 tests) ✅ IMPLEMENTED
 
 **File:** `core/extensions/reset-on-enter.spec.ts`  
 **Source:** `libs/document-engine-core/src/extensions/reset-on-enter.extension.ts`
@@ -210,86 +380,130 @@
 
 ---
 
-#### 15-21. Additional @medium Files (38 tests) 🔴 TODO
+#### 16. Link Properties View (6 tests) 🟡 PLACEHOLDER
 
-- **dynamic-fields-view.spec.ts** (~6 tests)
-- **special-characters-view.spec.ts** (~5 tests)
-- **template-view.spec.ts** (~6 tests)
-- **color-picker-view.spec.ts** (~8 tests)
-- **link-properties-view.spec.ts** (~6 tests)
-- **clear-content.spec.ts** (~3 tests)
-- **text-case.spec.ts** (~4 tests)
+**File:** `angular/views/link-properties-view.spec.ts`  
+**Source:** `libs/document-engine-angular/src/lib/views/link-views/link-properties-view.ts`
 
----
+**Advanced Options (3 tests):**
 
-## 📁 Directory Structure
+1. should set link rel attribute
+2. should set link class
+3. should set link ID
 
-```
-apps/document-engine-e2e/src/
-├── core/
-│   ├── nodeviews/
-│   │   ├── table-nodeview.spec.ts (@critical) ✅ 12 tests
-│   │   ├── page-break-nodeview.spec.ts (@critical) ✅ 3 tests
-│   │   └── dynamic-field-nodeview.spec.ts (@critical) ✅ 11 tests
-│   └── extensions/
-│       ├── table-bubble-menu.spec.ts (@critical) ✅ 6 tests
-│       ├── restricted-editing.spec.ts (@critical) 🟡 8 tests
-│       ├── table-resizing.spec.ts (@high) 🟡 6 tests
-│       ├── reset-on-enter.spec.ts (@medium) 🟡 4 tests
-│       ├── clear-content.spec.ts (@medium) 🔴 TODO
-│       └── text-case.spec.ts (@medium) 🔴 TODO
-└── angular/
-    ├── components/
-    │   ├── toolbar.spec.ts (@critical) ✅ 8 tests (planned)
-    │   ├── document-editor.spec.ts (@critical) ✅ 4 tests (planned)
-    │   └── tiptap-editor.spec.ts (@critical) ✅ 3 tests (planned)
-    └── views/
-        ├── table-main-view.spec.ts (@critical) 🟡 18 tests
-        ├── table-cell-style-view.spec.ts (@high) 🟡 20 tests
-        ├── table-style-view.spec.ts (@high) 🟡 13 tests
-        ├── table-create-view.spec.ts (@high) 🔴 TODO
-        ├── link-main-view.spec.ts (@high) 🔴 TODO
-        ├── link-edit-view.spec.ts (@high) 🔴 TODO
-        ├── link-properties-view.spec.ts (@medium) 🔴 TODO
-        ├── image-insert-view.spec.ts (@high) 🔴 TODO
-        ├── dynamic-fields-view.spec.ts (@medium) 🔴 TODO
-        ├── special-characters-view.spec.ts (@medium) 🔴 TODO
-        ├── template-view.spec.ts (@medium) 🔴 TODO
-        └── color-picker-view.spec.ts (@medium) 🔴 TODO
-```
+**Actions (3 tests):** 4. should save advanced properties 5. should cancel property changes 6. should navigate back to main view
 
 ---
 
-## 🔑 Legend
+#### 17. Dynamic Fields View (6 tests) � PLACEHOLDER
 
-- ✅ **IMPLEMENTED** - Tests written and working
-- 🟡 **PLACEHOLDER** - File created with TODO placeholders
-- 🔴 **TODO** - File needs to be created
+**File:** `angular/views/dynamic-fields-view.spec.ts`  
+**Source:** `libs/document-engine-angular/src/lib/views/dynamic-fields-view/dynamic-fields-view.ts`
+
+**Field Selection (3 tests):**
+
+1. should show available field types
+2. should filter fields by search
+3. should show field preview
+
+**Field Insertion (3 tests):** 4. should insert selected field 5. should configure field properties 6. should cancel field insertion
 
 ---
 
-## 📈 Implementation Roadmap
+#### 18. Special Characters View (5 tests) 🟡 PLACEHOLDER
+
+**File:** `angular/views/special-characters-view.spec.ts`  
+**Source:** `libs/document-engine-angular/src/lib/views/special-characters-view/special-characters-view.ts`
+
+**Character Grid (3 tests):**
+
+1. should show character grid
+2. should filter characters by category
+3. should search for characters
+
+**Character Insertion (2 tests):** 4. should insert character on click 5. should show character preview
+
+---
+
+#### 19. Template View (6 tests) 🟡 PLACEHOLDER
+
+**File:** `angular/views/template-view.spec.ts`  
+**Source:** `libs/document-engine-angular/src/lib/views/template-view/template-view.ts`
+
+**Template Selection (3 tests):**
+
+1. should show available templates
+2. should filter templates by category
+3. should show template preview
+
+**Template Insertion (3 tests):** 4. should insert template content 5. should replace existing content with template 6. should cancel template insertion
+
+---
+
+#### 20. Color Picker View (8 tests) 🟡 PLACEHOLDER
+
+**File:** `angular/views/color-picker-view.spec.ts`  
+**Source:** `libs/document-engine-angular/src/lib/views/color-picker-view/color-picker-view.ts`
+
+**Color Palette (3 tests):**
+
+1. should show color palette
+2. should select color from palette
+3. should show selected color preview
+
+**Custom Color (3 tests):** 4. should allow custom color input 5. should validate color format 6. should show color picker dialog
+
+**Actions (2 tests):** 7. should apply selected color 8. should clear color selection
+
+---
+
+#### 21. Clear Content Extension (3 tests) ✅ IMPLEMENTED
+
+**File:** `core/extensions/clear-content.spec.ts`  
+**Source:** `libs/document-engine-core/src/extensions/clear-content.extension.ts`
+
+1. should clear all editor content
+2. should show confirmation dialog
+3. should cancel clear operation
+
+---
+
+#### 22. Text Case Extension (4 tests) ✅ IMPLEMENTED
+
+**File:** `core/extensions/text-case.spec.ts`  
+**Source:** `libs/document-engine-core/src/extensions/text-case.extension.ts`
+
+1. should convert text to uppercase
+2. should convert text to lowercase
+3. should convert text to title case
+4. should toggle case
+
+---
+
+## Implementation Roadmap
 
 ### Phase 1: @critical (Priority 1)
 
 1. ✅ Core NodeViews (table, page-break, dynamic-field)
 2. ✅ Table Bubble Menu Extension
-3. 🟡 Table Main View (implement tests)
-4. 🟡 Restricted Editing Extension (implement tests)
+3. ✅ Table Main View
+4. 🟡 Restricted Editing Extension (needs test bench)
 
 ### Phase 2: @high (Priority 2)
 
-5. 🟡 Table Cell Style View (implement tests)
-6. 🟡 Table Style View (implement tests)
-7. 🟡 Table Resizing Extension (implement tests)
-8. 🔴 Link Views (create & implement)
-9. 🔴 Image Insert View (create & implement)
-10. 🔴 Table Create View (create & implement)
+5. ✅ Table Cell Style View
+6. ✅ Table Style View
+7. ✅ Table Resizing Extension
+8. ✅ Table Create View
+9. 🔴 Link Views (needs test bench)
+10. 🔴 Image Insert View (needs test bench)
 
 ### Phase 3: @medium (Priority 3)
 
-11. 🟡 Reset on Enter Extension (implement tests)
-12. 🔴 Remaining utility views (create & implement)
+11. ✅ Reset on Enter Extension
+12. ✅ Clear Content Extension
+13. ✅ Text Case Extension
+14. 🔴 Remaining utility views (needs test benches)
 
 ---
 

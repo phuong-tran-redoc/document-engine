@@ -1,5 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 
+// Verified
+
 /**
  * E2E tests for Table Bubble Menu (table-style.extension.ts)
  * Tests the bubble menu UI that appears when clicking on table cells

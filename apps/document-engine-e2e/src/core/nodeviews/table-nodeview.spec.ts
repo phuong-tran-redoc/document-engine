@@ -2,6 +2,8 @@ import { expect, test } from '@playwright/test';
 import { createEditorHelper } from '../../helpers/editor-helpers';
 import { TEST_DATA } from '../../helpers/test-data';
 
+// Verified
+
 /**
  * E2E tests for TableNodeView (block-handler.ts)
  * Tests the NodeView wrapper that provides handle and typearound functionality
