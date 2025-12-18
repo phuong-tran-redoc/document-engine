@@ -79,7 +79,7 @@ jobs:
 
       - name: Run E2E Tests (CI Suite)
         working-directory: apps/document-engine-e2e
-        run: pnpm exec playwright test --project=ci
+        run: pnpm exec playwright test --config=playwright.config.ts --project=ci
         env:
           CI: true
 
