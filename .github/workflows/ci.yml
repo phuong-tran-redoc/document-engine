@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Lint affected projects (allow warnings, fail on errors only)
+      - name: Lint
+        run: pnpm nx affected --target=lint --base=origin/main --parallel=3 -- --max-warnings=999
+        continue-on-error: false
+
+      # Test affected projects
+      - name: Test
+        run: pnpm nx affected --target=test --base=origin/main --parallel=3 --coverage
+        continue-on-error: false
+
+      # Build affected projects
+      - name: Build
+        run: pnpm nx affected --target=build --base=origin/main --parallel=3
+        continue-on-error: false
+
+      # Upload coverage reports (optional)
+      - name: Upload coverage
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/**/coverage-final.json
+          fail_ci_if_error: false
+        continue-on-error: true

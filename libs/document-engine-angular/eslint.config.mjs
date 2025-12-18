@@ -9,7 +9,8 @@ export default [
         'error',
         {
           ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
-          ignoreDependencies: [
+          ignoredDependencies: [
+            'tslib',
             '@tiptap/core',
             '@tiptap/extension-bubble-menu',
             '@tiptap/extension-floating-menu',
