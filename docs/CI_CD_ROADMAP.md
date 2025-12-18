@@ -5,57 +5,93 @@
 
 ---
 
-## Current Status: ~35-40%
+## Current Status: ~60-65% ✅
 
 ### Assessment Matrix
 
-| Component              | Status     | Description                            |
-| ---------------------- | ---------- | -------------------------------------- |
-| **CD - Deployment**    |            |                                        |
-| Auto Publish to npm    | ✅ Done    | Triggers on push to `main` branch      |
-| OIDC Authentication    | ✅ Done    | Trusted Publishing (no tokens needed)  |
-| Provenance Attestation | ✅ Done    | Sigstore verification enabled          |
-| **CI - Integration**   |            |                                        |
-| PR Validation Workflow | ❌ Missing | No automated checks on Pull Requests   |
-| Lint Check             | ❌ Missing | ESLint configured but not in CI        |
-| Unit Tests             | ❌ Missing | Jest configured but not in CI          |
-| E2E Tests              | ❌ Missing | Playwright configured but not in CI    |
-| Build Validation       | 🔶 Partial | Only builds during publish, not on PRs |
-| **Automation**         |            |                                        |
-| Auto Version Bump      | ❌ Manual  | Requires manual version updates        |
-| Changelog Generation   | ❌ Missing | No automated changelog                 |
-| **Security**           |            |                                        |
-| Branch Protection      | ❓ Unknown | Not verified                           |
-| Dependency Scanning    | ❌ Missing | No Dependabot or similar               |
+| Component              | Status     | Description                           |
+| ---------------------- | ---------- | ------------------------------------- |
+| **CD - Deployment**    |            |                                       |
+| Auto Publish to npm    | ✅ Done    | Triggers on push to `main` branch     |
+| OIDC Authentication    | ✅ Done    | Trusted Publishing (no tokens needed) |
+| Provenance Attestation | ✅ Done    | Sigstore verification enabled         |
+| **CI - Integration**   |            |                                       |
+| PR Validation Workflow | ✅ Done    | Runs lint, test, build on PRs         |
+| Lint Check             | ✅ Done    | ESLint configured and running in CI   |
+| Unit Tests             | ✅ Done    | Jest configured and running in CI     |
+| E2E Tests              | ❌ Missing | Playwright configured but not in CI   |
+| Build Validation       | ✅ Done    | Validates builds on PRs and main      |
+| **Automation**         |            |                                       |
+| Auto Version Bump      | ⏭️ Skipped | Manual versioning (acceptable)        |
+| Changelog Generation   | ⏭️ Skipped | Manual changelog (acceptable)         |
+| **Security**           |            |                                       |
+| Branch Protection      | ✅ Done    | Enabled for `main` branch             |
+| Dependency Scanning    | ❌ Missing | No Dependabot or similar              |
 
 ---
 
 ## Implementation Roadmap
 
-### Phase 1: Basic CI Workflow (Priority: HIGH)
+### ✅ Phase 1: Basic CI Workflow (COMPLETED)
 
 **Goal:** Validate code quality on every Pull Request
 
-#### Step 1.1: Create CI Workflow File
+**Status:** ✅ Done - CI workflow created and running
 
-Create `.github/workflows/ci.yml`:
+---
+
+### ✅ Phase 2: Branch Protection (COMPLETED)
+
+**Goal:** Prevent direct pushes to `main`, require PR reviews
+
+**Status:** ✅ Done - Branch protection enabled for `main`
+
+**Configuration:**
+
+- ✅ Require pull request before merging
+- ✅ Require status checks to pass (`validate`)
+- ✅ Block force pushes
+
+---
+
+### ⏭️ Phase 3: Automated Versioning (SKIPPED)
+
+**Goal:** Auto-bump version based on commit messages
+
+**Status:** ⏭️ Skipped - Manual versioning is acceptable for this project
+
+**Reason:** Manual version control provides more flexibility for library releases.
+
+---
+
+### 🎯 Phase 4: E2E Tests in CI (NEXT STEP - Priority: MEDIUM)
+
+**Goal:** Run Playwright tests on PRs
+
+**Current Status:** E2E tests exist but not running in CI
+
+#### Step 4.1: Check E2E Test Configuration
+
+Verify that E2E tests are working locally:
+
+```bash
+# Run E2E tests locally
+pnpm nx e2e document-engine-e2e
+```
+
+#### Step 4.2: Add E2E Job to CI Workflow
+
+Update `.github/workflows/ci.yml` to add E2E testing job:
 
 ```yaml
-name: CI
-
-on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
-
 jobs:
   validate:
+    # ... existing job ...
+
+  e2e:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -68,73 +104,53 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm nx affected --target=lint --base=origin/main
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps chromium
 
-      - name: Test
-        run: pnpm nx affected --target=test --base=origin/main
+      - name: Run E2E Tests
+        run: pnpm nx e2e document-engine-e2e
 
-      - name: Build
-        run: pnpm nx affected --target=build --base=origin/main
+      - name: Upload Test Results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/document-engine-e2e/playwright-report/
+          retention-days: 7
 ```
 
-#### Step 1.2: Verify Nx Targets
+#### Step 4.3: Optimize E2E Tests (Optional)
 
-Ensure these targets exist in `project.json` files:
+Consider these optimizations:
 
-- `lint` - ESLint validation
-- `test` - Jest unit tests
-- `build` - Production build
+1. **Run only affected E2E tests:**
 
----
+   ```yaml
+   run: pnpm nx affected --target=e2e --base=origin/main
+   ```
 
-### Phase 2: Branch Protection (Priority: HIGH)
+2. **Run E2E in parallel with unit tests:**
 
-**Goal:** Prevent direct pushes to `main`, require PR reviews
+   - E2E job runs independently from `validate` job
+   - Both must pass for PR to merge
 
-#### Step 2.1: GitHub Repository Settings
+3. **Skip E2E for documentation changes:**
+   ```yaml
+   e2e:
+     if: |
+       !contains(github.event.head_commit.message, '[skip e2e]')
+   ```
 
-1. Go to **Settings** → **Branches** → **Add rule**
-2. Branch name pattern: `main`
-3. Enable:
-   - ☑️ Require a pull request before merging
-   - ☑️ Require status checks to pass
-   - ☑️ Require branches to be up to date
+#### Step 4.4: Update Branch Protection
 
----
+After adding E2E job, update branch protection rules:
 
-### Phase 3: Automated Versioning (Priority: MEDIUM)
+1. Go to **Settings** → **Rules** → **Rulesets**
+2. Edit `Protect main branch` ruleset
+3. In **Require status checks**, add: `e2e`
+4. Now both `validate` AND `e2e` must pass
 
-**Goal:** Auto-bump version based on commit messages
-
-#### Option A: Conventional Commits + semantic-release
-
-1. Install: `pnpm add -D semantic-release @semantic-release/changelog @semantic-release/git`
-2. Configure `.releaserc.json`
-3. Commit format: `feat:`, `fix:`, `chore:`, `BREAKING CHANGE:`
-
-#### Option B: Changesets (simpler)
-
-1. Install: `pnpm add -D @changesets/cli`
-2. Run: `pnpm changeset init`
-3. Before each PR: `pnpm changeset` to describe changes
-
----
-
-### Phase 4: E2E Tests in CI (Priority: MEDIUM)
-
-**Goal:** Run Playwright tests on PRs
-
-```yaml
-e2e:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-    - run: pnpm install --frozen-lockfile
-    - run: pnpm exec playwright install --with-deps
-    - run: pnpm nx e2e document-engine-e2e
-```
+**Estimated effort:** ~30 minutes - 1 hour
 
 ---
 
