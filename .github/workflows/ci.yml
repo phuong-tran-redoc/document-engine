@@ -29,19 +29,22 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Derive appropriate SHAs for base and head
+        uses: nrwl/nx-set-shas@v4
+
       # Lint affected projects (allow warnings, fail on errors only)
       - name: Lint
-        run: pnpm nx affected --target=lint --base=origin/main --parallel=3 -- --max-warnings=999
+        run: pnpm nx affected --target=lint --parallel=3 -- --max-warnings=999
         continue-on-error: false
 
       # Test affected projects
       - name: Test
-        run: pnpm nx affected --target=test --base=origin/main --parallel=3 --coverage
+        run: pnpm nx affected --target=test --parallel=3 --coverage
         continue-on-error: false
 
       # Build affected projects
       - name: Build
-        run: pnpm nx affected --target=build --base=origin/main --parallel=3
+        run: pnpm nx affected --target=build --parallel=3
         continue-on-error: false
 
       # Upload coverage reports (optional)
