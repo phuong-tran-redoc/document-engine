@@ -57,14 +57,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 🔴 SỬA TẠI ĐÂY: Xóa registry-url và scope
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # registry-url: ... (XÓA DÒNG NÀY)
-          # scope: ... (XÓA DÒNG NÀY)
-          # Để setup-node sạch sẽ, không tạo .npmrc gây nhiễu
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
