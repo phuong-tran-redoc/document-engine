@@ -16,8 +16,8 @@
     "e2e": "nx e2e document-engine-e2e",
     "e2e:ui": "nx e2e document-engine-e2e --ui",
     "e2e:headed": "nx e2e document-engine-e2e -- --headed",
-    "e2e:ci": "cd apps/document-engine-e2e && playwright test --project=ci",
-    "e2e:local": "cd apps/document-engine-e2e && playwright test --project=local",
+    "e2e:ci": "cd apps/document-engine-e2e && playwright test --config=playwright.config.ts --project=ci",
+    "e2e:local": "cd apps/document-engine-e2e && playwright test --config=playwright.config.ts --project=local",
     "affected:test": "nx affected --target=test",
     "affected:build": "nx affected --target=build"
   },
