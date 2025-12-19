@@ -43,9 +43,10 @@ export default defineConfig({
   webServer: process.env['CI']
     ? {
         // CI: Serve static build (faster and more reliable)
-        command: 'serve dist/apps/document-engine -l 4200',
+        // -s flag enables single page application mode (redirects all routes to index.html)
+        command: 'serve dist/apps/document-engine -l 4200 -s',
         url: 'http://localhost:4200',
-        reuseExistingServer: false,
+        reuseExistingServer: true,
         cwd: workspaceRoot,
         timeout: 120 * 1000, // 2 minutes to allow serve package install
       }
