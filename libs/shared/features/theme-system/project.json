@@ -4,7 +4,7 @@
   "sourceRoot": "libs/shared/features/theme-system/src",
   "prefix": "document-engine",
   "projectType": "library",
-  "tags": ["scope:shared"],
+  "tags": ["scope:shared", "type:feature"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
