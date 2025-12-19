@@ -15,8 +15,7 @@ test.describe('TiptapEditor Directive - ngModel Binding @critical', () => {
 
   test('should bind initial value from ngModel', async ({ page }) => {
     // Verify initial content is displayed in editor
-    const editorContent = await page.locator('.tiptap-editor p').textContent();
-    expect(editorContent).toBe('Initial content');
+    await expect(page.locator('.tiptap-editor p')).toHaveText('Initial content');
 
     // Verify model value is displayed
     const modelValue = await page.locator('[data-testid="model-value"]').textContent();
@@ -44,8 +43,7 @@ test.describe('TiptapEditor Directive - ngModel Binding @critical', () => {
     await page.waitForTimeout(200);
 
     // Verify editor content updated
-    const editorContent = await page.locator('.tiptap-editor p').textContent();
-    expect(editorContent).toBe('Changed from Outside');
+    await expect(page.locator('.tiptap-editor p')).toHaveText('Changed from Outside');
 
     // Verify model value updated
     const modelValue = await page.locator('[data-testid="model-value"]').textContent();
@@ -74,8 +72,10 @@ test.describe('TiptapEditor Directive - Disabled State @critical', () => {
     await page.waitForTimeout(200);
 
     // Verify content didn't change
-    const finalContent = await page.locator('.tiptap-editor p').textContent();
-    expect(finalContent).toBe(initialContent);
+    // const finalContent = await page.locator('.tiptap-editor p').textContent();
+    // expect(finalContent).toBe(initialContent);
+    // await expect(page.locator('.tiptap-editor p')).toHaveText(initialContent);
+    await expect(page.locator('.tiptap-editor p')).toHaveValue(initialContent ?? '');
   });
 
   test('should re-enable editor when disabled is toggled back', async ({ page }) => {
@@ -112,8 +112,8 @@ test.describe('TiptapEditor Directive - Value Synchronization @critical', () => 
     await page.waitForTimeout(200);
 
     // Verify editor updated
-    let editorContent = await page.locator('.tiptap-editor p').textContent();
-    expect(editorContent).toBe('Changed from Outside');
+    const editorContentLocator = page.locator('.tiptap-editor p');
+    await expect(editorContentLocator).toHaveText('Changed from Outside');
 
     // Type in editor
     await page.locator('.tiptap-editor').click();
@@ -126,7 +126,6 @@ test.describe('TiptapEditor Directive - Value Synchronization @critical', () => 
     expect(modelValue).toContain('Changed from Outside - More text');
 
     // Verify editor still has correct content
-    editorContent = await page.locator('.tiptap-editor p').textContent();
-    expect(editorContent).toContain('Changed from Outside - More text');
+    await expect(editorContentLocator).toHaveText('Changed from Outside - More text');
   });
 });
