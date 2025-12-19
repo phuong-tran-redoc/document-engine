@@ -218,7 +218,7 @@ Developed by **Duc Phuong (Jack)** - Senior Frontend Engineer with 4+ years of e
 
 ## 📄 License
 
-**UNLICENSED** - Internal use only. This software is proprietary and confidential.
+MIT
 
 ---
 
