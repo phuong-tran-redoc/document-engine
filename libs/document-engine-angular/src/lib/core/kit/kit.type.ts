@@ -182,6 +182,13 @@ export interface DocumentEngineConfig {
   image?: Partial<ImageOptions> | boolean;
 
   /**
+   * Enable the URL-free `image-ref` node (`<figure data-block="image-ref" data-image-id>`).
+   * Stores an opaque media id; the consumer resolves the real responsive image.
+   * @default false
+   */
+  imageRef?: boolean;
+
+  /**
    * Cấu hình cho @tiptap/extension-table (StyledTableKit)
    * @default false
    */
