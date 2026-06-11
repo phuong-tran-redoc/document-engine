@@ -44,6 +44,16 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# .context: commit evergreen reference (ops/, decisions, domain, vision, techstack,
+# patterns), ignore only the ephemeral work-tracking (tasks/plans/investigations/progress).
+/.context/tasks/
+/.context/tasks-done/
+/.context/plans/
+/.context/plans-done/
+/.context/investigations/
+/.context/progress.md
+/.context/ctx-config.json
+
 .nx/cache
 .nx/workspace-data
 .cursor/rules/nx-rules.mdc
