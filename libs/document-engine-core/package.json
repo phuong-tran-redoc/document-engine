@@ -3,13 +3,14 @@
   "version": "0.0.41",
   "type": "module",
   "license": "MIT",
-  "author": "Duc Phuong (Jack) <tdp99.business@gmail.com>",
+  "author": "Realestatedoc (Redoc)",
+  "contributors": ["Duc Phuong (Jack) <tdp99.business@gmail.com>"],
   "description": "Framework-agnostic core library for Document Engine",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/phuong-tran-redoc/document-engine"
+    "url": "git+https://github.com/phuong-tran-redoc/document-engine.git"
   },
   "publishConfig": {
     "directory": "../../dist/libs/document-engine-core",
