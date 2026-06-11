@@ -19,7 +19,12 @@
     "e2e:ci": "cd apps/document-engine-e2e && playwright test --project=ci",
     "e2e:local": "cd apps/document-engine-e2e && playwright test --project=local",
     "affected:test": "nx affected --target=test",
-    "affected:build": "nx affected --target=build"
+    "affected:build": "nx affected --target=build",
+    "release:preview": "nx release --dry-run",
+    "release": "nx release --skip-publish",
+    "release:first": "nx release 0.1.0 --first-release --skip-publish",
+    "release:next": "nx release prerelease --preid=next --skip-publish",
+    "release:push": "git push --follow-tags"
   },
   "private": true,
   "dependencies": {
