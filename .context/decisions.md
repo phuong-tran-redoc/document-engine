@@ -77,6 +77,60 @@ Full spec in [`ops/security-legal-gate.md`](ops/security-legal-gate.md).
 
 ---
 
+### [2026-06-11] ADR-004 — Document versioning shape: thin `EditorDocument` wrapper (DE-003)
+
+**Context:** Stored documents need a `schemaVersion` so persisted JSON can migrate forward safely. Two
+places to put it: (a) a doc-level attribute on the ProseMirror `doc` node, or (b) a thin wrapper type
+around the content.
+
+**Decision:** A thin wrapper: `EditorDocument { schemaVersion: number; content: JSONContent }`. Versioning
+is a storage-layer concern, not an editor-schema concern. `migrateDoc(doc)` is pure + idempotent; the
+shipped registry (`docMigrations`) is empty/identity at `LATEST_SCHEMA_VERSION = 1`, but the walker +
+registry + field exist so future bumps are non-breaking.
+
+**Rationale:** Keeps the ProseMirror schema untouched (no migration of every node's attrs, no editor
+re-init to read a version). A backend can read/migrate the version without instantiating an editor, and it
+matches the `migrateDoc(doc)` signature the portfolio consumer (tasks 310/319) expects.
+
+**Consequences:** Consumers persist `{ schemaVersion, content }`. Adding a migration = bump
+`LATEST_SCHEMA_VERSION` and add the keyed step. All exported from `core/src/index.ts` via `./migrations`.
+
+---
+
+### [2026-06-11] ADR-005 — Headless `generateHTML` is async + environment-aware (DE-002)
+
+**Context:** Core must serialize document JSON → HTML headlessly (for backend rendering). Tiptap v3 splits
+`@tiptap/html`: the bare entry (and its CJS `require`) is **browser-only** and throws in Node; only
+`@tiptap/html/server` is Node-safe — but it's backed by **happy-dom**, which is ESM-only and ~600 files.
+A static import of `/server` into `index.ts` therefore breaks the whole (CJS) Jest suite and bundles a full
+DOM implementation into every browser editor app that imports core.
+
+**Decision:** `generateHTML(doc, extensions?)` is **async** and picks the serializer at call time from
+whether a DOM is present, via lazy `import()`: browser/jsdom → `@tiptap/html` (ambient DOM), Node →
+`@tiptap/html/server` (happy-dom). It lives in `core/src/kit/` (with `defaultExtensions`), not `utils/`, to
+avoid a `utils → kit → extensions → utils` cycle. A `defaultExtensions` array (content-schema half of the
+editor kit) is the default arg; `Indent` is excluded because its `renderHTML` emits an empty `style=""` on
+every block. An ambient shim (`types/tiptap-html-server.d.ts`) lets TS resolve the `/server` subpath under
+`moduleResolution: node10`.
+
+**Rationale:** Async + lazy isolates happy-dom to a never-fetched-in-browser chunk, keeps the export in
+`index.ts` (per the task contract), and stops unrelated tests from loading 600 ESM files. Env-awareness also
+gives the test seam: real HTML is asserted under jsdom; the Node path is asserted with `/server` mocked.
+
+**Consequences:** Consumers `await generateHTML(...)` (portfolio `RichTextService` must `await` before
+DOMPurify). `@tiptap/html` added to core deps **and** root `package.json` (repo convention: all `@tiptap/*`
+live in both).
+
+**Follow-up (2026-06-11):** the lazy `import('@tiptap/html/server')` was still **statically resolvable** by
+esbuild/webpack/vite, so a browser bundle (the demo app's `nx build`) tried to bundle happy-dom and failed on
+Node built-ins (`util`, `stream`, `vm`, …). Fixed by building the `/server` specifier at runtime
+(`['@tiptap','html','server'].join('/')`) plus `/* webpackIgnore */ /* @vite-ignore */`, so no bundler can
+resolve it and happy-dom stays out of the client bundle entirely. The `typeof document` guard means the Node
+branch never runs in a browser. (Surfaced only when the demo app was first built after this work — evidence
+that a dep/feature change must build **every** project, not just unit-test the libs.)
+
+---
+
 ## Template
 
 ### [Date] Decision Title
