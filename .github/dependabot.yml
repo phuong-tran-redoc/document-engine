@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # npm dependencies — weekly, with a cooldown so brand-new releases aren't pulled immediately
+  # (cheapest defense against the npm supply-chain worm class; see .context/ops/security-legal-gate.md).
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    groups:
+      tiptap:
+        patterns:
+          - '@tiptap/*'
+      angular:
+        patterns:
+          - '@angular/*'
+          - 'angular-eslint'
+      nx:
+        patterns:
+          - '@nx/*'
+          - 'nx'
+
+  # Keep pinned GitHub Actions SHAs current.
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    open-pull-requests-limit: 5

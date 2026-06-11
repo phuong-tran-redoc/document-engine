@@ -1,0 +1,12 @@
+# OSV-Scanner configuration — https://google.github.io/osv-scanner/configuration/
+#
+# The security gate currently runs OSV as ADVISORY. To promote it to blocking:
+#   1. Run `npx --yes @google/osv-scanner scan --lockfile=pnpm-lock.yaml` locally.
+#   2. Triage findings: suppress any that are unreachable/disputed/dev-only below, each with a
+#      reason + a review date.
+#   3. Remove `continue-on-error: true` from the OSV step in .github/workflows/security-gate.yml.
+#
+# Example suppression:
+# [[IgnoredVulns]]
+# id = "GHSA-xxxx-xxxx-xxxx"
+# # reason: not reachable from the published surface; review by 2026-09-01

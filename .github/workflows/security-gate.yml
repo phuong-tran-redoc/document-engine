@@ -1,0 +1,90 @@
+name: security-gate
+
+# Reusable pre-publish gate. Called by publish.yml as a required job, and runnable on PRs.
+# Blocking steps fail the job; advisory steps use continue-on-error and report only.
+# Spec + thresholds: .context/ops/security-legal-gate.md
+on:
+  workflow_call:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'libs/document-engine-core/**'
+      - 'libs/document-engine-angular/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/security-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history for secret scan)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      # --- BLOCKING: secrets in git history ---
+      - name: Secret scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_SUMMARY: 'true'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: 9
+
+      # Deterministic install with NO dependency lifecycle scripts.
+      - name: Install (frozen, no scripts)
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      # --- ADVISORY (promote to blocking after triaging baseline findings into osv-scanner.toml) ---
+      - name: Dependency vulnerabilities (OSV-Scanner)
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@e69cc6c86b31f1e7e23935bbe7031b50e51082de # v2.0.2
+        with:
+          scan-args: |-
+            --lockfile=pnpm-lock.yaml
+            --config=osv-scanner.toml
+
+      - name: Build publishable libs
+        run: pnpm nx run-many -t build --projects=tag:scope:public
+
+      # --- BLOCKING: transitive license allowlist (fail on GPL/AGPL/unknown) ---
+      - name: License allowlist (production closure)
+        run: |
+          npx --yes license-checker-rseidelsohn \
+            --start . \
+            --production \
+            --excludePrivatePackages \
+            --onlyAllow 'MIT;ISC;BSD-2-Clause;BSD-3-Clause;Apache-2.0;0BSD;CC0-1.0;Unlicense;BlueOak-1.0.0' \
+            --excludePackages '@phuong-tran-redoc/document-engine-core;@phuong-tran-redoc/document-engine-angular'
+
+      # --- BLOCKING: tarball contents (no secrets/junk; LICENSE present) ---
+      - name: Verify tarball contents
+        run: |
+          node tools/security/verify-tarball.mjs dist/libs/document-engine-core
+          node tools/security/verify-tarball.mjs dist/libs/document-engine-angular
+
+      # --- BLOCKING: package wiring + type resolution (ESM core / ESM angular) ---
+      - name: publint + are-the-types-wrong
+        run: |
+          npx --yes publint --strict --pack npm dist/libs/document-engine-core
+          npx --yes publint --strict --pack npm dist/libs/document-engine-angular
+          # core ships swc-built ESM whose .d.ts barrels use extensionless re-exports.
+          # These resolve fine for bundlers (the actual consumer: Angular apps) but trip
+          # Node16 native ESM type resolution. We target bundler/ESM-import usage, so the
+          # internal-resolution-error rule is intentionally ignored here.
+          npx --yes @arethetypeswrong/cli --pack dist/libs/document-engine-core --profile esm-only --ignore-rules internal-resolution-error
+          # angular is an ESM-only ng-packagr build (type: module, fesm2022). esm-only is the
+          # right profile (CJS consumers use dynamic import, as expected). The "./styles" subpath
+          # is a Sass-only entry (exports.sass, no JS/types), so it is excluded from type checks.
+          npx --yes @arethetypeswrong/cli --pack dist/libs/document-engine-angular --profile esm-only --exclude-entrypoints ./styles

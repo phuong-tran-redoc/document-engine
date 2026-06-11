@@ -1,12 +1,11 @@
 {
   "name": "@phuong-tran-redoc/document-engine-angular",
   "version": "0.0.41",
-  "type": "commonjs",
+  "type": "module",
   "license": "MIT",
-  "author": "Duc Phuong (Jack) <tdp99.business@gmail.com>",
+  "author": "Realestatedoc (Redoc)",
+  "contributors": ["Duc Phuong (Jack) <tdp99.business@gmail.com>"],
   "description": "Angular wrapper for @phuong-tran-redoc/document-engine-core",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
   "keywords": [
     "angular",
     "document-engine",
@@ -17,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/phuong-tran-redoc/document-engine"
+    "url": "git+https://github.com/phuong-tran-redoc/document-engine.git"
   },
   "publishConfig": {
     "directory": "../../dist/libs/document-engine-angular",
@@ -31,10 +30,10 @@
   "peerDependencies": {
     "rxjs": "^7.5.0",
     "lodash-es": "^4.17.10",
-    "@angular/core": ">=14.0.0 <21.0.0",
-    "@angular/common": ">=14.0.0 <21.0.0",
-    "@angular/forms": ">=14.0.0 <21.0.0",
-    "@angular/platform-browser": ">=14.0.0 <21.0.0",
+    "@angular/core": ">=14.0.0 <22.0.0",
+    "@angular/common": ">=14.0.0 <22.0.0",
+    "@angular/forms": ">=14.0.0 <22.0.0",
+    "@angular/platform-browser": ">=14.0.0 <22.0.0",
     "@tiptap/core": "^3.10.5",
     "@tiptap/extension-blockquote": "^3.10.5",
     "@tiptap/extension-bold": "^3.10.5",

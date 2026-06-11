@@ -3,3 +3,22 @@ packages:
   - 'apps/*'
 
 autoInstallPeers: true
+
+# --- Supply-chain hardening (see .context/ops/security-legal-gate.md) ---
+# pnpm >= 10 refuses to silently run dependency install/build scripts (default-deny).
+# `allowBuilds` is the per-package allowlist: only packages set to `true` may run their
+# install/build scripts; everything else stays blocked. All entries below are build tooling
+# (compilers, bundlers, the Nx engine, native watchers/db) that legitimately need a
+# postinstall build — each reviewed and known-safe.
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
+  nx: true
+  unrs-resolver: true
+
+# Dependency cooldown: wait 1 day before installing a freshly published version
+# (cheapest defense against the npm-worm / compromised-release class). Enable once verified.
+# minimumReleaseAge: 1440

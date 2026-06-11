@@ -12,6 +12,7 @@ describe('Avatar', () => {
 
     fixture = TestBed.createComponent(Avatar);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('items', []);
     fixture.detectChanges();
   });
 
