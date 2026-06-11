@@ -23,6 +23,7 @@ import { CustomOrderedList } from '../extensions/ordered-list.extension';
 import { StyledTableKit } from '../extensions/table-style.extension';
 import { DynamicField } from '../nodes/dynamic-field.node';
 import { NotumHeading } from '../nodes/heading.node';
+import { ImageRef } from '../nodes/image-ref.node';
 import { PageBreak } from '../nodes/page-break.node';
 
 /**
@@ -80,6 +81,7 @@ export const defaultExtensions: Extensions = [
 
   // Content nodes
   Image,
+  ImageRef,
   PageBreak,
   DynamicField,
 
