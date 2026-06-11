@@ -1,13 +1,11 @@
 {
   "name": "@phuong-tran-redoc/document-engine-angular",
   "version": "0.0.41",
-  "type": "commonjs",
+  "type": "module",
   "license": "MIT",
   "author": "Realestatedoc (Redoc)",
   "contributors": ["Duc Phuong (Jack) <tdp99.business@gmail.com>"],
   "description": "Angular wrapper for @phuong-tran-redoc/document-engine-core",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
   "keywords": [
     "angular",
     "document-engine",

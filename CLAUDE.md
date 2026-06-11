@@ -11,7 +11,7 @@ Published packages (npm, scope `@phuong-tran-redoc`, MIT, public):
 | Package | Role | Module type | Builder |
 | --- | --- | --- | --- |
 | `@phuong-tran-redoc/document-engine-core` | Framework-agnostic core: Tiptap extensions, custom nodes, models, utils | ESM (`type: module`) | `@nx/js:swc` |
-| `@phuong-tran-redoc/document-engine-angular` | Angular wrapper components/directives/CVA over core | CommonJS (`type: commonjs`) | `@nx/angular:package` (ng-packagr) |
+| `@phuong-tran-redoc/document-engine-angular` | Angular wrapper components/directives/CVA over core | ESM (`type: module`) | `@nx/angular:package` (ng-packagr) |
 
 The Angular lib depends on core via `workspace:*` — they version and publish **together**.
 
@@ -91,7 +91,7 @@ Cut a release (summary — full detail in [`RELEASING.md`](./RELEASING.md)):
 | **Nx MCP first** | Use `nx_workspace` / `nx_project_details` / `nx_docs` MCP tools to understand the workspace and answer Nx-config questions instead of assuming. |
 | **Verify project names** | `pnpm nx show projects \| grep -i <term>` before running nx commands — project names use the npm-scoped form (e.g. `@phuong-tran-redoc/document-engine-core`). |
 | **Public API is a contract** | Anything exported from a lib `index.ts` is consumed by external apps. Additive changes only; breaking changes need a major bump + coordination. |
-| **Two module systems** | core is ESM, angular is CJS — don't assume one config works for both. Headless/Node-side helpers must be ESM-safe in core. |
+| **Both ESM, two builders** | core is ESM via `@nx/js:swc`; angular is ESM via ng-packagr (fesm2022). Different build pipelines and output layouts — don't assume one config works for both. Headless/Node-side helpers must be ESM-safe in core. |
 | **Style** | SCSS + Tailwind; Angular components use `scss`. Follow existing extension/node folder structure under `core/src/{extensions,nodes,...}`. |
 | **English in code** | Identifiers, comments, and docs in English (some legacy Vietnamese comments are being cleaned up). |
 | **Type-check after edits** | `npx nx build <project>` or `npx tsc --noEmit` after touching `.ts`. |
