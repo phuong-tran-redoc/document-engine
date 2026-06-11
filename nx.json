@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "defaultBase": "master",
+  "defaultBase": "main",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
@@ -89,8 +89,17 @@
     }
   },
   "release": {
+    "projects": ["tag:scope:public"],
+    "projectsRelationship": "fixed",
+    "releaseTagPattern": "v{version}",
     "version": {
-      "preVersionCommand": "pnpm dlx nx run-many -t build"
+      "conventionalCommits": true,
+      "preserveLocalDependencyProtocols": false,
+      "preVersionCommand": "pnpm nx run-many -t build --projects=tag:scope:public"
+    },
+    "changelog": {
+      "workspaceChangelog": { "createRelease": false },
+      "projectChangelogs": false
     }
   }
 }
