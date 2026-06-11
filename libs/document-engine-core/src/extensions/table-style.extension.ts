@@ -1,5 +1,6 @@
-import { Extension, Node, NodeViewRendererProps } from '@tiptap/core';
+import { Extension, Node, NodeViewRenderer, NodeViewRendererProps, RawCommands } from '@tiptap/core';
 import { Table, TableCell, TableHeader, TableKitOptions, TableOptions, TableRow } from '@tiptap/extension-table';
+import { Node as PMNode } from '@tiptap/pm/model';
 import { TextSelection } from '@tiptap/pm/state';
 import { addColumnAfter, addColumnBefore, deleteColumn, selectionCell, TableMap } from '@tiptap/pm/tables';
 import { MIN_NEW_COL_WIDTH } from '../constants/table.constant';
@@ -144,7 +145,7 @@ declare module '@tiptap/core' {
 }
 
 // Extend Table node to support width (%) and alignment (left|center|right)
-export const StyledTable = Table.extend({
+export const StyledTable = Table.extend<TableOptions & { enableNodeView?: boolean }>({
   // name: 'styledTable',
 
   // draggable: true,
@@ -153,7 +154,7 @@ export const StyledTable = Table.extend({
     return {
       ...this.parent?.(),
       enableNodeView: true,
-    };
+    } as TableOptions & { enableNodeView?: boolean };
   },
 
   addAttributes() {
@@ -223,14 +224,8 @@ export const StyledTable = Table.extend({
     };
   },
 
-  renderHTML({
-    node,
-    HTMLAttributes,
-  }: {
-    node: Node & { attrs: { colwidths?: (number | null)[] | null } };
-    HTMLAttributes: Record<string, unknown>;
-  }) {
-    const colwidths = node.attrs?.['colwidths'];
+  renderHTML({ node, HTMLAttributes }: { node: PMNode; HTMLAttributes: Record<string, unknown> }) {
+    const colwidths = node.attrs?.['colwidths'] as (number | null)[] | null | undefined;
 
     const domNodes: (string | number | Record<string, unknown> | unknown[])[] = [];
 
@@ -514,17 +509,17 @@ export const StyledTable = Table.extend({
             .updateAttributes('tableHeader', { backgroundColor: color ?? null })
             .run();
         },
-    };
+    } as Partial<RawCommands>;
   },
 
   addNodeView() {
     const options: TableOptions & { enableNodeView?: boolean } = this.options;
     if (options.enableNodeView === false) {
-      return undefined;
+      return null;
     }
 
     // Only use custom NodeView (with handle) when editor is editable
-    return (props: NodeViewRendererProps) => {
+    return ((props: NodeViewRendererProps) => {
       // Check if editor is editable
       if (!props.editor.isEditable) {
         // Return undefined to use default table rendering (no widget wrapper)
@@ -533,7 +528,7 @@ export const StyledTable = Table.extend({
 
       // Editor is editable → use custom NodeView with handle
       return createTableNodeView(props);
-    };
+    }) as NodeViewRenderer;
   },
 });
 
