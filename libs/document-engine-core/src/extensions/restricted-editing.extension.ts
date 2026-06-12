@@ -13,12 +13,12 @@ export const EditableRegion = Node.create({
   parseHTML() {
     return [
       // ----------------------------------------------------------
-      // RULE 1: Standard Tiptap Format (Ưu tiên cao nhất)
+      // RULE 1: Standard Tiptap Format (highest priority)
       // ----------------------------------------------------------
       { tag: 'span[data-editable-region]' },
 
       // ----------------------------------------------------------
-      // RULE 2: CKEditor Format (Ưu tiên thấp nhất)
+      // RULE 2: CKEditor Format (lowest priority)
       // ----------------------------------------------------------
       { tag: 'span.restricted-editing-exception' },
     ];

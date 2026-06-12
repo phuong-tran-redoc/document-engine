@@ -18,7 +18,7 @@ type DragInfo = {
 };
 
 /**
- * Hàm xử lý khi di chuột (kéo)
+ * Handler for mouse move (dragging)
  */
 function handleMouseMoveEvent(event: MouseEvent, dragInfo: DragInfo) {
   if (!dragInfo.isDragging) return;
@@ -28,59 +28,59 @@ function handleMouseMoveEvent(event: MouseEvent, dragInfo: DragInfo) {
   const { startX, tableWidthPx, initialLeftWidth, initialRightWidth, leftColIndex, tablePos, tableNode, view } =
     dragInfo;
 
-  // 1. Tính toán delta (pixel)
+  // 1. Compute the delta (pixels)
   const deltaX = event.clientX - startX;
 
-  // 2. Chuyển delta pixel sang delta percentage
-  // Đây là logic quan trọng nhất
+  // 2. Convert the pixel delta into a percentage delta
+  // This is the most important piece of logic
   const deltaPercent = (deltaX / tableWidthPx) * 100;
 
-  // 3. Tính toán width mới
+  // 3. Compute the new widths
   let newLeftWidth = initialLeftWidth + deltaPercent;
   let newRightWidth = initialRightWidth - deltaPercent;
 
-  // 4. Áp dụng ràng buộc (ví dụ: min-width 5%)
-  const minWidth = 5; // Cấu hình min-width
+  // 4. Apply constraints (e.g. min-width 5%)
+  const minWidth = 5; // min-width configuration
   if (newLeftWidth < minWidth) {
     const diff = minWidth - newLeftWidth;
     newLeftWidth = minWidth;
-    newRightWidth = newRightWidth - diff; // Cột phải bù phần bị thiếu
+    newRightWidth = newRightWidth - diff; // Right column absorbs the shortfall
   } else if (newRightWidth < minWidth) {
     const diff = minWidth - newRightWidth;
     newRightWidth = minWidth;
-    newLeftWidth = newLeftWidth - diff; // Cột trái bù phần bị thiếu
+    newLeftWidth = newLeftWidth - diff; // Left column absorbs the shortfall
   }
 
-  // Đảm bảo không có cột nào bị âm (nếu kéo quá nhanh)
+  // Make sure no column goes negative (in case of a very fast drag)
   if (newLeftWidth < 0) newLeftWidth = 0;
   if (newRightWidth < 0) newRightWidth = 0;
 
-  // 5. Tạo mảng colwidths mới
+  // 5. Build the new colwidths array
   const newColWidths = [...(tableNode?.attrs?.['colwidths'] as number[])];
   newColWidths[leftColIndex] = newLeftWidth;
   newColWidths[leftColIndex + 1] = newRightWidth;
 
-  // 6. Dispatch transaction để cập nhật state
+  // 6. Dispatch a transaction to update the state
   if (tableNode && view) {
     const tr = view.state.tr.setNodeMarkup(tablePos, null, {
       ...tableNode.attrs,
       colwidths: newColWidths,
     });
 
-    // Dùng dispatchTransaction để Tiptap/ProseMirror tự cập nhật UI
+    // Use dispatchTransaction so Tiptap/ProseMirror updates the UI itself
     view.dispatch(tr);
   }
 }
 
 /**
- * Hàm xử lý khi nhả chuột (kết thúc kéo)
+ * Handler for mouse up (end of drag)
  */
 function handleMouseUpEvent(event: MouseEvent, dragInfo: DragInfo) {
   if (!dragInfo.isDragging) return;
 
   event.preventDefault();
 
-  // Reset trạng thái
+  // Reset the state
   dragInfo = {
     isDragging: false,
     startX: 0,
@@ -96,14 +96,14 @@ function handleMouseUpEvent(event: MouseEvent, dragInfo: DragInfo) {
 
 /**
  * Extension PercentageColumnResizing
- * * Thay thế logic resize cột mặc định bằng logic dựa trên %.
+ * * Replaces the default column-resize logic with percentage-based logic.
  */
 export const PercentageColumnResizing = Extension.create({
   name: 'percentageColumnResizing',
 
   addProseMirrorPlugins() {
-    // Một đối tượng tạm thời để lưu trữ trạng thái kéo-thả
-    // Chúng ta không dùng Plugin State vì nó không cần thiết phải "undo"
+    // A temporary object to hold the drag-and-drop state
+    // We don't use Plugin State because this state never needs to be "undone"
     let dragInfo: DragInfo = {
       isDragging: false,
       startX: 0,
@@ -125,7 +125,7 @@ export const PercentageColumnResizing = Extension.create({
 
         props: {
           /**
-           * Vẽ các resize handles vào DOM
+           * Draw the resize handles into the DOM
            */
           decorations(state) {
             if (!editorInstance?.isEditable) return;
@@ -134,7 +134,7 @@ export const PercentageColumnResizing = Extension.create({
             const { doc } = state;
             const tableTypes = tableNodeTypes(state.schema);
 
-            // Duyệt qua tất cả node trong document
+            // Walk every node in the document
             doc.descendants((node, pos) => {
               if (node.type.name !== tableTypes.table.name) return;
 
@@ -142,20 +142,20 @@ export const PercentageColumnResizing = Extension.create({
               if (!colwidths || colwidths.length === 0) return;
 
               let accumulatedWidth = 0;
-              // Tạo handle cho N-1 cột (không cần cho cột cuối)
+              // Create a handle for N-1 columns (the last column doesn't need one)
               for (let i = 0; i < colwidths.length - 1; i++) {
                 accumulatedWidth += colwidths[i] ?? 0;
 
-                // Tạo một widget 'div' để làm handle
+                // Create a 'div' widget to act as the handle
                 const handle = document.createElement('div');
                 handle.className = 'pm-col-resizer';
                 handle.style.left = `calc(${accumulatedWidth}% - 2px)`;
 
-                // Lưu vị trí cột để biết đang resize cột nào
+                // Store the column position so we know which column is being resized
                 handle.setAttribute('data-col-index', i.toString());
                 handle.setAttribute('data-table-pos', pos.toString());
 
-                // Đặt widget ngay sau thẻ <table> (pos + 1)
+                // Place the widget right after the <table> tag (pos + 1)
                 decorations.push(Decoration.widget(pos + 1, handle));
               }
             });
@@ -164,13 +164,13 @@ export const PercentageColumnResizing = Extension.create({
           },
 
           /**
-           * Xử lý sự kiện mousedown trên handle
+           * Handle the mousedown event on a handle
            */
           handleDOMEvents: {
             mousedown(view, event) {
               const target = event.target as HTMLElement;
 
-              // Chỉ kích hoạt khi click vào handle
+              // Only trigger when clicking on a handle
               if (!target.classList.contains('pm-col-resizer')) return false;
 
               event.preventDefault();
@@ -186,13 +186,13 @@ export const PercentageColumnResizing = Extension.create({
               const tableDOM = getTableDOMFromView(view, tablePos);
               if (!tableDOM) return false;
 
-              // Lưu thông tin cần thiết cho việc kéo
+              // Store the info needed for dragging
               dragInfo = {
                 isDragging: true,
                 startX: event.clientX,
                 tablePos: tablePos,
                 tableNode: tableNode,
-                tableWidthPx: tableDOM.offsetWidth, // <-- Lấy width (px) của table
+                tableWidthPx: tableDOM.offsetWidth, // <-- Get the table width (px)
                 leftColIndex: colIndex,
                 initialLeftWidth: colwidths[colIndex],
                 initialRightWidth: colwidths[colIndex + 1],
@@ -211,7 +211,7 @@ export const PercentageColumnResizing = Extension.create({
               window.addEventListener('mousemove', handleMouseMove, true);
               window.addEventListener('mouseup', handleMouseUp, true);
 
-              return true; // Đã xử lý event
+              return true; // Event handled
             },
           },
         },

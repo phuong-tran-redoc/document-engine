@@ -193,7 +193,7 @@ export const StyledTable = Table.extend<TableOptions & { enableNodeView?: boolea
         default: null,
         renderHTML: (attributes) => {
           if (!attributes['colwidths']) {
-            return {}; // Không có gì để render
+            return {}; // Nothing to render
           }
 
           return {
@@ -229,7 +229,7 @@ export const StyledTable = Table.extend<TableOptions & { enableNodeView?: boolea
 
     const domNodes: (string | number | Record<string, unknown> | unknown[])[] = [];
 
-    // Render <colgroup> nếu có colwidths
+    // Render <colgroup> when colwidths are present
     if (colwidths) {
       const colgroup: (string | Record<string, unknown> | unknown[])[] = ['colgroup', {}];
       colwidths.forEach((width: number | null) => {
@@ -238,11 +238,11 @@ export const StyledTable = Table.extend<TableOptions & { enableNodeView?: boolea
       domNodes.push(colgroup);
     }
 
-    // Thêm <tbody> (0 là 'content hole')
+    // Add <tbody> (0 is the 'content hole')
     domNodes.push(['tbody', 0]);
 
-    // Merge các HTML attributes (bao gồm cả global attributes)
-    // HTMLAttributes đã được Tiptap merge sẵn từ getRenderedAttributes
+    // Merge the HTML attributes (including global attributes)
+    // HTMLAttributes has already been merged by Tiptap via getRenderedAttributes
     return ['table', HTMLAttributes, ...domNodes];
   },
 
@@ -286,36 +286,36 @@ export const StyledTable = Table.extend<TableOptions & { enableNodeView?: boolea
         ({ tr, dispatch, editor }) => {
           const { schema } = editor.state;
 
-          // --- BƯỚC 1: Tính toán colWidths ---
+          // --- STEP 1: Compute colWidths ---
           const calculatedColWidths: number[] = [];
           const defaultWidth = 100 / cols;
           for (let i = 0; i < cols; i += 1) {
             calculatedColWidths.push(defaultWidth);
           }
 
-          // Ví dụ: cols = 3 -> calculatedColWidths = [33.33, 33.33, 33.33]
+          // Example: cols = 3 -> calculatedColWidths = [33.33, 33.33, 33.33]
 
-          // --- BƯỚC 2: Tạo nội dung bảng (rows, cells) ---
-          // Chúng ta phải tự xây dựng các node con
+          // --- STEP 2: Build the table content (rows, cells) ---
+          // We have to build the child nodes ourselves
           const cellType = schema.nodes['tableCell'];
           const headerType = schema.nodes['tableHeader'];
           const rowType = schema.nodes['tableRow'];
 
           const tableRows = [];
 
-          // Hàm trợ giúp tạo 1 cell rỗng
+          // Helper to create a single empty cell
           const createEmptyCell = (type: typeof cellType | typeof headerType) => {
             const emptyParagraph = schema.nodes['paragraph'].create();
             return type.create(null, emptyParagraph);
           };
 
-          // Tạo các hàng
+          // Create the rows
           for (let r = 0; r < rows; r += 1) {
             const tableCells = [];
 
             for (let c = 0; c < cols; c += 1) {
               let cellNode;
-              // Nếu là hàng đầu tiên và có 'withHeaderRow'
+              // If this is the first row and 'withHeaderRow' is set
               if (r === 0 && withHeaderRow) {
                 cellNode = createEmptyCell(headerType);
               } else {
@@ -323,20 +323,20 @@ export const StyledTable = Table.extend<TableOptions & { enableNodeView?: boolea
               }
               tableCells.push(cellNode);
             }
-            // Thêm hàng mới vào mảng các hàng
+            // Add the new row to the rows array
             tableRows.push(rowType.create(null, tableCells));
           }
 
-          // --- BƯỚC 3: Tạo node Table chính VỚI ATTRIBUTE 'colwidths' ---
+          // --- STEP 3: Create the main Table node WITH the 'colwidths' ATTRIBUTE ---
           const tableNode = schema.nodes['table'].create(
             {
-              // Đây là mấu chốt: gán mảng % của chúng ta vào đây
+              // This is the key part: assign our percentage array here
               colwidths: calculatedColWidths,
             },
-            tableRows // Nội dung (các node 'tableRow')
+            tableRows // Content (the 'tableRow' nodes)
           );
 
-          // --- BƯỚC 4: Dispatch transaction (Original code)---
+          // --- STEP 4: Dispatch transaction (Original code)---
           if (dispatch) {
             const offset = tr.selection.from + 1;
 
@@ -348,7 +348,7 @@ export const StyledTable = Table.extend<TableOptions & { enableNodeView?: boolea
           return true;
         },
 
-      // 2. LỆNH ADDCOLUMNAFTER
+      // 2. ADDCOLUMNAFTER COMMAND
       addColumnAfter:
         () =>
         ({ state, dispatch }) => {
@@ -384,7 +384,7 @@ export const StyledTable = Table.extend<TableOptions & { enableNodeView?: boolea
           return true;
         },
 
-      // 3. LỆNH ADDCOLUMNBEFORE
+      // 3. ADDCOLUMNBEFORE COMMAND
       addColumnBefore:
         () =>
         ({ state, dispatch }) => {
@@ -416,7 +416,7 @@ export const StyledTable = Table.extend<TableOptions & { enableNodeView?: boolea
           return true;
         },
 
-      // 4. LỆNH DELETECOLUMN
+      // 4. DELETECOLUMN COMMAND
       deleteColumn:
         () =>
         ({ state, dispatch }) => {
