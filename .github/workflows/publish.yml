@@ -66,8 +66,14 @@ jobs:
             VERSION="${GITHUB_REF_NAME#v}"
           fi
           echo "Publishing version: $VERSION"
+          # Stamp the tagged version + resolved dep ranges into the built dist manifests.
           pnpm nx release version "$VERSION" --git-commit=false --git-tag=false --stage-changes=false
-          pnpm nx release publish
+          # Publish each built package with npm (>= 11.5.1) for OIDC Trusted Publishing + provenance.
+          # nx's pnpm-based `release publish` does NOT perform OIDC (it expects an npm token and fails
+          # token-lessly with an empty "pnpm publish error:"); npm does OIDC natively. Core first —
+          # angular depends on it.
+          npm publish ./dist/libs/document-engine-core --provenance --access public
+          npm publish ./dist/libs/document-engine-angular --provenance --access public
         env:
           NPM_CONFIG_PROVENANCE: 'true'
 
