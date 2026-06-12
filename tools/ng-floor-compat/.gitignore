@@ -1,0 +1,8 @@
+# Throwaway artifacts — run.sh regenerates these on every guard run
+# (rm -rf node_modules package-lock.json dist, then npm install from the
+# ~16.0.0 ranges in package.json). The floor is pinned by package.json, not
+# by a committed lock, so none of these belong in version control.
+package-lock.json
+node_modules/
+dist/
+.angular/

@@ -32,6 +32,7 @@ import {
   DynamicField,
   NotumHeading,
   PageBreak,
+  ImageRef,
 } from '@phuong-tran-redoc/document-engine-core';
 import { DocumentEngineConfig } from './kit.type';
 
@@ -114,6 +115,7 @@ export const DocumentEngineKit = Extension.create<DocumentEngineConfig>({
     add(options.superscript, Superscript);
     add(options.textAlign, TextAlign, DEFAULT_TEXT_ALIGN);
     add(options.image, Image);
+    add(options.imageRef, ImageRef);
     add(options.placeholder, Placeholder, DEFAULT_PLACEHOLDER);
     add(options.pageBreak, PageBreak);
     add(options.resetFormat, ResetFormat);

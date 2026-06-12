@@ -32,6 +32,11 @@ export const EDITOR_ROUTES: Route[] = [
     loadComponent: () => import('./editor-table').then((m) => m.EditorTableComponent),
   },
   {
+    path: 'image-ref',
+    data: { breadcrumb: 'Image Ref' },
+    loadComponent: () => import('./editor-image-ref').then((m) => m.EditorImageRefComponent),
+  },
+  {
     path: 'full',
     data: { breadcrumb: 'Full Features' },
     loadComponent: () => import('./editor-full').then((m) => m.EditorFullComponent),

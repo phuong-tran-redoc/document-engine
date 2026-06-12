@@ -1,24 +1,24 @@
 {
-  "name": "@phuong-tran-redoc/document-engine-core",
-  "version": "0.0.41",
-  "type": "module",
-  "license": "MIT",
-  "author": "Realestatedoc (Redoc)",
-  "contributors": [
-    "Duc Phuong (Jack) <tdp99.business@gmail.com>"
-  ],
-  "description": "Framework-agnostic core library for Document Engine",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/phuong-tran-redoc/document-engine.git"
-  },
-  "publishConfig": {
-    "directory": "../../dist/libs/document-engine-core",
-    "access": "public"
+  "name": "ng-floor-compat",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Throwaway consumer pinned to the declared Angular peer floor (guard layer 2). Proves @phuong-tran-redoc/document-engine-angular installs and AOT-builds on the floor (currently Angular 16). The lib tarballs are installed (--no-save) on top by run.sh / CI. Isolated on purpose: own node_modules + an Angular-16-era TypeScript (the repo's Angular 20 uses TS ~5.9).",
+  "scripts": {
+    "build": "ng build --configuration production"
   },
   "dependencies": {
+    "@angular/animations": "~16.0.0",
+    "@angular/common": "~16.0.0",
+    "@angular/compiler": "~16.0.0",
+    "@angular/core": "~16.0.0",
+    "@angular/forms": "~16.0.0",
+    "@angular/platform-browser": "~16.0.0",
+    "@angular/platform-browser-dynamic": "~16.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.13.0",
+    "lodash-es": "^4.17.21",
+    "@floating-ui/dom": "^1.7.4",
     "@tiptap/core": "^3.26.0",
     "@tiptap/extension-blockquote": "^3.26.0",
     "@tiptap/extension-bold": "^3.26.0",
@@ -44,11 +44,12 @@
     "@tiptap/extension-text-style": "^3.26.0",
     "@tiptap/extension-underline": "^3.26.0",
     "@tiptap/extensions": "^3.26.0",
-    "@tiptap/html": "^3.26.0",
-    "@tiptap/pm": "^3.26.0",
-    "tslib": "^2.3.0"
+    "@tiptap/pm": "^3.26.0"
   },
-  "peerDependencies": {
-    "lodash-es": "^4.17.10"
+  "devDependencies": {
+    "@angular-devkit/build-angular": "~16.0.0",
+    "@angular/cli": "~16.0.0",
+    "@angular/compiler-cli": "~16.0.0",
+    "typescript": "~5.0.0"
   }
 }
