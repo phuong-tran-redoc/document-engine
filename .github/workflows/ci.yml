@@ -30,7 +30,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Derive appropriate SHAs for base and head
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
 
       # Lint affected projects (allow warnings, fail on errors only)
       # Exclude E2E project - it has its own job
