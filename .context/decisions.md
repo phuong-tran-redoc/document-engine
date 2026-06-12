@@ -131,6 +131,46 @@ that a dep/feature change must build **every** project, not just unit-test the l
 
 ---
 
+### [2026-06-12] ADR-006 — Angular peer floor raised `>=14` → `>=16`; lib source held to it + enforced by a 2-layer guard (DE-013)
+
+**Context:** The workspace develops on Angular 20.3, but `@phuong-tran-redoc/document-engine-angular` declared a
+peer floor of `@angular/* >=14.0.0 <22.0.0`. Nothing stopped the lib from using syntax newer than the floor — it
+builds here but would break older consumers. A source audit found two offenders (`node-view.component.ts`
+`input.required()`, 17.1+; `image-insert-view.ts` `@if`, 17+). The original plan was to keep `>=14` and just
+downgrade those. But the **layer-2 real-compile guard (built first) disproved the premise**: a stock Angular
+**14** AOT build of the packed lib fails `NG8002` on every input binding — not from our source, but because
+ng-packagr@20 emits `.d.ts` whose `ɵɵComponentDeclaration` input metadata uses the **object form**
+(`{ alias, required }`), which only Angular **≥16** type-checkers understand (14/15 expect the string form). The
+runtime fesm is fine (string-map inputs, `minVersion` 12/14); the incompatibility is purely the emitted **type
+declarations**. An empirical run then confirmed Angular **16.0** AOT-builds the package cleanly.
+
+**Decision:** **Raise the floor to `@angular/* >=16.0.0 <22.0.0`** (the lowest the Angular-20 build output
+actually supports), **hold the lib source to that floor** (`input.required()` → `@Input()`, `@if` → `*ngIf` —
+both are 17+, still above 16), and enforce with a **two-layer guard**, both blocking and wired into
+`security-gate.yml` (which `publish.yml` requires, so failure blocks publish):
+1. **Static denylist** (`tools/check-angular-floor.mjs`, `pnpm guard:ng-floor`): fast source scan banning
+   post-16 APIs (signal inputs/queries `input()/output()/model()/viewChild()`, built-in control flow
+   `@if/@for/@switch`). Angular-16 APIs (signals, `@Input({…})`, `takeUntilDestroyed`) are allowed.
+2. **Real floor-Angular compile** (`tools/ng-floor-compat/`, pinned Angular 16): pack the libs, install into an
+   isolated consumer, AOT `ng build`.
+`standalone` is kept (no downgrade) — it works on Angular 16; layer 2 validates it empirically.
+
+**Rationale:** A peer floor is a published contract; `>=14` was simply **false** for any AOT/strictTemplates
+consumer (i.e. essentially all real apps) given the ng20-emitted `.d.ts` — better an honest `>=16` than a
+contract that breaks on install. The static layer gives instant PR feedback but is a blocklist (can miss novel
+APIs); the real-compile layer is authoritative — it is the only check that exercises the floor's template
+type-checker (the `.d.ts` input-declaration format — the exact thing that broke 14) and the partial-ivy linker
+on the Angular-20-built declarations. No published consumers exist yet (first release is DE-008), so narrowing
+the range now costs nothing.
+
+**Consequences:** Lib contributors must use ≤Angular-16 syntax in the published lib (guard-enforced locally + in
+CI). The real-compile job adds a few minutes to `security-gate` (isolated Angular-16 toolchain install). The
+`dep-bump` and `publish` skills reference the guard. If the floor is ever changed, update the peer range, the
+static denylist calibration, and the `ng-floor-compat` pinned Angular version in lock-step, and supersede this
+ADR. (Reaching a literal `>=14` is not possible without building the lib on an older Angular toolchain.)
+
+---
+
 ## Template
 
 ### [Date] Decision Title

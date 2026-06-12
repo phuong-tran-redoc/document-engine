@@ -311,7 +311,7 @@ export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestr
     this.activateView(this.currentViewRef);
 
     // Trigger change detection for the child component to render immediately
-    // This is especially important for Angular v14 compatibility
+    // (the view is created imperatively, so it is outside Angular's normal CD pass)
     this.cdr.markForCheck();
 
     // Mark bubble as visible for transition handling

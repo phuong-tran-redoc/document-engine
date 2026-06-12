@@ -109,12 +109,27 @@ A bump that leaves docs lying is a half-bump:
 - Lib `README.md` peer-dependency examples / install snippets.
 - Any version pinned in prose.
 
-## Step 7 — Published contract (peer ranges)
+## Step 7 — Published contract (peer ranges) + Angular-floor guard
 
 The libs are consumed externally. When a shipped dep's major/minor moves, the **published `peerDependencies`
 range** must move too (e.g. the angular lib's `@angular/*` range, or a `@tiptap/*` floor). Widen additively;
 a narrowing/raising floor is a **breaking change → minor bump pre-1.0** and needs a changelog `### Migration`
 note. Cross-check with [`/publish`](../publish/SKILL.md)'s 0.x semver policy.
+
+**Angular peer floor is enforced — don't let it drift (ADR-006 / DE-013).** The angular lib declares
+`@angular/* >=16.0.0` (raised from 14 — ng-packagr@20 emits `.d.ts` with the Angular-16+ input-declaration
+format, so 14/15 consumers `NG8002` on every input binding regardless of source). The workspace builds on
+Angular 20, so it is easy to slip in syntax newer than the floor. Two blocking guards run in `security-gate`
+(and locally):
+- `pnpm guard:ng-floor` — static denylist (`tools/check-angular-floor.mjs`): no signal inputs/queries
+  (`input()/output()/model()/viewChild()`) and no built-in control flow (`@if/@for/@switch`) in the published
+  lib source (these are 17+; Angular-16 APIs like signals / `@Input({…})` are fine).
+- `bash tools/ng-floor-compat/run.sh` — packs the libs + AOT-builds an isolated **Angular-16** consumer
+  (catches the `.d.ts` ɵɵComponentDeclaration input format + the partial-ivy linker — what static scan can't).
+
+When you **bump `@angular/*`**: if you change the floor, update the peer range, the denylist calibration, **and**
+the `tools/ng-floor-compat` pinned Angular version in lock-step, and supersede ADR-006. Otherwise run both
+guards before committing — a new Angular API above the floor in the lib must be rewritten down to the floor.
 
 ## Step 8 — Consumer impact + commit
 

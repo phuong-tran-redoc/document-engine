@@ -24,7 +24,8 @@
     "release": "nx release --skip-publish",
     "release:first": "nx release 0.1.0 --first-release --skip-publish",
     "release:next": "nx release prerelease --preid=next --skip-publish",
-    "release:push": "git push --follow-tags"
+    "release:push": "git push --follow-tags",
+    "guard:ng-floor": "node tools/check-angular-floor.mjs"
   },
   "private": true,
   "dependencies": {
