@@ -2,6 +2,10 @@
   "name": "@document-engine/source",
   "version": "0.0.0",
   "license": "UNLICENSED",
+  "packageManager": "pnpm@11.4.0",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "nx serve document-engine",
     "build": "nx run-many --target=build --all",

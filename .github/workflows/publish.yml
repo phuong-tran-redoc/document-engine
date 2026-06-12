@@ -12,6 +12,10 @@ on:
       version:
         description: 'Version to publish (e.g. 0.1.0). Must already exist as the source-of-truth.'
         required: true
+      dry_run:
+        description: 'Run the full toolchain but stop at npm publish --dry-run (no real publish, skips the approval gate)'
+        type: boolean
+        default: false
 
 jobs:
   # Required pre-publish gate (secrets / vulns / licenses / tarball / type correctness).
@@ -22,6 +26,11 @@ jobs:
   publish:
     needs: security-gate
     runs-on: ubuntu-latest
+    # Real publishes require manual approval via the `npm-publish` environment's required reviewers.
+    # Dry-runs evaluate to an empty environment (no gate) so the pipeline can be iterated freely.
+    # NB: the truthy branch must be 'npm-publish' — an empty string is falsy in GitHub expressions,
+    # so `dry_run && '' || 'npm-publish'` would wrongly always gate. Invert the condition instead.
+    environment: ${{ (github.event_name != 'workflow_dispatch' || !inputs.dry_run) && 'npm-publish' || '' }}
     # Permissions required for OIDC Trusted Publishing.
     permissions:
       contents: read
@@ -46,11 +55,9 @@ jobs:
           echo "npm version: $(npm --version)"
 
       - name: Setup pnpm
+        # pnpm version is read from the "packageManager" field in package.json (pnpm 11.x).
+        # pnpm 9 cannot do OIDC Trusted Publishing; pnpm 11 needs Node >= 22.13 (set above).
         uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
-        with:
-          # Must match the repo's pnpm (11.x) — pnpm 9 cannot do OIDC Trusted Publishing
-          # (publishes token-lessly), and predates the `allowBuilds` lockfile metadata.
-          version: 11.4.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -72,11 +79,18 @@ jobs:
           # nx's pnpm-based `release publish` does NOT perform OIDC (it expects an npm token and fails
           # token-lessly with an empty "pnpm publish error:"); npm does OIDC natively. Core first —
           # angular depends on it.
-          npm publish ./dist/libs/document-engine-core --provenance --access public
-          npm publish ./dist/libs/document-engine-angular --provenance --access public
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "DRY RUN — validating the toolchain + tarball without publishing"
+            npm publish ./dist/libs/document-engine-core --access public --dry-run
+            npm publish ./dist/libs/document-engine-angular --access public --dry-run
+          else
+            npm publish ./dist/libs/document-engine-core --provenance --access public
+            npm publish ./dist/libs/document-engine-angular --provenance --access public
+          fi
         env:
           NPM_CONFIG_PROVENANCE: 'true'
 
       - name: Verify published signatures (advisory)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
         continue-on-error: true
         run: npm audit signatures
