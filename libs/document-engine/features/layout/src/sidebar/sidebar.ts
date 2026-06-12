@@ -130,6 +130,7 @@ export class DocumentEngineSidebarComponent {
           },
           { id: 'editor-readonly', name: 'Readonly', url: `${ROUTE.EDITOR}/readonly`, type: 'normal' },
           { id: 'editor-table', name: 'Table', url: `${ROUTE.EDITOR}/table`, type: 'normal' },
+          { id: 'editor-image-ref', name: 'Image Ref', url: `${ROUTE.EDITOR}/image-ref`, type: 'normal' },
           { id: 'editor-form', name: 'Form Integration', url: `${ROUTE.EDITOR}/form`, type: 'normal' },
           {
             id: 'template-editor',

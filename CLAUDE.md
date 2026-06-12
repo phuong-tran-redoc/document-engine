@@ -21,7 +21,7 @@ The Angular lib depends on core via `workspace:*` — they version and publish *
 
 - **Nx:** 22.0.2 | **pnpm** | **Node:** 20+
 - **Angular:** ~20.3.0 (demo app + wrapper lib) | **TypeScript:** ~5.9
-- **Editor:** Tiptap 3.10.5 (`@tiptap/*`) on ProseMirror (`@tiptap/pm`)
+- **Editor:** Tiptap 3.26.0 (`@tiptap/*`) on ProseMirror (`@tiptap/pm`)
 - **Styling:** Tailwind CSS 3.4 + SCSS design system
 - **Test:** Jest (unit, `jest-preset-angular`) + Playwright (e2e)
 - **Lint:** ESLint 9 (flat config) + Nx module-boundary rules

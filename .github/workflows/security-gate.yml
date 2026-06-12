@@ -46,6 +46,12 @@ jobs:
       - name: Install (frozen, no scripts)
         run: pnpm install --frozen-lockfile --ignore-scripts
 
+      # --- BLOCKING: angular peer-floor guard, layer 1 (static) ---
+      # Fail if the angular lib uses Angular APIs newer than its declared peer floor
+      # (>=16): signals, signal inputs, control flow, decorator-option inputs, etc.
+      - name: Angular peer-floor guard (static denylist)
+        run: node tools/check-angular-floor.mjs
+
       # --- ADVISORY (promote to blocking after triaging baseline findings into osv-scanner.toml) ---
       - name: Dependency vulnerabilities (OSV-Scanner)
         continue-on-error: true
@@ -88,3 +94,33 @@ jobs:
           # right profile (CJS consumers use dynamic import, as expected). The "./styles" subpath
           # is a Sass-only entry (exports.sass, no JS/types), so it is excluded from type checks.
           npx --yes @arethetypeswrong/cli --pack dist/libs/document-engine-angular --profile esm-only --exclude-entrypoints ./styles
+
+  # --- BLOCKING: angular peer-floor guard, layer 2 (real floor-Angular compile) ---
+  # Pack the libs, install them into an isolated consumer pinned to the declared
+  # Angular floor (>=16, see ADR-006) and AOT-build. Authoritative proof the package
+  # is installable on the floor: it exercises the floor's template type-checker (the
+  # .d.ts ɵɵComponentDeclaration input format) AND the partial-ivy linker on the
+  # (Angular-20-built) declarations. A failure here blocks publish (publish.yml
+  # `needs: security-gate`, which waits for every job in this workflow).
+  ng-floor-compat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: 9
+
+      # Functional install (allowed build scripts only — needed to build the libs).
+      - name: Install (frozen)
+        run: pnpm install --frozen-lockfile
+
+      - name: Build libs + install on floor Angular + AOT build
+        run: bash tools/ng-floor-compat/run.sh
