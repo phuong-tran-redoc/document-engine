@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
-  DocumentEditorComponent,
   DocumentEditorModule,
   DocumentEngineConfig,
   Editor,
+  MediaResult,
 } from '@phuong-tran-redoc/document-engine-angular';
 
 interface HydratedFigure {
@@ -32,7 +32,9 @@ interface HydratedFigure {
       <h2 class="text-2xl font-semibold m-0 text-foreground">Image Ref (placeholder + hydrate)</h2>
       <p class="text-sm m-0 text-muted-foreground">
         A URL-free media reference. The document stores only an <code>imageId</code>; the real image is
-        resolved by the consumer at render time.
+        resolved by the consumer at render time. Insert via the form below, or via the toolbar image button —
+        which calls the consumer's <code>image.onPick</code> media picker (mocked here) and inserts the result
+        as an <code>image-ref</code>.
       </p>
 
       <!-- Insert controls -->
@@ -124,8 +126,14 @@ export class EditorImageRefComponent {
     italic: true,
     heading: true,
     imageRef: true,
+    showToolbar: true,
+    // The toolbar image button delegates to this consumer hook instead of asking
+    // for a raw URL. Here it's a stand-in for a real media dialog.
+    image: { onPick: () => this.pickMedia() },
     showFooter: true,
   };
+
+  private pickIndex = 0;
 
   /** Sample media library — a real consumer would call its own media service. */
   private readonly sampleImages: Record<string, string> = {
@@ -136,6 +144,18 @@ export class EditorImageRefComponent {
 
   onEditorReady(editor: Editor): void {
     this.editor = editor;
+  }
+
+  /**
+   * Stand-in for a consumer's async media picker (e.g. a dialog hitting a media
+   * service). Resolves the next sample as a `MediaResult`; the editor inserts it
+   * as an `image-ref` because that node is enabled.
+   */
+  pickMedia(): Promise<MediaResult> {
+    const ids = Object.keys(this.sampleImages);
+    const id = ids[this.pickIndex % ids.length];
+    this.pickIndex++;
+    return Promise.resolve({ id, url: this.sampleImages[id], alt: id.replace('media_', '') });
   }
 
   insert(): void {

@@ -18,6 +18,12 @@
   padding: 1rem 0.5rem;
 }
 
+.image-insert-view__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+}
+
 .image-insert-view__field {
   display: flex;
   flex-direction: column;

@@ -22,6 +22,22 @@ import { UnderlineOptions } from '@tiptap/extension-underline';
 import { CharacterCountOptions, PlaceholderOptions, UndoRedoOptions } from '@tiptap/extensions';
 import { TemplateItem } from '../../types/template.type';
 import { ToolbarButton } from '../../types/button.type';
+import { ImagePickHook } from '../../types/media-result.type';
+
+/**
+ * Image options plus the optional async `onPick` media-picker hook. When `onPick`
+ * is provided, the image insert view delegates selection to the consumer's picker
+ * instead of asking for a raw URL.
+ */
+export type ImageConfig = Partial<ImageOptions> & {
+  /**
+   * Async hook that supplies an image from the consumer's own media library.
+   * When set, the insert view calls it and inserts the result (an `image-ref`
+   * node when that node is enabled, else a plain image). Resolving nothing or
+   * rejecting is a no-op.
+   */
+  onPick?: ImagePickHook;
+};
 
 /**
  * Định nghĩa cấu hình đầy đủ cho DocumentEngineKit (Factory của bạn).
@@ -176,10 +192,11 @@ export interface DocumentEngineConfig {
   // Insert Object
   // ============================================
   /**
-   * Cấu hình cho @tiptap/extension-image
+   * Options for @tiptap/extension-image. May include `onPick` to delegate image
+   * selection to the consumer's own media picker.
    * @default {}
    */
-  image?: Partial<ImageOptions> | boolean;
+  image?: ImageConfig | boolean;
 
   /**
    * Enable the URL-free `image-ref` node (`<figure data-block="image-ref" data-image-id>`).
