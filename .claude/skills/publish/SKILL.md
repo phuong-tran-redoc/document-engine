@@ -113,9 +113,10 @@ breaking change), amend the release commit if you edit it.
 ```bash
 git push --follow-tags
 ```
-The `v*` tag push triggers `publish.yml` → `security-gate` job → `nx release publish --provenance`. CI
-re-stamps the tagged version into a clean `dist/` build (the model-B re-stamp path), publishes both packages
-in lock-step with provenance, on `latest` (standard/first) or `next` (prerelease).
+The `v*` tag push triggers `publish.yml` → `security-gate` job → publish. CI re-stamps the tagged version into a
+clean `dist/` build via `nx release version` (the model-B re-stamp path), then publishes each package with
+`npm publish ./dist/libs/<pkg> --provenance --access public` (NOT `nx release publish` — see Gotchas), in
+lock-step with provenance, on `latest` (standard/first) or `next` (prerelease).
 
 ### Step 5 — Post-publish
 Tell the user to watch the Actions run (security-gate → publish). `npm audit signatures` runs post-publish as
@@ -135,6 +136,19 @@ then re-tag and push again.
   `changelog.workspaceChangelog.createRelease: false`. The git tag + `CHANGELOG.md` are the record; a GitHub
   Release page (if wanted) is created from CI, not local `nx release`. **Do not** flip `createRelease` back to
   `"github"` locally — it will fail the release again.
+- **Empty `pnpm publish error:` in the publish job (OIDC)** — `nx release publish` shells out to **`pnpm publish`**,
+  and pnpm does **not** perform npm OIDC Trusted Publishing — it expects a token, finds none (token-less OIDC),
+  and fails with an *empty* error nx swallows. **`publish.yml` publishes with `npm publish ./dist/libs/<pkg>
+  --provenance --access public` per package (npm ≥ 11.5.1, which does OIDC natively), core before angular.**
+  `nx release version <v>` is still used, but only to stamp the dist manifests. Do **not** revert to
+  `nx release publish`.
+- **`ERR_UNKNOWN_BUILTIN_MODULE: node:sqlite` at `pnpm install` in CI** — pnpm 11.x needs **Node ≥ 22.13**
+  (`node:sqlite`). The publish job pins `node-version: '22'` and `pnpm/action-setup` `version: 11.4.0` (matching
+  the repo's local pnpm). If you bump pnpm in a workflow, bump its Node floor too. (ci.yml/security-gate.yml run
+  non-publish tasks on pnpm 9 + Node 20 and pass — only the publish job needs the pnpm-11/Node-22 pair.)
+- **`npm audit signatures` (advisory) fails with `ETARGET … @rspack-canary/core@…`** — it resolves the *whole*
+  dep tree and chokes on a phantom transitive canary version; it is `continue-on-error: true`, **not** a
+  provenance problem with our packages. Ignore, or pin/clean the offending transitive dep later.
 
 ## Rollback / incident
 
