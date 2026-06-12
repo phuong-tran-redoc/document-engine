@@ -123,4 +123,13 @@ export default [
       '@typescript-eslint/no-non-null-assertion': 'off', // Safe when preceded by assertions
     },
   },
+  {
+    // ng-floor-compat is a throwaway, isolated consumer (own node_modules, Angular-16 floor) whose
+    // whole job is to import the published lib and prove it installs/AOT-builds. Module boundaries
+    // do not apply to it — same exception we make for e2e.
+    files: ['tools/ng-floor-compat/**/*.ts', 'tools/ng-floor-compat/**/*.js'],
+    rules: {
+      '@nx/enforce-module-boundaries': 'off',
+    },
+  },
 ];
