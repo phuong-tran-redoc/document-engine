@@ -1,0 +1,83 @@
+name: dependabot-auto-merge
+
+# Tiered Dependabot auto-merge (DE-011). Decides per-PR whether a bump is safe to land
+# automatically. It NEVER force-merges: it calls `gh pr merge --auto`, which only completes
+# once every branch-protection required check (validate + e2e) is green. A bump that breaks
+# the build/tests goes red → merge stays blocked → it falls back to manual review.
+#
+# Golden rule (strict): anything that ships inside a published package or is consumer-resolved
+# (core's @tiptap/* + @floating-ui closure, angular runtime peers, lodash-es) is held for manual
+# review on EVERY bump — patch included. A production patch (e.g. tiptap 3.10.5 -> 3.10.6) still
+# edits the published contract, and CI cannot catch a runtime regression that still builds + tests
+# green; that residual risk is a human's call. Only build/test tooling and CI plumbing auto-merge.
+#
+# Tier table:
+#   AUTO  : dev-dependency (patch OR minor)  |  github-actions non-major
+#   MANUAL: ANY production/peer dep (patch/minor/major)  |  every major (incl. dev-tooling major)
+# Playbook for the manual track: .context/ops/dependabot-auto-merge.md
+
+on: pull_request
+
+permissions:
+  contents: write # enable auto-merge
+  pull-requests: write # merge / label the PR
+  issues: write # ensure the review label exists
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    # Only act on Dependabot's own PRs.
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    steps:
+      - name: Fetch Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+
+      # Classify once (env-passed, no script injection) so the merge/label steps stay readable.
+      # AUTO iff the bump is non-major AND it is either dev-tooling (direct:development) or a
+      # github-actions bump. Everything touching a production/peer dep — at any version level —
+      # falls through to MANUAL. ecosystem string is the dependabot branch prefix, so
+      # github-actions => 'github_actions'.
+      - name: Classify bump
+        id: classify
+        env:
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          DEP_TYPE: ${{ steps.meta.outputs.dependency-type }}
+          ECOSYSTEM: ${{ steps.meta.outputs.package-ecosystem }}
+        run: |
+          if [ "$UPDATE_TYPE" != "version-update:semver-major" ] \
+             && { [ "$DEP_TYPE" = "direct:development" ] || [ "$ECOSYSTEM" = "github_actions" ]; }; then
+            echo "decision=auto" >> "$GITHUB_OUTPUT"
+          else
+            echo "decision=manual" >> "$GITHUB_OUTPUT"
+          fi
+
+      # AUTO: queue the PR. GitHub holds it until validate + e2e (branch protection) pass.
+      - name: Enable auto-merge
+        if: steps.classify.outputs.decision == 'auto'
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEP_NAMES: ${{ steps.meta.outputs.dependency-names }}
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          DEP_TYPE: ${{ steps.meta.outputs.dependency-type }}
+        run: |
+          echo "AUTO-MERGE queued: $DEP_NAMES ($UPDATE_TYPE, $DEP_TYPE)" >> "$GITHUB_STEP_SUMMARY"
+          gh pr merge --auto --squash "$PR_URL"
+
+      # MANUAL: leave it for a human and label it so it is filterable. Does NOT merge.
+      - name: Flag for manual review
+        if: steps.classify.outputs.decision == 'manual'
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEP_NAMES: ${{ steps.meta.outputs.dependency-names }}
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          DEP_TYPE: ${{ steps.meta.outputs.dependency-type }}
+        run: |
+          gh label create needs-manual-review \
+            --color D93F0B \
+            --description "Dependabot bump on a shipped dep or a minor/major — review per ops/dependabot-auto-merge.md" \
+            --force
+          gh pr edit "$PR_URL" --add-label needs-manual-review
+          echo "MANUAL review: $DEP_NAMES ($UPDATE_TYPE, $DEP_TYPE)" >> "$GITHUB_STEP_SUMMARY"

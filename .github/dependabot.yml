@@ -9,7 +9,22 @@ updates:
     cooldown:
       default-days: 7
     open-pull-requests-limit: 3
+    # Framework-spine majors are adopted only during a planned migration, never via an
+    # unsolicited Dependabot PR. Patch/minor still flow (and stay on the manual track for these).
+    ignore:
+      - dependency-name: '@angular/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'zone.js'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'rxjs'
+        update-types: ['version-update:semver-major']
+    # Groups are matched top-down; a dep lands in the first group it matches. The split keeps
+    # dev/build tooling (auto-merge eligible) cleanly separate from shipped/peer deps (manual),
+    # so dependabot-auto-merge.yml sees an unambiguous dependency-type per grouped PR.
     groups:
+      # Shipped/peer spine — kept on the manual-review track (see dependabot-auto-merge.yml).
       tiptap:
         patterns:
           - '@tiptap/*'
@@ -21,15 +36,23 @@ updates:
         patterns:
           - '@nx/*'
           - 'nx'
-      # Catch-all: collapse every other minor/patch bump into ONE PR (majors stay separate for review).
-      minor-and-patch:
-        patterns:
-          - '*'
+      # Dev/build tooling (jest, eslint, prettier, playwright, @types/*, …) — never ships to
+      # consumers, so minor+patch here is auto-merge eligible once CI is green.
+      dev-dependencies:
+        dependency-type: 'development'
+        update-types:
+          - 'minor'
+          - 'patch'
+      # Remaining production/peer deps that ship or are consumer-resolved (@floating-ui/dom,
+      # lodash-es, …). Grouped but left for manual review on minor.
+      production-dependencies:
+        dependency-type: 'production'
         update-types:
           - 'minor'
           - 'patch'
 
   # Keep pinned GitHub Actions SHAs current — all actions grouped into a single PR.
+  # github-actions PRs never touch the published packages, so non-major auto-merges.
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
