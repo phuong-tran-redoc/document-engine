@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working in this repository.
 
+## ⛔ TOP RULE — never auto-commit; no AI credit outside `/cap`
+
+This is the **single most important rule of this project**. It overrides every other instruction here.
+
+1. **Never commit or push on your own initiative** — to *any* branch, ever. Edit the working tree, then
+   stop and let the user review. Only commit/push when the user **explicitly asks in that turn**, or when
+   they run the `/cap` skill. "I'll commit this for you" is not allowed unless they asked.
+2. **No AI credit outside `/cap`.** Any commit or push made *without* going through the `/cap` skill must
+   **not** contain the `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>` trailer (or
+   any variant of it) in the commit message — in any form. Only `/cap` may add attribution.
+
 ## Project Overview
 
 **Document Engine** — an in-house, framework-agnostic rich-text/document editor built on Tiptap + ProseMirror. The product is two **publishable npm packages** plus an Angular **demo app** that showcases them. It exists to replace third-party rich-text editors (e.g. CKEditor) in enterprise document workflows: own the IP, kill licensing cost, and add business-specific features (Dynamic Fields like `{{customer_name}}`, Restricted Editing, templates, tables).

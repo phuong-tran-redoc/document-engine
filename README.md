@@ -90,15 +90,15 @@ This demo is built on a **decoupled, multi-package architecture**:
 
 ### Prerequisites
 
-- **Node.js:** v18 or higher
-- **Package Manager:** pnpm (recommended) or npm
+- **Node.js:** v22+ (the repo pins pnpm 11, which requires Node ≥ 22.13)
+- **Package Manager:** pnpm (the repo pins `pnpm@11.4.0` via `packageManager`)
 
 ### Installation
 
 1. Clone the repository:
 
 ```bash
-git clone [repository-url]
+git clone https://github.com/phuong-tran-redoc/document-engine.git
 cd document-engine
 ```
 
@@ -147,8 +147,8 @@ npx nx graph
 This repository contains:
 
 - **Demo Application:** `/apps/document-engine` - The Angular application you see in the demo
-- **Core Library:** `/libs/document-engine-core` - Framework-agnostic document engine _(Private package - contact authorized person for installation)_
-- **Angular Wrapper:** `/libs/document-engine-angular` - Angular-specific components and directives _(Private package - contact authorized person for installation)_
+- **Core Library:** `/libs/document-engine-core` - Framework-agnostic document engine _([published on npm](https://www.npmjs.com/package/@phuong-tran-redoc/document-engine-core), public, MIT)_
+- **Angular Wrapper:** `/libs/document-engine-angular` - Angular-specific components and directives _([published on npm](https://www.npmjs.com/package/@phuong-tran-redoc/document-engine-angular), public, MIT)_
 - **Shared Libraries:** `/libs/shared` - Reusable UI components and utilities
 - **Feature Libraries:** `/libs/document-engine/features` - Feature modules for the demo app
 

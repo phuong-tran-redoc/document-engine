@@ -28,6 +28,7 @@ try {
 
 const sensitive = files.filter((p) => DENY.test(p));
 const hasLicense = files.some((p) => /(^|\/)LICENSE(\.md|\.txt)?$/i.test(p));
+const hasNotices = files.some((p) => /(^|\/)THIRD-PARTY-NOTICES\.txt$/i.test(p));
 
 let failed = false;
 if (sensitive.length) {
@@ -39,6 +40,10 @@ if (!hasLicense) {
   console.error(`[${dir}] BLOCKED — no LICENSE file in the tarball`);
   failed = true;
 }
+if (!hasNotices) {
+  console.error(`[${dir}] BLOCKED — no THIRD-PARTY-NOTICES.txt in the tarball (run tools/security/generate-third-party-notices.mjs)`);
+  failed = true;
+}
 
-console.log(`[${dir}] ${files.length} files, license=${hasLicense ? 'yes' : 'NO'}`);
+console.log(`[${dir}] ${files.length} files, license=${hasLicense ? 'yes' : 'NO'}, notices=${hasNotices ? 'yes' : 'NO'}`);
 process.exit(failed ? 1 : 0);
