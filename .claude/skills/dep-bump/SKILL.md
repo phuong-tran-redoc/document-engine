@@ -9,6 +9,14 @@ description: >-
   warning". Trigger for shipped/runtime deps especially (anything in a published lib's dependencies or
   peerDependencies). Also use it to diagnose dual-version / unmet-peer / "Property X does not exist on
   ChainedCommands" / happy-dom-in-browser-bundle errors, which are almost always a half-done bump.
+  ALSO triggers — Mode B (verify an existing PR locally before merge, Claude as executor): ANY request to
+  check / verify / test / vet / review / run-the-checks-on / "is it safe to merge" a SPECIFIC pull request
+  (referenced by a number, or "this PR", "the dependabot PR", "cái PR này") before merging — regardless of
+  exact wording, Vietnamese or English. Non-exhaustive examples: "PR 28 ổn rồi kiểm tra trực tiếp giúp mình",
+  "kiểm tra PR 28 giúp mình", "PR 28 ổn chưa", "soi/test/review thử PR 28", "PR 28 merge được chưa", "PR 28 có
+  an toàn không", "chạy thử PR 28 ở local", "verify/check/vet PR 28", "is PR 28 safe to merge", "run the checks
+  on PR 28 before merging", "giúp mình verify rồi merge PR 28". Treat any "evaluate a named PR before merging"
+  intent as Mode B even if phrased differently.
 ---
 
 # document-engine dependency-bump runbook (`/dep-bump`)
@@ -18,10 +26,55 @@ share a cohort of `@tiptap/*` / ProseMirror packages that must move in lock-step
 silently degrades **HTML output**, breaks **types**, splits the dependency tree into **two copies**, or fails
 only at **demo-app build** time. This skill is the checklist that makes every one of those visible.
 
-This skill is the **manual tier** of the planned safe-Dependabot-auto-merge policy: Dependabot/CI auto-merges
-*tooling/dev* deps; any *shipped/runtime* dep (a published lib's `dependencies` or `peerDependencies`) lands
-here and gets the full process below. It feeds the `security-gate` that [`/publish`](../publish/SKILL.md) runs
-before release.
+This skill is the **manual tier** of the safe-Dependabot-auto-merge policy
+([`.context/ops/dependabot-auto-merge.md`](../../../.context/ops/dependabot-auto-merge.md)): Dependabot/CI
+auto-merges *tooling/dev* non-major deps; any *shipped/runtime* dep (a published lib's `dependencies` or
+`peerDependencies`), any *framework-spine build tool* (nx, swc, ng-packagr), and every *major* lands on the
+manual track and gets the full process below. It feeds the `security-gate` that [`/publish`](../publish/SKILL.md)
+runs before release.
+
+## Mode B — Verify an existing Dependabot/dep PR before merge (Claude is the executor)
+
+Trigger: the user points at a specific open PR and wants it evaluated before merge — **any phrasing** of
+check / verify / test / vet / review / "safe to merge?" against a PR number or "this/the PR" (VN or EN; see
+the description's examples). The bump already exists in the PR; you do NOT author it — you **verify it
+locally, get the human's part, then merge on green**. Run this flow:
+
+1. **Resolve + MINE THE PR BODY (do this first — it is the richest, cheapest signal).** The Dependabot PR
+   already aggregates everything upstream: `gh pr view <n>` (read the full body, not just the title) +
+   `gh pr view <n> --comments`. Extract and actually read:
+   - **Release notes** + **Changelog** sections (the collapsed `<details>` blocks) — hunt specifically for
+     **BREAKING CHANGES / deprecations / "migration" / removed|renamed APIs** in the version range.
+   - **Commits** list — scope of what moved.
+   - **Compatibility score** badge — Dependabot's cross-repo CI signal for this bump.
+   - `@dependabot`/maintainer comments.
+   Then `gh pr diff <n> --name-only` (does it touch `libs/*/package.json` = published contract?) and
+   `gh pr checks <n>` (CI status). **State the predicted class (Step 0), the CI status, and a short summary of
+   any breaking notes you found** — these notes DIRECTLY drive how deep to verify (step 3), which features to
+   exercise in the human handoff (step 4), and where to look first in the fix loop (step 5). If the body is
+   thin (grouped PR with many entries), pull the changelog per package from the linked releases.
+2. **Stash/clean check, then pull the branch.** Ensure the working tree is clean (warn the user if not).
+   `gh pr checkout <n>` then `pnpm install`.
+3. **Run depth-appropriate checks** (you run these — report PASS/FAIL with exact output on failure):
+   - **Tooling/dev, non-spine, non-major:** `pnpm nx affected -t lint test build`. (These usually CI-auto-merge;
+     a Mode-B request means the user wants eyes on it anyway.)
+   - **Shipped/runtime, spine build tool, or any major:** the **full Steps 3–7** below —
+     single-version assert → build ALL (`build:libs` + demo app) → `test:all` + output/serialization → `e2e:ci`
+     → `pnpm api:check` (published-surface drift) → peer-range/Angular-floor guards.
+4. **Hand off the human's part.** For shipped/runtime deps, runtime behavior needs a human eye. Ask the user
+   to run `pnpm start` and exercise the affected features (tables, dynamic fields, restricted editing, image
+   nodes…), **or** offer to drive it via the playwright skill and show screenshots. Wait for their "looks good".
+5. **If something breaks → the fix loop** (don't merge red): `build:libs` points at the broken call-sites →
+   read the dep's changelog → fix on the PR branch → rebuild/test → commit the fixes onto the branch (Dependabot
+   stops managing a branch you push to — fine). Surface non-trivial breakage to the user before grinding on it.
+6. **Merge — only after green CI + the user's explicit go** (TOP RULE: never merge on your own initiative).
+   If GitHub shows "out of date with base" (strict branch protection), update first:
+   `gh pr merge <n> --squash --auto` (auto-merge waits for required checks) **or** `gh pr update-branch <n>`
+   then `gh pr merge <n> --squash`. Never use the bypass-rules option.
+7. **Post-merge: resync the user's local `main`.** `git checkout main && git pull && pnpm install`. Confirm a
+   clean install. Done.
+
+For Mode A (you author a fresh bump from a version request), continue with Step 0 onward.
 
 ## Step 0 — Classify the dep (decides how much process)
 
