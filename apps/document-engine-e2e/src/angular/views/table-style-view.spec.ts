@@ -155,7 +155,7 @@ test.describe('Table Style View - Border Styling @high', () => {
     await page.waitForTimeout(200);
 
     // Verify border color cleared
-    const table = await page.locator('table');
+    const table = page.locator('table');
     const hasBorderColor = await table.evaluate((el) => {
       return el.style.borderColor !== '';
     });
@@ -207,7 +207,7 @@ test.describe('Table Style View - Background Styling @high', () => {
     await page.waitForTimeout(200);
 
     // Verify background color cleared
-    const table = await page.locator('table');
+    const table = page.locator('table');
     const hasBgColor = await table.evaluate((el) => {
       return el.style.backgroundColor !== '';
     });
