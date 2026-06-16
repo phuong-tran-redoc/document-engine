@@ -57,6 +57,14 @@ jobs:
           fail_ci_if_error: false
         continue-on-error: true
 
+      # Human-readable verdict on the run summary page (pass or fail) — no log-diving needed.
+      - name: Result summary (pass)
+        if: success()
+        run: echo "✅ **validate** passed — lint + unit tests + build green on all affected projects." >> "$GITHUB_STEP_SUMMARY"
+      - name: Result summary (fail)
+        if: failure()
+        run: echo "❌ **validate** failed — an affected project broke on lint, unit test, or build (see step logs above)." >> "$GITHUB_STEP_SUMMARY"
+
   # E2E Testing Job
   e2e:
     runs-on: ubuntu-latest
@@ -103,3 +111,11 @@ jobs:
           name: playwright-report
           path: apps/document-engine-e2e/playwright-report/
           retention-days: 7
+
+      # Human-readable verdict on the run summary page (pass or fail) — no log-diving needed.
+      - name: Result summary (pass)
+        if: success()
+        run: echo "✅ **e2e** passed — Playwright \`@ci\` suite green against the built app." >> "$GITHUB_STEP_SUMMARY"
+      - name: Result summary (fail)
+        if: failure()
+        run: echo "❌ **e2e** failed — Playwright \`@ci\` suite red. Trace/report uploaded as the \`playwright-report\` artifact." >> "$GITHUB_STEP_SUMMARY"

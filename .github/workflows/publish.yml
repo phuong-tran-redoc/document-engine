@@ -119,3 +119,17 @@ jobs:
           else
             gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes --verify-tag
           fi
+
+      # Human-readable verdict on the run summary page (pass or fail) — no log-diving needed.
+      - name: Result summary (pass)
+        if: success()
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then VERSION="${{ github.event.inputs.version }}"; else VERSION="${GITHUB_REF_NAME#v}"; fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "✅ **publish** (DRY RUN) — toolchain + tarball validated for v$VERSION; nothing published." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "✅ **publish** — both packages published at v$VERSION via OIDC trusted publishing + provenance." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Result summary (fail)
+        if: failure()
+        run: echo "❌ **publish** failed — see step logs. (security-gate runs first as a required job; if it passed, the break is in build/version/publish.)" >> "$GITHUB_STEP_SUMMARY"

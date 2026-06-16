@@ -1,6 +1,6 @@
-name: dependabot-auto-merge
+name: dependabot-triage
 
-# Tiered Dependabot auto-merge (DE-011). Decides per-PR whether a bump is safe to land
+# Tiered Dependabot triage (DE-011). Decides per-PR whether a bump is safe to land
 # automatically. It NEVER force-merges: it calls `gh pr merge --auto`, which only completes
 # once every branch-protection required check (validate + e2e) is green. A bump that breaks
 # the build/tests goes red → merge stays blocked → it falls back to manual review.
@@ -25,7 +25,12 @@ permissions:
   issues: write # ensure the review label exists
 
 jobs:
-  auto-merge:
+  # Job name = the check name shown on the PR. It is called "dependabot-triage" (NOT
+  # "auto-merge") on purpose: a GREEN check here means "the bump was correctly triaged",
+  # NOT "the PR was merged" and NOT "the bump is safe to merge". A manual-track bump still
+  # produces a green check — the verdict (SAFE / NOT-SAFE per policy) is logged in the step
+  # summary. Whether the PR can actually merge is decided by the required checks (validate + e2e).
+  dependabot-triage:
     runs-on: ubuntu-latest
     # Only act on Dependabot's own PRs.
     if: github.event.pull_request.user.login == 'dependabot[bot]'
@@ -53,26 +58,49 @@ jobs:
           # comma/space-separated list; if any entry is a spine tool the whole (grouped) PR is manual.
           SPINE=$(printf '%s' "$DEP_NAMES" | tr ', ' '\n\n' | grep -E '^(nx|ng-packagr|@nx/.+|@swc/.+)$' || true)
           if [ -n "$SPINE" ]; then
-            echo "decision=manual" >> "$GITHUB_OUTPUT"
-          elif [ "$UPDATE_TYPE" != "version-update:semver-major" ] \
-               && { [ "$DEP_TYPE" = "direct:development" ] || [ "$ECOSYSTEM" = "github_actions" ]; }; then
-            echo "decision=auto" >> "$GITHUB_OUTPUT"
+            DECISION=manual
+            REASON="framework-spine build tool ($(printf '%s' "$SPINE" | tr '\n' ' ')) — workspace-wide blast radius (builds the published .d.ts / fesm)"
+          elif [ "$UPDATE_TYPE" = "version-update:semver-major" ]; then
+            DECISION=manual
+            REASON="major bump — breaking by definition"
+          elif [ "$DEP_TYPE" = "direct:development" ] || [ "$ECOSYSTEM" = "github_actions" ]; then
+            DECISION=auto
+            REASON="non-major dev-tooling / CI plumbing — never ships to consumers"
           else
-            echo "decision=manual" >> "$GITHUB_OUTPUT"
+            DECISION=manual
+            REASON="production/peer dep — ships to or is resolved by consumers; CI cannot catch a runtime regression that still builds + tests green"
+          fi
+          echo "decision=$DECISION" >> "$GITHUB_OUTPUT"
+
+          if [ "$DECISION" = auto ]; then
+            VERDICT="✅ SAFE per policy → auto-merge queued (lands ONLY after validate + e2e pass)"
+          else
+            VERDICT="⛔ NOT auto-safe per policy → held for manual review (verify per .context/ops/dependabot-auto-merge.md before merging)"
           fi
 
-      # AUTO: queue the PR. GitHub holds it until validate + e2e (branch protection) pass.
+          # Emit the verdict to BOTH the job log and the PR check summary so it is unmissable.
+          # A green check here just means "triaged correctly" — this block says SAFE vs NOT-SAFE.
+          {
+            echo "### Dependabot triage verdict"
+            echo ""
+            echo "- **Packages:** \`${DEP_NAMES}\`"
+            echo "- **Update type:** ${UPDATE_TYPE}"
+            echo "- **Dependency type:** ${DEP_TYPE}${ECOSYSTEM:+ / ${ECOSYSTEM}}"
+            echo "- **Decision:** \`${DECISION}\`"
+            echo "- **Reason:** ${REASON}"
+            echo "- **Verdict:** ${VERDICT}"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # AUTO: queue the PR. GitHub holds it until validate + e2e (branch protection) pass —
+      # this never blind-merges. The SAFE/NOT-SAFE verdict is already logged by Classify above.
       - name: Enable auto-merge
         if: steps.classify.outputs.decision == 'auto'
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }} # no checkout in this job; gh needs the repo explicitly
-          DEP_NAMES: ${{ steps.meta.outputs.dependency-names }}
-          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
-          DEP_TYPE: ${{ steps.meta.outputs.dependency-type }}
         run: |
-          echo "AUTO-MERGE queued: $DEP_NAMES ($UPDATE_TYPE, $DEP_TYPE)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Queuing auto-merge — GitHub will land this only once validate + e2e are green."
           gh pr merge --auto --squash "$PR_URL"
 
       # MANUAL: leave it for a human and label it so it is filterable. Does NOT merge.
@@ -82,13 +110,10 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }} # no checkout in this job; gh needs the repo explicitly
-          DEP_NAMES: ${{ steps.meta.outputs.dependency-names }}
-          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
-          DEP_TYPE: ${{ steps.meta.outputs.dependency-type }}
         run: |
           gh label create needs-manual-review \
             --color D93F0B \
             --description "Dependabot bump on a shipped dep or a minor/major — review per ops/dependabot-auto-merge.md" \
             --force
           gh pr edit "$PR_URL" --add-label needs-manual-review
-          echo "MANUAL review: $DEP_NAMES ($UPDATE_TYPE, $DEP_TYPE)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Labeled needs-manual-review — held for a human (NOT merged)."

@@ -130,6 +130,14 @@ jobs:
           # is a Sass-only entry (exports.sass, no JS/types), so it is excluded from type checks.
           npx --yes @arethetypeswrong/cli --pack dist/libs/document-engine-angular --profile esm-only --exclude-entrypoints ./styles
 
+      # Human-readable verdict on the run summary page (pass or fail) — no log-diving needed.
+      - name: Result summary (pass)
+        if: success()
+        run: echo "✅ **gate** passed — secret scan, OSV vulns (published prod closure), license allowlist, API-surface, tarball, publint/attw, angular-floor (static) all clear." >> "$GITHUB_STEP_SUMMARY"
+      - name: Result summary (fail)
+        if: failure()
+        run: echo "❌ **gate** failed — one of these blocked — Gitleaks, OSV vuln, license allowlist, api-extractor drift, tarball contents, publint/attw, or angular-floor static guard. See the failed step above." >> "$GITHUB_STEP_SUMMARY"
+
   # --- BLOCKING: angular peer-floor guard, layer 2 (real floor-Angular compile) ---
   # Pack the libs, install them into an isolated consumer pinned to the declared
   # Angular floor (>=16, see ADR-006) and AOT-build. Authoritative proof the package
@@ -158,3 +166,11 @@ jobs:
 
       - name: Build libs + install on floor Angular + AOT build
         run: bash tools/ng-floor-compat/run.sh
+
+      # Human-readable verdict on the run summary page (pass or fail) — no log-diving needed.
+      - name: Result summary (pass)
+        if: success()
+        run: echo "✅ **ng-floor-compat** passed — both libs install + AOT-build on the declared Angular floor (ADR-006)." >> "$GITHUB_STEP_SUMMARY"
+      - name: Result summary (fail)
+        if: failure()
+        run: echo "❌ **ng-floor-compat** failed — the published libs do not install/compile on the floor Angular version. See tools/ng-floor-compat/run.sh logs above." >> "$GITHUB_STEP_SUMMARY"
