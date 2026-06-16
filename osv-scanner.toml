@@ -1,11 +1,11 @@
 # OSV-Scanner configuration — https://google.github.io/osv-scanner/configuration/
 #
-# STATUS: ADVISORY, scoped to the published prod closure (DE-010 #3). The OSV step in
-# .github/workflows/security-gate.yml keeps `continue-on-error: true` ONLY until this scoped
-# scan is confirmed green in a real CI run — then remove it to make a vuln in the SHIPPED
-# surface block the gate. (Couldn't be validated locally: the osv-scanner binary is a separate
-# download, not part of this toolchain; but `npm install --package-lock-only` on each scoped
-# closure reports 0 vulnerabilities, so the scoped scan is expected green.)
+# STATUS: BLOCKING, scoped to the published prod closure (DE-010 #3). The OSV step in
+# .github/workflows/security-gate.yml has NO `continue-on-error` — a vuln in the SHIPPED surface
+# fails the gate (and therefore blocks publish, since publish.yml `needs: security-gate`).
+# Confirmed green on PR #26 before flipping: osv-scanner scanned 57 + 4 packages, "No issues
+# found", exit 0. The prep step also asserts each synthesized lockfile resolves >1 package, so a
+# future build regression can't let the scan silently pass on an empty closure.
 #
 # --- What is scanned now (2026-06-16 re-scope) ---
 # NOT the full pnpm-lock.yaml (~2014 dev+prod pkgs). The gate synthesizes a production-only
