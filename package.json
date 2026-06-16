@@ -29,7 +29,9 @@
     "release:first": "nx release 0.1.0 --first-release --skip-publish",
     "release:next": "nx release prerelease --preid=next --skip-publish",
     "release:push": "git push --follow-tags",
-    "guard:ng-floor": "node tools/check-angular-floor.mjs"
+    "guard:ng-floor": "node tools/check-angular-floor.mjs",
+    "api:check": "pnpm build:libs && (cd libs/document-engine-core && api-extractor run --verbose) && (cd libs/document-engine-angular && api-extractor run --verbose)",
+    "api:update": "pnpm build:libs && (cd libs/document-engine-core && api-extractor run --local) && (cd libs/document-engine-angular && api-extractor run --local)"
   },
   "private": true,
   "dependencies": {
@@ -55,6 +57,7 @@
     "@angular/language-service": "~20.3.0",
     "@eslint/js": "^9.8.0",
     "@floating-ui/dom": "^1.7.4",
+    "@microsoft/api-extractor": "^7.58.8",
     "@nx/angular": "22.0.2",
     "@nx/devkit": "22.0.2",
     "@nx/eslint": "22.0.2",

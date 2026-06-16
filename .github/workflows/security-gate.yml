@@ -51,17 +51,51 @@ jobs:
       - name: Angular peer-floor guard (static denylist)
         run: node tools/check-angular-floor.mjs
 
-      # --- ADVISORY (promote to blocking after triaging baseline findings into osv-scanner.toml) ---
-      - name: Dependency vulnerabilities (OSV-Scanner)
+      - name: Build publishable libs
+        run: pnpm nx run-many -t build --projects=tag:scope:public
+
+      # Scope the OSV scan to the PUBLISHED production closure (not the ~2014-pkg dev lockfile).
+      # For each built package we synthesize a manifest containing only its real runtime
+      # `dependencies` — dev + peer deps and the workspace self-ref are dropped (peers/core are
+      # consumer- or sibling-provided), then resolve a production lockfile from the registry.
+      # core's deps are the bundled @tiptap/* + tslib closure; angular adds @floating-ui/dom + tslib.
+      - name: Prepare published prod closure for OSV
+        run: |
+          set -eux
+          for pkg in document-engine-core document-engine-angular; do
+            mkdir -p "osv-scan/$pkg"
+            node -e "const p=require('./dist/libs/$pkg/package.json');delete p.devDependencies;delete p.peerDependencies;if(p.dependencies)delete p.dependencies['@phuong-tran-redoc/document-engine-core'];require('fs').writeFileSync('osv-scan/$pkg/package.json',JSON.stringify(p,null,2))"
+            (cd "osv-scan/$pkg" && npm install --package-lock-only --omit=dev --omit=peer --ignore-scripts)
+          done
+
+      # --- ADVISORY (DE-010 #3): scoped to the published prod closure above. Kept non-blocking
+      # only until this scoped scan is confirmed green in a real CI run; then remove
+      # `continue-on-error` to make a vuln in the SHIPPED surface fail the gate. The full-lockfile
+      # dev-tooling/peer noise that forced this to be advisory no longer applies here. ---
+      - name: Dependency vulnerabilities (OSV-Scanner — published prod closure)
         continue-on-error: true
         uses: google/osv-scanner-action/osv-scanner-action@e69cc6c86b31f1e7e23935bbe7031b50e51082de # v2.0.2
         with:
           scan-args: |-
-            --lockfile=pnpm-lock.yaml
             --config=osv-scanner.toml
+            --lockfile=osv-scan/document-engine-core/package-lock.json
+            --lockfile=osv-scan/document-engine-angular/package-lock.json
 
-      - name: Build publishable libs
-        run: pnpm nx run-many -t build --projects=tag:scope:public
+      # Generate THIRD-PARTY-NOTICES.txt into each dist (required in the tarball; see verify step).
+      - name: Generate THIRD-PARTY-NOTICES
+        run: |
+          node tools/security/generate-third-party-notices.mjs dist/libs/document-engine-core
+          node tools/security/generate-third-party-notices.mjs dist/libs/document-engine-angular
+
+      # --- BLOCKING: public API surface (additive-only contract) ---
+      # api-extractor regenerates the API report from the built .d.ts and fails if it drifts
+      # from the committed etc/*.api.md. A REMOVED export = a breaking change (pre-1.0: minor
+      # bump + a ### Migration changelog block); an added export = update the baseline.
+      # Regenerate locally with: (cd libs/<pkg> && npx api-extractor run --local) then commit.
+      - name: API surface check (api-extractor)
+        run: |
+          (cd libs/document-engine-core && npx api-extractor run --verbose)
+          (cd libs/document-engine-angular && npx api-extractor run --verbose)
 
       # --- BLOCKING: transitive license allowlist (fail on GPL/AGPL/unknown) ---
       - name: License allowlist (production closure)

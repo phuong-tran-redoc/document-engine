@@ -22,6 +22,14 @@
     "directory": "../../dist/libs/document-engine-angular",
     "access": "public"
   },
+  "files": [
+    "fesm2022",
+    "index.d.ts",
+    "src/lib/styles",
+    "README.md",
+    "LICENSE.md",
+    "THIRD-PARTY-NOTICES.txt"
+  ],
   "dependencies": {
     "tslib": "^2.3.0",
     "@floating-ui/dom": "^1.7.4",

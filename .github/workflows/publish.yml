@@ -31,9 +31,9 @@ jobs:
     # NB: the truthy branch must be 'npm-publish' — an empty string is falsy in GitHub expressions,
     # so `dry_run && '' || 'npm-publish'` would wrongly always gate. Invert the condition instead.
     environment: ${{ (github.event_name != 'workflow_dispatch' || !inputs.dry_run) && 'npm-publish' || '' }}
-    # Permissions required for OIDC Trusted Publishing.
+    # Permissions: id-token for OIDC Trusted Publishing; contents:write to create the GitHub Release.
     permissions:
-      contents: read
+      contents: write
       id-token: write
     steps:
       - name: Checkout code
@@ -75,6 +75,9 @@ jobs:
           echo "Publishing version: $VERSION"
           # Stamp the tagged version + resolved dep ranges into the built dist manifests.
           pnpm nx release version "$VERSION" --git-commit=false --git-tag=false --stage-changes=false
+          # Generate THIRD-PARTY-NOTICES.txt into each dist before publishing (shipped via the `files` allowlist).
+          node tools/security/generate-third-party-notices.mjs ./dist/libs/document-engine-core
+          node tools/security/generate-third-party-notices.mjs ./dist/libs/document-engine-angular
           # Publish each built package with npm (>= 11.5.1) for OIDC Trusted Publishing + provenance.
           # nx's pnpm-based `release publish` does NOT perform OIDC (it expects an npm token and fails
           # token-lessly with an empty "pnpm publish error:"); npm does OIDC natively. Core first —
@@ -94,3 +97,25 @@ jobs:
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.dry_run) }}
         continue-on-error: true
         run: npm audit signatures
+
+      # Create the GitHub Release for the tag from CI. We do this here (not in local
+      # `nx release`) because the local git `origin` is an SSH host alias that nx's
+      # GitHub-API resolver can't parse, so `changelog.workspaceChangelog.createRelease`
+      # is false in nx.json. Real tag-pushes only (skip workflow_dispatch / dry-run).
+      - name: Create GitHub Release
+        if: ${{ github.event_name == 'push' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          # Extract this version's section from CHANGELOG.md (nx heading: "## <version> (date)").
+          awk -v v="$VERSION" '
+            $0 ~ "^## " v "( |\\()" {flag=1; print; next}
+            /^## / {flag=0}
+            flag {print}
+          ' CHANGELOG.md > release-notes.md
+          if [ -s release-notes.md ]; then
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file release-notes.md --verify-tag
+          else
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes --verify-tag
+          fi

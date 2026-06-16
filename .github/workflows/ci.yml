@@ -12,24 +12,24 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22'
 
       - name: Setup pnpm
         # pnpm version is read from the "packageManager" field in package.json
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Derive appropriate SHAs for base and head
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1 # v4.4.0
 
       # Lint affected projects (allow warnings, fail on errors only)
       # Exclude E2E project - it has its own job
@@ -51,7 +51,7 @@ jobs:
       # Upload coverage reports (optional)
       - name: Upload coverage
         if: always()
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4.6.0
         with:
           files: ./coverage/**/coverage-final.json
           fail_ci_if_error: false
@@ -63,16 +63,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22'
 
       - name: Setup pnpm
         # pnpm version is read from the "packageManager" field in package.json
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -98,7 +98,7 @@ jobs:
 
       - name: Upload Playwright Report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: playwright-report
           path: apps/document-engine-e2e/playwright-report/

@@ -8,6 +8,12 @@
 
 # compiled output
 dist
+
+# OSV prod-closure lockfiles (synthesized in CI from dist manifests for the scoped scan)
+osv-scan/
+
+# api-extractor intermediate report (the committed baseline lives in libs/*/etc/)
+libs/*/temp/
 tmp
 out-tsc
 

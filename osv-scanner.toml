@@ -1,12 +1,35 @@
 # OSV-Scanner configuration — https://google.github.io/osv-scanner/configuration/
 #
-# The security gate currently runs OSV as ADVISORY. To promote it to blocking:
-#   1. Run `npx --yes @google/osv-scanner scan --lockfile=pnpm-lock.yaml` locally.
-#   2. Triage findings: suppress any that are unreachable/disputed/dev-only below, each with a
-#      reason + a review date.
-#   3. Remove `continue-on-error: true` from the OSV step in .github/workflows/security-gate.yml.
+# STATUS: ADVISORY, scoped to the published prod closure (DE-010 #3). The OSV step in
+# .github/workflows/security-gate.yml keeps `continue-on-error: true` ONLY until this scoped
+# scan is confirmed green in a real CI run — then remove it to make a vuln in the SHIPPED
+# surface block the gate. (Couldn't be validated locally: the osv-scanner binary is a separate
+# download, not part of this toolchain; but `npm install --package-lock-only` on each scoped
+# closure reports 0 vulnerabilities, so the scoped scan is expected green.)
 #
-# Example suppression:
+# --- What is scanned now (2026-06-16 re-scope) ---
+# NOT the full pnpm-lock.yaml (~2014 dev+prod pkgs). The gate synthesizes a production-only
+# lockfile per published package from its built dist manifest (dev + peer deps and the
+# workspace self-ref dropped), then scans those:
+#   - document-engine-core  → its real `dependencies`: the @tiptap/* + tslib closure (~58 pkgs)
+#   - document-engine-angular → its extra `dependencies`: @floating-ui/dom + tslib (~5 pkgs)
+# This is exactly the third-party code a consumer pulls in transitively from our packages.
+#
+# --- What is deliberately OUT of scope ---
+#   (a) DEV-ONLY tooling that never ships (axios, @babel/*, @modelcontextprotocol/sdk, ajv,
+#       glob, …) — was the bulk of the old full-lockfile HIGH/CRITICAL noise.
+#   (b) CONSUMER-PROVIDED PEERS we declare but do not pull in: @angular/* and lodash-es — the
+#       host app resolves these, their CVEs are the consumer's to patch (tracked below).
+#
+# --- Peer-dependency advisories (informational; not our runtime, tracked here) ---
+# lodash-es code-injection (GHSA-r5fr-rjxr-66jc, `_.template`) + prototype-pollution
+# (GHSA-f23m-r3pf-42rh, GHSA-xxjr-mmjv-4gpg): we declare `lodash-es: ^4.17.10` as a PEER.
+# Consider raising the peer floor to `^4.17.23` so consumers resolve patched lodash.
+# @angular/* XSS/XSRF advisories: peer dependencies; the consuming app controls its Angular
+# version. Not shipped by us.
+#
+# Once re-scoped + validated, record any genuinely-accepted finding below with a reason +
+# review date, e.g.:
 # [[IgnoredVulns]]
 # id = "GHSA-xxxx-xxxx-xxxx"
-# # reason: not reachable from the published surface; review by 2026-09-01
+# # reason: dev-only / unreachable from the published surface; review by 2026-09-01

@@ -10,6 +10,13 @@
   "description": "Framework-agnostic core library for Document Engine",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
+  "files": [
+    "src/**/*.js",
+    "src/**/*.d.ts",
+    "README.md",
+    "LICENSE.md",
+    "THIRD-PARTY-NOTICES.txt"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/phuong-tran-redoc/document-engine.git"

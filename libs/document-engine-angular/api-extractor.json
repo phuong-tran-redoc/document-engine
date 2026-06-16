@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+  "mainEntryPointFilePath": "<projectFolder>/../../dist/libs/document-engine-angular/index.d.ts",
+  "bundledPackages": [],
+  "compiler": {
+    "overrideTsconfig": {
+      "compilerOptions": {
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "target": "es2020",
+        "skipLibCheck": true,
+        "types": []
+      },
+      "include": ["../../dist/libs/document-engine-angular/**/*.d.ts"]
+    }
+  },
+  "apiReport": {
+    "enabled": true,
+    "reportFolder": "<projectFolder>/etc/",
+    "reportFileName": "<unscopedPackageName>.api.md"
+  },
+  "docModel": { "enabled": false },
+  "dtsRollup": { "enabled": false },
+  "tsdocMetadata": { "enabled": false },
+  "messages": {
+    "extractorMessageReporting": {
+      "ae-missing-release-tag": { "logLevel": "none" },
+      "ae-forgotten-export": { "logLevel": "none" },
+      "ae-missing-getter": { "logLevel": "none" }
+    },
+    // This gate enforces API-surface (drift), not JSDoc style. Silence tsdoc lint so cosmetic
+    // doc-comment warnings don't fail the gate in CI (api-extractor escalates warnings to a
+    // non-zero exit in non-local mode). Drift detection is independent and still blocks.
+    "tsdocMessageReporting": {
+      "default": { "logLevel": "none" }
+    }
+  }
+}
