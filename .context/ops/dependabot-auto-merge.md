@@ -20,6 +20,7 @@ those are never auto-merged on minor/major.
 | --- | --- | --- |
 | **`dev-dependency` patch or minor** (jest, eslint, prettier, playwright, `@types/*`, …) | AUTO | never ships to consumers |
 | **`github-actions` non-major** | AUTO | CI plumbing; never enters the npm package |
+| **framework-spine build tools** (`nx`, `@nx/*`, `@swc/*`, `ng-packagr`) — any version | MANUAL | dev-typed but workspace-wide blast radius; they build the published `.d.ts`/fesm output |
 | **ANY `production`/peer dep — patch, minor _or_ major** (tiptap, `@floating-ui/dom`, lodash-es, angular, rxjs, …) | MANUAL | ships to / is resolved by consumers — even a patch edits the published contract |
 | **every `major`** (incl. dev-tooling major) | MANUAL | breaking by definition; framework-spine majors are `ignore`d entirely |
 
@@ -42,18 +43,23 @@ How it is gated:
 
 Order of questions:
 
+0. **Mine the PR body FIRST.** Dependabot embeds the upstream **release notes**, **changelog**, **commits**,
+   and a **compatibility score** right in the PR (collapsed `<details>` blocks) — read them before anything
+   else and pull out breaking changes / deprecations / migration notes. This is the cheapest, richest signal
+   and it tells you where to look in every step below.
 1. **Is CI fully green?** Red → investigate the failure first; never merge red.
 2. **Does it touch `libs/*/package.json`?** If yes it changes the published contract → scrutinize.
-3. **patch / minor / major?** Major → read the upstream breaking-change notes before anything else.
+3. **patch / minor / major?** Major → the breaking notes you mined in step 0 drive what to test.
 4. A **tiptap / angular major** affecting a published lib may force a **major bump of our own package**
    (it is breaking for our consumers) — coordinate, don't just merge.
 
 Commands:
 
 ```bash
+gh pr view <n>                   # 0. READ the body: release notes / changelog / commits / compat score
+gh pr view <n> --comments        #    + any @dependabot / maintainer notes
 gh pr checks <n>                 # 1. all required checks green?
 gh pr diff <n> --name-only       # 2. touches libs/*/package.json?
-# 3. read the upstream changelog for the version range (breaking?)
 gh pr checkout <n>               # 4. pull locally
 pnpm install && pnpm build:libs && pnpm test:all && pnpm e2e:ci
 # 5. for SHIPPED deps (tiptap, @floating-ui): run the app and exercise real features
@@ -66,6 +72,58 @@ Don't reflex-reject. Default is **review-then-merge**. Close a PR only when:
 
 - a **major isn't ready to adopt** → add an `ignore` rule in `dependabot.yml` so it doesn't reopen, or
 - a bump **breaks the build with a non-trivial fix** → defer and note why.
+
+> **Automated:** just point Claude at a PR in any phrasing — *"kiểm tra PR &lt;n&gt; giúp mình"*, *"PR &lt;n&gt;
+> ổn chưa"*, *"verify/vet PR &lt;n&gt;"*, *"is PR &lt;n&gt; safe to merge"* — and it runs the verify-before-merge
+> flow via the [`/dep-bump`](../../.claude/skills/dep-bump/SKILL.md) skill (Mode B): checkout → install →
+> depth-appropriate checks → hands you the visual app check for shipped deps → merges on green + your OK →
+> syncs your local `main`.
+
+## After a PR merges — sync your local checkout
+
+The merged commit updated `package.json` + `pnpm-lock.yaml` on `main`. Your working copy must catch up.
+
+**AUTO-merged PR (dev tooling, non-major):** CI was green *before* it merged, so it cannot have broken the
+build/tests. Just resync — nothing else:
+
+```bash
+git checkout main && git pull
+pnpm install        # reconcile node_modules with the merged lockfile (required)
+```
+
+**MANUAL PR:** the heavy verification happens *before* merge (see below), so after merge the same two lines
+are all you need. If `pnpm install` reports a lockfile/manifest mismatch, the merge was incomplete — investigate.
+
+## Adapting a breaking major — verify + fix BEFORE merge
+
+The rule: **never merge red.** For a major with API changes, verify on the PR branch, fix breakage there, and
+only merge once `main` will stay green. `build:libs` (TypeScript compile) is the primary "what broke" detector
+— it points at every broken call-site.
+
+```bash
+gh pr checkout <n>          # work on the PR's branch locally
+pnpm install                # install the bumped deps
+pnpm build:libs             # TS compile — API breaks show here with exact file:line
+pnpm test:all
+pnpm nx affected -t lint    # catches newly-promoted lint rules (e.g. angular-eslint prefer-control-flow)
+pnpm api:check              # api-extractor: did the dep drift OUR published surface?
+pnpm e2e:ci
+# shipped deps (tiptap, @floating-ui): exercise the real app
+pnpm start                  # tables, dynamic fields, restricted editing, …
+```
+
+The fix loop when something breaks:
+1. `pnpm build:libs` → read the compile errors (exact call-sites).
+2. Read the dependency's CHANGELOG / migration guide for that version range.
+3. Fix the call-sites → rebuild → repeat until clean, then `test:all` + `e2e:ci`.
+4. **Commit the fixes onto the PR branch** so the merge is green end-to-end (Dependabot stops managing a branch
+   you push to — that's fine; you've taken it over).
+5. If the break changes **our** public API (api-extractor flags drift) → it's breaking for our consumers → a
+   **major/minor bump of our own package** may be required (see `RELEASING.md`).
+
+For any **shipped/runtime** dep (a published lib's `dependencies`/`peerDependencies`), do the full
+[`/dep-bump`](../../.claude/skills/dep-bump/SKILL.md) process — cohort lock-step, peer ranges, single-version
+assertion, output/serialization check, Angular-floor guard. After merge, resync `main` as above.
 
 ## Repo settings (required for auto-merge to work)
 

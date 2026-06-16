@@ -36,6 +36,13 @@ updates:
         patterns:
           - '@nx/*'
           - 'nx'
+      # Framework-spine build tools — dev-typed but workspace-wide blast radius (they build the
+      # published .d.ts / fesm output). Isolated into their own group so they stay on the manual
+      # track (enforced in dependabot-auto-merge.yml) without dragging the auto-eligible dev group.
+      build-tooling:
+        patterns:
+          - '@swc/*'
+          - 'ng-packagr'
       # Dev/build tooling (jest, eslint, prettier, playwright, @types/*, …) — never ships to
       # consumers, so minor+patch here is auto-merge eligible once CI is green.
       dev-dependencies:
