@@ -20,6 +20,7 @@ those are never auto-merged on minor/major.
 | --- | --- | --- |
 | **`dev-dependency` patch or minor** (jest, eslint, prettier, playwright, `@types/*`, …) | AUTO | never ships to consumers |
 | **`github-actions` non-major** | AUTO | CI plumbing; never enters the npm package |
+| **framework-spine build tools** (`nx`, `@nx/*`, `@swc/*`, `ng-packagr`) — any version | MANUAL | dev-typed but workspace-wide blast radius; they build the published `.d.ts`/fesm output |
 | **ANY `production`/peer dep — patch, minor _or_ major** (tiptap, `@floating-ui/dom`, lodash-es, angular, rxjs, …) | MANUAL | ships to / is resolved by consumers — even a patch edits the published contract |
 | **every `major`** (incl. dev-tooling major) | MANUAL | breaking by definition; framework-spine majors are `ignore`d entirely |
 

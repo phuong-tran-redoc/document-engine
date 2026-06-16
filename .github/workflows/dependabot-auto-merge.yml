@@ -13,7 +13,8 @@ name: dependabot-auto-merge
 #
 # Tier table:
 #   AUTO  : dev-dependency (patch OR minor)  |  github-actions non-major
-#   MANUAL: ANY production/peer dep (patch/minor/major)  |  every major (incl. dev-tooling major)
+#   MANUAL: ANY production/peer dep (patch/minor/major)  |  framework-spine build tools
+#           (nx, swc, ng-packagr — dev-typed but workspace-wide blast radius)  |  every major
 # Playbook for the manual track: .context/ops/dependabot-auto-merge.md
 
 on: pull_request
@@ -35,18 +36,26 @@ jobs:
 
       # Classify once (env-passed, no script injection) so the merge/label steps stay readable.
       # AUTO iff the bump is non-major AND it is either dev-tooling (direct:development) or a
-      # github-actions bump. Everything touching a production/peer dep — at any version level —
-      # falls through to MANUAL. ecosystem string is the dependabot branch prefix, so
-      # github-actions => 'github_actions'.
+      # github-actions bump — EXCEPT framework-spine build tools, which are forced to MANUAL.
+      # Everything touching a production/peer dep — at any version level — falls through to MANUAL.
+      # ecosystem string is the dependabot branch prefix, so github-actions => 'github_actions'.
       - name: Classify bump
         id: classify
         env:
           UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
           DEP_TYPE: ${{ steps.meta.outputs.dependency-type }}
           ECOSYSTEM: ${{ steps.meta.outputs.package-ecosystem }}
+          DEP_NAMES: ${{ steps.meta.outputs.dependency-names }}
         run: |
-          if [ "$UPDATE_TYPE" != "version-update:semver-major" ] \
-             && { [ "$DEP_TYPE" = "direct:development" ] || [ "$ECOSYSTEM" = "github_actions" ]; }; then
+          # Framework-spine build tools (nx, swc, ng-packagr): dev-typed but workspace-wide blast
+          # radius — they build the published .d.ts / fesm output — so hold them for manual review
+          # even on a non-major bump, overriding the dev-tooling AUTO rule. dependency-names is a
+          # comma/space-separated list; if any entry is a spine tool the whole (grouped) PR is manual.
+          SPINE=$(printf '%s' "$DEP_NAMES" | tr ', ' '\n\n' | grep -E '^(nx|ng-packagr|@nx/.+|@swc/.+)$' || true)
+          if [ -n "$SPINE" ]; then
+            echo "decision=manual" >> "$GITHUB_OUTPUT"
+          elif [ "$UPDATE_TYPE" != "version-update:semver-major" ] \
+               && { [ "$DEP_TYPE" = "direct:development" ] || [ "$ECOSYSTEM" = "github_actions" ]; }; then
             echo "decision=auto" >> "$GITHUB_OUTPUT"
           else
             echo "decision=manual" >> "$GITHUB_OUTPUT"
@@ -58,6 +67,7 @@ jobs:
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }} # no checkout in this job; gh needs the repo explicitly
           DEP_NAMES: ${{ steps.meta.outputs.dependency-names }}
           UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
           DEP_TYPE: ${{ steps.meta.outputs.dependency-type }}
@@ -71,6 +81,7 @@ jobs:
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }} # no checkout in this job; gh needs the repo explicitly
           DEP_NAMES: ${{ steps.meta.outputs.dependency-names }}
           UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
           DEP_TYPE: ${{ steps.meta.outputs.dependency-type }}
