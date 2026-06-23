@@ -1,3 +1,17 @@
+## 0.1.1 (2026-06-23)
+
+### 🩹 Fixes
+
+- **angular:** make DocumentEditorComponent standalone
+- **ci:** bump publish workflow to Node 22 for pnpm 11.x
+- **ci:** publish via npm for OIDC trusted publishing, not nx/pnpm
+- **de-011:** gh repo context + carve spine build tools to manual
+- **e2e:** drop redundant await on page.locator for playwright-plugin v2
+
+### ❤️ Thank You
+
+- Phuong Tran
+
 # Changelog
 
 All notable changes to the `@phuong-tran-redoc/document-engine-*` packages are documented here.
