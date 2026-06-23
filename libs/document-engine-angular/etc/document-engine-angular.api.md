@@ -29,7 +29,6 @@ import { FloatingMenuPluginProps } from '@tiptap/extension-floating-menu';
 import { FormControl } from '@angular/forms';
 import { HeadingOptions } from '@tiptap/extension-heading';
 import * as i0 from '@angular/core';
-import * as i2 from '@angular/common';
 import { ImageOptions } from '@tiptap/extension-image';
 import { IndentOptions } from '@phuong-tran-redoc/document-engine-core';
 import { InjectionToken } from '@angular/core';
@@ -295,19 +294,19 @@ export class DocumentEditorComponent implements OnInit, OnChanges, OnDestroy {
     // (undocumented)
     ngOnInit(): void;
     // (undocumented)
-    static ɵcmp: i0.ɵɵComponentDeclaration<DocumentEditorComponent, "document-engine-editor", never, { "config": { "alias": "config"; "required": false; }; }, { "editorReady": "editorReady"; }, never, ["*"], false, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<DocumentEditorComponent, "document-engine-editor", never, { "config": { "alias": "config"; "required": false; }; }, { "editorReady": "editorReady"; }, never, ["*"], true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<DocumentEditorComponent, never>;
 }
 
-// @public (undocumented)
+// @public
 export class DocumentEditorModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<DocumentEditorModule, never>;
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<DocumentEditorModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<DocumentEditorModule, [typeof DocumentEditorComponent], [typeof i2.CommonModule, typeof ToolbarComponent, typeof FooterComponent, typeof TiptapEditorDirective], [typeof DocumentEditorComponent, typeof TiptapEditorDirective]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<DocumentEditorModule, never, [typeof DocumentEditorComponent, typeof TiptapEditorDirective], [typeof DocumentEditorComponent, typeof TiptapEditorDirective]>;
 }
 
 // @public
