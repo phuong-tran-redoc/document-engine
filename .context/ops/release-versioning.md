@@ -10,7 +10,9 @@
 - **Relationship:** `fixed` — `core` and `angular` always carry the same version and bump together.
 - **Local protocol:** `preserveLocalDependencyProtocols: false` → Nx writes a real semver range
   (`^x.y.z`) into the manifest at version time, so `workspace:*` never reaches npm.
-- **Trigger:** bump locally → push tag → CI builds + publishes (gated). No auto-publish-on-push.
+- **Trigger:** PR merge to `main` → `release.yml` cuts version + tag (auto) → tag push → CI builds + publishes
+  (gated by the `npm-publish` environment approval). No auto-publish-on-push; the publish step still waits for a
+  reviewer. Manual `nx release` is the fallback.
 - **Versioning driver:** Conventional Commits (`feat`→minor, `fix`→patch, `feat!`/`BREAKING CHANGE`→major).
 
 ## 0.x semver policy
@@ -26,6 +28,11 @@
 - Pre-releases → `next` (single pre-release channel). Consumers opt in via `npm i <pkg>@next`.
 
 ## Runbook
+
+> **Normal path is automated.** Merging a PR to `main` triggers `.github/workflows/release.yml`, which runs
+> `nx release --skip-publish` and pushes the commit + tag (via the `RELEASE_TOKEN` secret — see
+> [`/RELEASING.md`](../../RELEASING.md) § "Automated release setup"). The commands below are the **manual
+> fallback** for when automation is unavailable; `release.yml` runs the same `nx release` underneath.
 
 **First stable cut (one-time):**
 ```bash
