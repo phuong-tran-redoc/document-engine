@@ -20,6 +20,14 @@ The user explicitly built this skill because they don't want to memorize the com
 for them**: run the steps, explain what each one did in one line, and stop at the two human gates. Never make
 them look anything up.
 
+> **The standard cut is now automated.** `.github/workflows/release.yml` runs on every push to `main` (PR
+> merge): it runs `nx release --skip-publish` and pushes the commit + tag (via the `RELEASE_TOKEN` secret), and
+> the tag push triggers `publish.yml`. So for normal work the user merges a PR and the release cuts itself — you
+> don't run anything. This skill's **manual** flow below is the **fallback** (no `RELEASE_TOKEN`, CI down, forced
+> or first release), plus the always-manual modes: preview/dry-run, pre-flight check, and rollback. When the user
+> says "/publish" for a change that's still on a branch, the right answer is usually "open/merge the PR — the
+> release auto-cuts," not a local `nx release`.
+
 ## The release model (why the commands look the way they do)
 
 - **Tool:** `nx release` (native, fixed/lock-step). No Changesets/semantic-release.
@@ -29,8 +37,10 @@ them look anything up.
   manifest gets stamped at release time, and `workspace:*` → a real `^x.y.z` range there
   (`preserveLocalDependencyProtocols: false`). CI rebuilds and re-stamps the tagged version before publishing.
 - **Version bump = Conventional Commits** (`feat`→minor, `fix`→patch, `feat!`/`BREAKING CHANGE`→major).
-- **Trigger:** bump + tag locally → `git push --follow-tags` → tag push fires the **gated** CI publish
-  (`security-gate` job must pass first). There is **no** auto-publish-on-push.
+- **Trigger:** *automated* — PR merge to `main` → `release.yml` cuts + pushes the tag → tag push fires the
+  **gated** CI publish (`security-gate` must pass, then the `npm-publish` environment approval). Manual fallback:
+  bump + tag locally → `git push --follow-tags`. There is **no** auto-publish-on-push; the publish still waits
+  for a reviewer.
 
 ### 0.x semver policy (we are pre-1.0)
 - `0.MINOR` = breaking changes **and** notable features (minor is the de-facto "major" before 1.0).

@@ -6,6 +6,23 @@ published, and rolled back.
 > Releases are driven by **`nx release`** (native Nx). The two packages are versioned **in lock-step**
 > (fixed relationship) — they always carry the same version and bump together. Publishing happens in CI on a
 > tag push, behind a required security/legal gate. **Never** publish from a laptop directly to `latest`.
+>
+> **The cut is automated.** You don't run `nx release` by hand for normal work — merging a PR to `main`
+> triggers `release.yml`, which cuts the version + tag for you (see [§ Automated release](#automated-release)).
+> The manual `nx release` flow ([§ Manual cut](#manual-cut-fallback)) is the **fallback** for when automation
+> is unavailable.
+
+## How a release flows
+
+```
+feature branch → PR → CI (ci.yml + security-gate on the PR) → merge to main
+  → release.yml: infer version (Conventional Commits) → changelog → commit `chore(release): publish <v>` → tag v<v> → push
+  → the v* tag push triggers publish.yml → security-gate → publish (gated by the `npm-publish` environment approval)
+```
+
+The contentful change is reviewed and CI-checked **in the PR**. The release commit + tag are produced by CI,
+never hand-authored on `main`. The only human gate left at publish time is the `npm-publish` environment
+approval — the actual `npm publish` still waits for a reviewer.
 
 ## Versioning policy
 
@@ -16,7 +33,36 @@ published, and rolled back.
 - The public API is **additive-only** — it is whatever each lib's `src/index.ts` exports. Removing or
   changing an export is a breaking change and must be called out in the changelog with a migration note.
 
-## Cut a release
+## Automated release
+
+`release.yml` runs on every push to `main` (i.e. every PR merge):
+
+1. Skips itself when the head commit is `chore(release): …` (so its own pushed-back commit doesn't loop).
+2. Runs `pnpm nx release --skip-publish` — infers the bump from Conventional Commits, builds, stamps `dist/`,
+   writes `CHANGELOG.md`, commits, and tags `v<version>`.
+3. If no `feat`/`fix`/breaking commits exist since the last tag, it **no-ops** (HEAD doesn't move → nothing pushed).
+4. Otherwise it pushes the commit + tag, and the tag push hands off to `publish.yml`.
+
+To preview without cutting, run the workflow manually: **Actions → Release → Run workflow → `dry_run: true`**.
+
+### Automated release setup (one-time)
+
+`release.yml` pushes a commit + tag to the protected `main` branch, and that tag push must trigger
+`publish.yml`. The default `GITHUB_TOKEN` can do **neither** (it can't bypass branch/tag protection, and tags
+it pushes don't trigger other workflows). So the workflow uses a **`RELEASE_TOKEN`** secret:
+
+1. Create a **fine-grained PAT** (or a GitHub App installation token) scoped to this repo with
+   **Contents: Read and write**. (A GitHub App is the more secure, non-expiring option.)
+2. Add it as the repo secret **`RELEASE_TOKEN`** (Settings → Secrets and variables → Actions).
+3. On `main`'s **branch protection** and the **tag protection** for `v*`, add that token's identity to the
+   **bypass / allowed-to-push** list — it is the only actor permitted to push release commits and tags directly.
+
+Until `RELEASE_TOKEN` is configured, `release.yml` will fail at checkout/push; use the manual fallback below.
+
+## Manual cut (fallback)
+
+Use this only when automation is unavailable (no `RELEASE_TOKEN`, CI down, or a forced/odd release). Run from a
+clean, up-to-date `main`:
 
 ```bash
 # 1. Preview the inferred bump + changelog (no writes)

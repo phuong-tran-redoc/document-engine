@@ -98,7 +98,7 @@
       "preVersionCommand": "pnpm nx run-many -t build --projects=tag:scope:public"
     },
     "changelog": {
-      "workspaceChangelog": { "createRelease": false },
+      "workspaceChangelog": { "createRelease": false, "renderOptions": { "authors": false } },
       "projectChangelogs": false
     }
   }

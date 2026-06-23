@@ -1,0 +1,119 @@
+name: Release (cut version + tag)
+
+# Auto-cut a release when a PR merges to main. The flow this enforces:
+#
+#   feature branch → PR → CI (ci.yml + security-gate run on the PR) → merge to main
+#     → THIS workflow infers the version from Conventional Commits, writes the
+#       changelog, commits `chore(release): publish <v>`, tags `v<v>`, and pushes.
+#     → the v* tag push triggers publish.yml (security-gate + npm-publish env approval).
+#
+# Humans never hand-cut a tag on main. Manual `nx release` stays documented as a
+# fallback (see /RELEASING.md). workflow_dispatch is provided for forced / dry runs.
+#
+# TOKEN — why this can't use the default GITHUB_TOKEN:
+#   1. It pushes a commit + tag to the protected `main` branch (GITHUB_TOKEN can't bypass
+#      branch/tag protection).
+#   2. The tag push must in turn trigger publish.yml — and tags pushed with GITHUB_TOKEN
+#      do NOT trigger other workflows (GitHub blocks token-triggered workflow chains).
+# So it uses RELEASE_TOKEN: a fine-grained PAT (or GitHub App token) with `contents:write`
+# on this repo, whose identity is on main's branch-protection + tag-protection bypass list.
+# One-time setup is documented in /RELEASING.md § "Automated release setup".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Preview the bump + changelog without committing / tagging / pushing.'
+        type: boolean
+        default: false
+
+# Serialize releases; never cancel one mid-flight (a half-pushed tag is worse than a queue).
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # Don't loop on our own release commit (it gets pushed back to main and would re-trigger).
+    if: ${{ github.event_name == 'workflow_dispatch' || !startsWith(github.event.head_commit.message, 'chore(release):') }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout (full history + tags)
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          # PAT / App token so the push bypasses branch protection AND the tag push
+          # triggers publish.yml (a GITHUB_TOKEN-pushed tag would not).
+          token: ${{ secrets.RELEASE_TOKEN }}
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          # pnpm 11.x needs Node >= 22.13 (uses the node:sqlite builtin).
+          node-version: '22'
+
+      - name: Setup pnpm
+        # pnpm version is read from the "packageManager" field in package.json.
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure git identity
+        run: |
+          git config user.name "document-engine-release[bot]"
+          git config user.email "release-bot@users.noreply.github.com"
+
+      - name: Cut release (version + changelog + commit + tag)
+        id: cut
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "Dry-run: previewing version + changelog (no writes)."
+            pnpm nx release --skip-publish --dry-run
+            echo "released=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          BEFORE="$(git rev-parse HEAD)"
+          # nx release runs preVersionCommand (build) → stamps dist → writes CHANGELOG → commits → tags.
+          # A "nothing to release" run is allowed to exit non-zero; we judge success by whether HEAD moved.
+          set +e
+          pnpm nx release --skip-publish
+          CODE=$?
+          set -e
+          AFTER="$(git rev-parse HEAD)"
+
+          if [ "$BEFORE" = "$AFTER" ]; then
+            echo "No releasable commits since the last tag — nothing to cut."
+            echo "released=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$CODE" -ne 0 ]; then
+            echo "nx release moved HEAD but exited $CODE — treating as a real failure."
+            exit "$CODE"
+          fi
+          echo "released=true" >> "$GITHUB_OUTPUT"
+          echo "tag=$(git describe --tags --exact-match HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Push release commit + tag
+        if: ${{ steps.cut.outputs.released == 'true' }}
+        run: |
+          git push origin HEAD:main
+          git push origin "${{ steps.cut.outputs.tag }}"
+
+      - name: Result summary
+        if: always()
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "🔍 **release** dry-run — previewed bump + changelog, nothing written." >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ steps.cut.outputs.released }}" = "true" ]; then
+            echo "🏷️ **release** cut \`${{ steps.cut.outputs.tag }}\` and pushed — publish.yml runs on the tag (npm-publish approval gates the actual publish)." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "➖ **release** no-op — no releasable (feat/fix/breaking) commits since the last tag." >> "$GITHUB_STEP_SUMMARY"
+          fi
