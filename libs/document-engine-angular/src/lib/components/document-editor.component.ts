@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,6 +18,8 @@ import { EditorCapabilities } from '../core/capability.model';
 import { Editor } from '@tiptap/core';
 import { DefaultEditorConfig } from '../configs/editor.config';
 import { EDITOR_CONTENT_WRAPPER_CLASS } from '../core';
+import { FooterComponent } from '../ui/footer/footer.component';
+import { ToolbarComponent } from '../ui/toolbar/toolbar.component';
 
 /**
  * Document Editor Component
@@ -38,7 +41,7 @@ import { EDITOR_CONTENT_WRAPPER_CLASS } from '../core';
  */
 @Component({
   selector: 'document-engine-editor',
-  standalone: false,
+  imports: [CommonModule, ToolbarComponent, FooterComponent],
   templateUrl: './document-editor.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
