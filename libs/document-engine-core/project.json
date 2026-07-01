@@ -13,14 +13,17 @@
   "tags": ["scope:public"],
   "targets": {
     "build": {
-      "executor": "@nx/js:swc",
+      "executor": "@nx/rollup:rollup",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/document-engine-core",
         "main": "libs/document-engine-core/src/index.ts",
         "tsConfig": "libs/document-engine-core/tsconfig.lib.json",
-        "assets": ["libs/document-engine-core/*.md"],
-        "generatePackageJson": true
+        "compiler": "tsc",
+        "format": ["esm"],
+        "external": "all",
+        "generatePackageJson": true,
+        "assets": [{ "glob": "*.md", "input": "libs/document-engine-core", "output": "." }]
       }
     },
     "nx-release-publish": {
