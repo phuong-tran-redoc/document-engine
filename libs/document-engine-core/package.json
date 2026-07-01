@@ -8,10 +8,20 @@
     "Duc Phuong (Jack) <tdp99.business@gmail.com>"
   ],
   "description": "Framework-agnostic core library for Document Engine",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
+  "main": "./index.esm.js",
+  "module": "./index.esm.js",
+  "types": "./index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.esm.js"
+    }
+  },
   "files": [
-    "src/**/*.js",
+    "index.esm.js",
+    "index.d.ts",
     "src/**/*.d.ts",
     "README.md",
     "LICENSE.md",

@@ -120,23 +120,31 @@ jobs:
         run: |
           npx --yes publint --strict --pack npm dist/libs/document-engine-core
           npx --yes publint --strict --pack npm dist/libs/document-engine-angular
-          # core ships swc-built ESM whose .d.ts barrels use extensionless re-exports.
-          # These resolve fine for bundlers (the actual consumer: Angular apps) but trip
-          # Node16 native ESM type resolution. We target bundler/ESM-import usage, so the
-          # internal-resolution-error rule is intentionally ignored here.
+          # core's runtime JS is now a single rollup-bundled ESM entry (no internal directory
+          # imports — DE-014). The shipped per-file .d.ts still use extensionless re-exports,
+          # which resolve fine for bundlers (the actual consumer: Angular apps) but trip Node16
+          # native ESM *type* resolution. We target bundler/ESM-import usage, so the
+          # internal-resolution-error rule is intentionally ignored here (types-only).
           npx --yes @arethetypeswrong/cli --pack dist/libs/document-engine-core --profile esm-only --ignore-rules internal-resolution-error
           # angular is an ESM-only ng-packagr build (type: module, fesm2022). esm-only is the
           # right profile (CJS consumers use dynamic import, as expected). The "./styles" subpath
           # is a Sass-only entry (exports.sass, no JS/types), so it is excluded from type checks.
           npx --yes @arethetypeswrong/cli --pack dist/libs/document-engine-angular --profile esm-only --exclude-entrypoints ./styles
 
+      # --- BLOCKING (DE-014): Node-ESM runtime load. publint/attw validate wiring + type
+      # resolution but never LOAD the JS under bare Node, so core ≤0.1.1's ERR_UNSUPPORTED_DIR_IMPORT
+      # shipped undetected. This packs core, installs it fresh with its real prod deps, and
+      # imports it under the strict Node ESM loader — the exact runtime a Node consumer hits.
+      - name: Node-ESM load smoke check (core)
+        run: node tools/security/verify-esm-load.mjs dist/libs/document-engine-core
+
       # Human-readable verdict on the run summary page (pass or fail) — no log-diving needed.
       - name: Result summary (pass)
         if: success()
-        run: echo "✅ **gate** passed — secret scan, OSV vulns (published prod closure), license allowlist, API-surface, tarball, publint/attw, angular-floor (static) all clear." >> "$GITHUB_STEP_SUMMARY"
+        run: echo "✅ **gate** passed — secret scan, OSV vulns (published prod closure), license allowlist, API-surface, tarball, publint/attw, Node-ESM load, angular-floor (static) all clear." >> "$GITHUB_STEP_SUMMARY"
       - name: Result summary (fail)
         if: failure()
-        run: echo "❌ **gate** failed — one of these blocked — Gitleaks, OSV vuln, license allowlist, api-extractor drift, tarball contents, publint/attw, or angular-floor static guard. See the failed step above." >> "$GITHUB_STEP_SUMMARY"
+        run: echo "❌ **gate** failed — one of these blocked — Gitleaks, OSV vuln, license allowlist, api-extractor drift, tarball contents, publint/attw, Node-ESM load, or angular-floor static guard. See the failed step above." >> "$GITHUB_STEP_SUMMARY"
 
   # --- BLOCKING: angular peer-floor guard, layer 2 (real floor-Angular compile) ---
   # Pack the libs, install them into an isolated consumer pinned to the declared
