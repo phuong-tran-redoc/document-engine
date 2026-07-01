@@ -1,3 +1,9 @@
+## 0.1.2 (2026-07-01)
+
+### 🩹 Fixes
+
+- **core:** bundle to single Node-ESM entry + add exports map ([1add35b](https://github.com/phuong-tran-redoc/document-engine/commit/1add35b))
+
 ## 0.1.1 (2026-06-23)
 
 ### 🩹 Fixes
