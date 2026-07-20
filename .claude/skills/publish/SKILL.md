@@ -36,17 +36,26 @@ them look anything up.
   `package.json` keeps `version` + `workspace:*` (so local pnpm linking is never disturbed); only the **dist/**
   manifest gets stamped at release time, and `workspace:*` → a real `^x.y.z` range there
   (`preserveLocalDependencyProtocols: false`). CI rebuilds and re-stamps the tagged version before publishing.
-- **Version bump = Conventional Commits** (`feat`→minor, `fix`→patch, `feat!`/`BREAKING CHANGE`→major).
+- **Version bump = Conventional Commits.** At **≥1.0**: `feat`→minor, `fix`→patch, `feat!`/`BREAKING CHANGE`→major.
+  **Pre-1.0 (where we are) nx downgrades one level** (see the 0.x policy below): `feat`/`fix`→patch,
+  `feat!`/`BREAKING CHANGE`→minor.
 - **Trigger:** *automated* — PR merge to `main` → `release.yml` cuts + pushes the tag → tag push fires the
   **gated** CI publish (`security-gate` must pass, then the `npm-publish` environment approval). Manual fallback:
   bump + tag locally → `git push --follow-tags`. There is **no** auto-publish-on-push; the publish still waits
   for a reviewer.
 
 ### 0.x semver policy (we are pre-1.0)
-- `0.MINOR` = breaking changes **and** notable features (minor is the de-facto "major" before 1.0).
-- `0.x.PATCH` = bug fixes / internal only.
+`nx release` with `conventionalCommits` **downgrades the inferred bump one level while the version is
+< 1.0.0** — this is nx's default pre-1.0 behavior (semver "initial development"), not something we configure.
+So in practice:
+- `0.x.PATCH` = **both `fix` and `feat`** — a non-breaking feature lands as a *patch*, not a minor. (Verified:
+  DE-015 shipped two new public style entrypoints as `feat`, and the cut was `0.1.2 → 0.1.3`, **not** `0.2.0`.)
+- `0.MINOR` = only a **breaking change** (`feat!` / `BREAKING CHANGE`), downgraded from major → minor.
+- **Want a minor for a feature you consider notable anyway?** Don't rely on the inferred bump — pass an explicit
+  specifier: `pnpm nx release minor` (then continue the flow from Step 2).
 - First intentional release: **`0.0.41 → 0.1.0`** (needs `--first-release`, see below).
-- Go `1.0.0` only when both packages' public API is stable.
+- Go `1.0.0` only when both packages' public API is stable — from then on the standard (non-downgraded)
+  `feat`→minor / `feat!`→major rules apply.
 
 ### dist-tags
 - Stable cuts → `latest`. Pre-releases → `next` (consumers opt in via `npm i <pkg>@next`).
