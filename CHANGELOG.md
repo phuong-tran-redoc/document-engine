@@ -1,3 +1,10 @@
+## 0.1.3 (2026-07-20)
+
+### 🚀 Features
+
+- **angular:** light up active toolbar toggle buttons ([ce77d90](https://github.com/phuong-tran-redoc/document-engine/commit/ce77d90))
+- **de-015:** opt-in editor content + interaction themes ([e81c4cd](https://github.com/phuong-tran-redoc/document-engine/commit/e81c4cd))
+
 ## 0.1.2 (2026-07-01)
 
 ### 🩹 Fixes
