@@ -72,6 +72,12 @@
   "exports": {
     "./styles": {
       "sass": "./src/lib/styles/index.scss"
+    },
+    "./styles/editor-content": {
+      "sass": "./src/lib/styles/editor-content.scss"
+    },
+    "./styles/editor-interaction": {
+      "sass": "./src/lib/styles/editor-interaction.scss"
     }
   }
 }

@@ -18,6 +18,8 @@
       "@phuong-tran-redoc/document-engine-core": ["libs/document-engine-core/src/index.ts"],
       "@phuong-tran-redoc/document-engine-angular": ["libs/document-engine-angular/src/index.ts"],
       "@phuong-tran-redoc/document-engine-angular/styles": ["libs/document-engine-angular/src/lib/styles/index.scss"],
+      "@phuong-tran-redoc/document-engine-angular/styles/editor-content": ["libs/document-engine-angular/src/lib/styles/editor-content.scss"],
+      "@phuong-tran-redoc/document-engine-angular/styles/editor-interaction": ["libs/document-engine-angular/src/lib/styles/editor-interaction.scss"],
       "@shared/ui/avatar": ["libs/shared/ui/avatar/src/index.ts"],
       "@shared/ui/breadcrumb": ["libs/shared/ui/breadcrumb/src/index.ts"],
       "@shared/ui/confirmation-dialog": ["libs/shared/ui/confirmation-dialog/src/index.ts"],

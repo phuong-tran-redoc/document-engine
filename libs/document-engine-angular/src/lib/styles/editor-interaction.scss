@@ -1,0 +1,281 @@
+/**
+ * Opt-in editor INTERACTION chrome theme
+ * `@phuong-tran-redoc/document-engine-angular/styles/editor-interaction`
+ *
+ * Editing-surface chrome for a consumer mounting a bare editor: node-view widget
+ * handles + type-around buttons, table editing (selected cell, column resize),
+ * dynamic-field nodes, restricted-editing regions, empty-state placeholders, and
+ * the selected-node outline.
+ *
+ * Separate from `editor-content` on purpose: content prose is what makes the
+ * document *render* correctly, this is what makes it *editable*. NOT auto-imposed
+ * (the main `/styles` barrel is chrome-only) — import this subpath explicitly.
+ * Token-driven with sensible fallbacks; scoped to `.tiptap-editor`.
+ *
+ * Ported from the demo app's private `_editor.scss`; Tailwind `@apply` utilities
+ * are inlined as plain CSS and the demo-only colour vars are remapped so the
+ * theme themes cleanly for any consumer:
+ *   --light-blue / --light-blue-foreground  → --accent / --accent-foreground
+ *   --blue (hover, borders, handles)         → --ring
+ *   --blue (selected-node outline)           → --primary
+ *   --secondary (placeholder text)           → --muted-foreground
+ *   --green (dynamic-field accent)           → --de-dynamic-field (engine custom prop)
+ */
+
+.tiptap-editor {
+  position: relative;
+
+  .ProseMirror {
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  /* Selected node (covers image + any selected block) */
+  .ProseMirror-selectednode {
+    outline: 3px solid var(--primary, hsl(221.2 83.2% 53.3%));
+  }
+
+  /* Restricted-editing region (was --light-blue / --blue) */
+  .editable-region {
+    background-color: var(--accent, hsl(210 40% 96.1%));
+    color: var(--accent-foreground, hsl(222.2 47.4% 11.2%));
+    border-bottom: 1px dashed var(--ring, hsl(221.2 83.2% 53.3%));
+    padding: 0 4px;
+  }
+
+  /* Placeholder (first line) — was --secondary; use --muted-foreground so the
+   * placeholder stays legible for any consumer token set */
+  p.is-editor-empty:first-child::before {
+    color: var(--muted-foreground, hsl(215.4 16.3% 46.9%));
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* Placeholder (every empty line) */
+  .is-empty::before {
+    color: var(--muted-foreground, hsl(215.4 16.3% 46.9%));
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* --- Node-view widget (figure wrapper) --- */
+  .widget {
+    position: relative; // relative
+    margin: 1rem 0; // my-4 mx-0
+    transition: opacity 0.2s ease-in-out;
+
+    &:hover {
+      outline: 3px solid var(--ring, hsl(221.2 83.2% 53.3%));
+    }
+
+    &.ProseMirror-selectednode {
+      outline: 2px solid var(--accent, hsl(210 40% 96.1%));
+      outline-offset: 2px;
+    }
+
+    &:hover .widget__selection-handle {
+      opacity: 1;
+    }
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    .ck p:first-child {
+      margin-top: 0;
+    }
+  }
+
+  /* Selection handle button */
+  .widget__selection-handle {
+    position: absolute;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    width: 1.5rem; // w-6
+    height: 1.5rem; // h-6
+    border-radius: 0.25rem; // rounded
+    border: 1px solid var(--border, hsl(214.3 31.8% 91.4%));
+    background-color: var(--card, hsl(0 0% 100%));
+    color: var(--muted-foreground, hsl(215.4 16.3% 46.9%));
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); // shadow-elevation-1
+
+    left: -32px;
+    top: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out, background-color 0.15s ease-in-out;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      opacity: 1 !important;
+      background-color: var(--accent, hsl(210 40% 96.1%));
+      color: var(--accent-foreground, hsl(222.2 47.4% 11.2%));
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  /* Widget content area */
+  .widget-content {
+    position: relative;
+  }
+
+  /* Type-around buttons (insert paragraph before/after) */
+  .type-around {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+    height: auto;
+    width: auto;
+    position: static;
+  }
+
+  .widget:hover > .type-around {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .widget__type-around__button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 1.5rem; // w-6
+    height: 1.5rem; // h-6
+    border-radius: 9999px; // rounded-full
+    background-color: var(--card, hsl(0 0% 100%));
+    color: var(--muted-foreground, hsl(215.4 16.3% 46.9%));
+    border: 2px solid var(--border, hsl(214.3 31.8% 91.4%));
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1); // shadow-elevation-2
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
+
+    &:hover {
+      background-color: var(--accent, hsl(210 40% 96.1%));
+      color: var(--accent-foreground, hsl(222.2 47.4% 11.2%));
+      border-color: var(--accent, hsl(210 40% 96.1%));
+    }
+
+    &:active {
+      transform: scale(1.05);
+    }
+
+    &_before {
+      position: absolute;
+      top: -0.75rem;
+      left: 10%;
+      transform: translateX(-50%);
+    }
+
+    &_after {
+      position: absolute;
+      bottom: -0.75rem;
+      left: 90%;
+      transform: translateX(-50%);
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover svg {
+      transform: scale(1.1);
+    }
+  }
+
+  /* --- Table editing chrome --- */
+  .table-wrapper {
+    position: relative;
+  }
+
+  table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    position: relative;
+
+    th,
+    td {
+      padding: 6px;
+      position: relative;
+    }
+
+    /* Selected cell (Tiptap/ProseMirror .selectedCell) */
+    .selectedCell {
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        background-color: var(--de-selected-cell, rgba(59, 130, 246, 0.12)); // bg-blue-100/50
+        pointer-events: none;
+      }
+    }
+
+    /* Column resize handle (ColumnResizing) */
+    .column-resize-handle {
+      position: absolute;
+      width: 0.25rem; // w-1
+      top: 0;
+      bottom: 0;
+      right: -0.125rem; // -right-0.5
+      background-color: var(--ring, hsl(221.2 83.2% 53.3%)); // bg-blue-300
+      pointer-events: none;
+    }
+  }
+
+  .resize-cursor {
+    cursor: col-resize;
+  }
+
+  /* Custom column-resizer handle */
+  .pm-col-resizer {
+    position: absolute;
+    top: 0;
+    z-index: 10; /* above table content */
+    display: block;
+    width: 4px;
+    background-color: var(--ring, hsl(221.2 83.2% 53.3%));
+    opacity: 0; /* hidden by default */
+    transition: opacity 0.2s;
+    cursor: col-resize;
+    height: 100%;
+
+    &:hover {
+      opacity: 1 !important;
+    }
+  }
+
+  /* --- Dynamic field node --- (accent was demo-only --green; exposed as the
+   * engine custom prop --de-dynamic-field so it stays remappable, since a shadcn
+   * consumer never defines --green) */
+  .dynamic-field {
+    border: 1px solid var(--de-dynamic-field, hsl(142.1 76.2% 36.3%));
+    cursor: default; /* feels non-editable */
+    user-select: none; /* prevent text selection inside */
+    white-space: nowrap;
+
+    &.ProseMirror-selectednode {
+      outline: 1px solid var(--ring, hsl(221.2 83.2% 53.3%));
+    }
+  }
+}
