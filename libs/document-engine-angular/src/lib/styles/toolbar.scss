@@ -56,3 +56,18 @@
     display: none;
   }
 }
+
+// Active/pressed state for toolbar toggle buttons (bold, italic, underline, lists,
+// link, blockquote, …). The buttons apply `.active` via
+// `[class.active]="editor.isActive(...)"`; this gives the pressed treatment so the
+// currently-applied formatting is visible. Without it the class is set but nothing
+// renders — the toggle never "lights up". Uses the consumer's `--primary` tokens
+// for contrast against the toolbar surface (`--muted`); the hover selector keeps an
+// active button highlighted while the pointer is over it.
+document-engine-toolbar .btn.active {
+  &,
+  &:hover:not(:disabled) {
+    background-color: var(--primary, hsl(222.2 47.4% 11.2%));
+    color: var(--primary-foreground, hsl(210 40% 98%));
+  }
+}

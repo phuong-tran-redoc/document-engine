@@ -1,0 +1,190 @@
+/**
+ * Opt-in editor CONTENT prose theme
+ * `@phuong-tran-redoc/document-engine-angular/styles/editor-content`
+ *
+ * Structural correctness for the editor's *rendered content*: heading scale,
+ * bullet + ordered lists (incl. the engine's `data-list-style-type` counters),
+ * blockquote, inline code, hr, img, and block rhythm.
+ *
+ * NOT auto-imposed — the main `/styles` barrel is chrome-only, so a consumer
+ * opts in by importing THIS subpath explicitly. Token-driven: every colour /
+ * dimension resolves from a CSS custom property with a sensible fallback, so a
+ * consumer themes it purely by remapping vars (no rule-body overrides needed).
+ *
+ * Scoped to `.tiptap-editor` (the class the editor directive sets on its host),
+ * so importing it can never leak prose onto unrelated app content.
+ */
+
+.tiptap-editor {
+  /* --- Block rhythm --- */
+  p {
+    margin: 0.5rem 0;
+  }
+
+  p:first-of-type {
+    margin-top: 0;
+  }
+
+  p:last-of-type {
+    margin-bottom: 0;
+  }
+
+  /* --- Headings (structural floor) ---
+   * The engine emits class-less <h1>–<h6> and the host preflight strips their
+   * size, so the lib restores a token-overridable scale. Remap `--de-prose-h*`
+   * (size) and `--foreground` (colour) to theme. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600; // font-semibold
+    line-height: 1.25;
+    margin: 1.25rem 0 0.5rem;
+    color: var(--foreground, hsl(222.2 84% 4.9%));
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h1 {
+    font-size: var(--de-prose-h1, 2rem);
+  }
+
+  h2 {
+    font-size: var(--de-prose-h2, 1.5rem);
+  }
+
+  h3 {
+    font-size: var(--de-prose-h3, 1.25rem);
+  }
+
+  h4 {
+    font-size: var(--de-prose-h4, 1.125rem);
+  }
+
+  h5 {
+    font-size: var(--de-prose-h5, 1rem);
+  }
+
+  h6 {
+    font-size: var(--de-prose-h6, 0.875rem);
+  }
+
+  /* --- Blockquote --- (ported from `@apply border-l-4 border-border pl-4`) */
+  blockquote {
+    border-left: 4px solid var(--border, hsl(214.3 31.8% 91.4%));
+    padding-left: 1rem; // pl-4
+  }
+
+  /* --- Horizontal rule --- (ported from `@apply border-t border-foreground`) */
+  hr {
+    border: 0;
+    border-top: 1px solid var(--foreground, hsl(222.2 84% 4.9%));
+  }
+
+  /* --- Inline code --- */
+  code {
+    background-color: var(--secondary, hsl(210 40% 96.1%));
+    color: var(--secondary-foreground, hsl(222.2 47.4% 11.2%));
+    border-radius: 0.4rem;
+    font-size: 0.85rem;
+    padding: 0.25em 0.3em;
+  }
+
+  /* --- Image --- */
+  img {
+    display: block;
+    height: auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 1rem 0;
+  }
+
+  /* --- Bullet lists (structural floor) ---
+   * The host preflight kills `list-style`; the engine relies on the theme to
+   * restore markers. */
+  ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+  }
+
+  ul ul {
+    list-style: circle;
+  }
+
+  ul ul ul {
+    list-style: square;
+  }
+
+  ul li p {
+    margin: 0;
+  }
+
+  /* --- Ordered lists: engine-coupled counters ---
+   * The engine resets `list-style` and paints markers via CSS counters keyed off
+   * the `data-list-style-type` attribute (decimal / lower-alpha-dot /
+   * lower-alpha-parens / lower-roman-parens). A consumer cannot derive this —
+   * the lib owns it. */
+  ol[data-list-style-type] {
+    counter-reset: list-counter;
+    list-style: none;
+    padding-left: 3rem;
+    margin: 0.5rem 0;
+  }
+
+  ol[data-list-style-type] > li {
+    position: relative;
+    display: block;
+
+    &:not(:first-child) {
+      margin-top: 0.25rem;
+    }
+  }
+
+  ol[data-list-style-type] > li::before {
+    position: absolute;
+    left: -2rem;
+    width: 2rem;
+    display: inline-block;
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+    font-weight: normal;
+  }
+
+  ol p {
+    margin: 0;
+  }
+
+  /* Default decimal style (1., 2., 3.) */
+  ol[data-list-style-type='decimal'] > li::before {
+    counter-increment: list-counter;
+    content: counter(list-counter) '.';
+  }
+
+  /* Lower alpha with dot style (a., b., c.) */
+  ol[data-list-style-type='lower-alpha-dot'] > li::before {
+    counter-increment: list-counter;
+    content: counter(list-counter, lower-alpha) '.';
+  }
+
+  /* Lower alpha with parentheses style ((a), (b), (c)) */
+  ol[data-list-style-type='lower-alpha-parens'] > li::before {
+    counter-increment: list-counter;
+    content: '(' counter(list-counter, lower-alpha) ')';
+  }
+
+  /* Lower roman with parentheses style ((i), (ii), (iii)) */
+  ol[data-list-style-type='lower-roman-parens'] > li::before {
+    counter-increment: list-counter;
+    content: '(' counter(list-counter, lower-roman) ')';
+  }
+
+  /* Nested list support */
+  ol[data-list-style-type] ol {
+    counter-reset: list-counter;
+  }
+}

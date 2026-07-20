@@ -1,22 +1,28 @@
 /**
- * Main styles entry point for @document-engine/document-engine-angular
+ * Main styles entry point for @phuong-tran-redoc/document-engine-angular
  *
- * Usage in client application:
+ * This barrel ships CHROME ONLY — toolbar, buttons, select, color-picker,
+ * the document-editor wrapper, inputs, etc. It never styles the editor's
+ * rendered content, so importing it can never impose a look on your document.
  *
- * Option 1: Import default styles (recommended)
- * In your main styles.scss or styles.css:
- * @import '@document-engine/document-engine-angular/styles';
+ * Usage in a client application:
  *
- * Option 2: Import individual style files
- * @import '@document-engine/document-engine-angular/styles/button';
- * @import '@document-engine/document-engine-angular/styles/icon';
- * @import '@document-engine/document-engine-angular/styles/toolbar';
- * @import '@document-engine/document-engine-angular/styles/document-editor';
- * @import '@document-engine/document-engine-angular/styles/color-picker';
+ *   // Chrome (recommended baseline)
+ *   @use '@phuong-tran-redoc/document-engine-angular/styles';
  *
- * Option 3: Provide custom styles
- * Styles use class and element selectors (document-engine-*, .document-engine-*),
- * so you can override them with your own CSS without importing these files.
+ * Opt-in content / interaction themes (NOT included in this barrel — import
+ * whichever you want, then theme by remapping their CSS custom properties):
+ *
+ *   // Content prose: heading scale, lists (incl. data-list-style-type counters),
+ *   // blockquote, code, hr, img, block rhythm
+ *   @use '@phuong-tran-redoc/document-engine-angular/styles/editor-content';
+ *
+ *   // Editing-surface chrome: node-view widget handles, table editing,
+ *   // dynamic fields, placeholders, selected-node outline
+ *   @use '@phuong-tran-redoc/document-engine-angular/styles/editor-interaction';
+ *
+ * All styles use class/element selectors and CSS-variable-driven values, so you
+ * can also override them with your own CSS without importing these files.
  */
 
 @forward 'icon';

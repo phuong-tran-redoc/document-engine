@@ -171,6 +171,81 @@ ADR. (Reaching a literal `>=14` is not possible without building the lib on an o
 
 ---
 
+### [2026-07-01] ADR-007 — `document-engine-core` keeps `@tiptap/*` as `dependencies` (not peer)
+
+**Context:** core and the Angular wrapper declare `@tiptap/*` differently — the wrapper uses
+`peerDependencies` (single Editor instance in the browser), core uses `dependencies`. This
+inconsistency was never recorded, and debugging a Node consumer's runtime load failure (DE-014)
+raised the question of whether peer is the correct choice for core too.
+
+**Decision:** core **keeps `@tiptap/*` as `dependencies`**.
+
+**Rationale:**
+
+- core is "batteries-included" for headless Node consumers (`generateHTML` + `defaultExtensions`):
+  the consumer does not have to hand-declare all ~27 `@tiptap/*` packages itself.
+- The duplicate-instance hazard that peer deps normally solve does not arise here: the `^3.26`
+  ranges of core and the consumer overlap, so pnpm dedupes to a single copy in the store.
+- The place where a single Tiptap instance genuinely matters is the live Editor, which lives in the
+  Angular wrapper — already correctly declared as `peerDependencies`. core is used mostly headless.
+- Flipping core to peer would change the package's public contract (major-ish) for no real benefit.
+
+**Not related to DE-014:** that crash was `ERR_UNSUPPORTED_DIR_IMPORT` (core's own broken ESM
+packaging), fully independent of the dep-vs-peer question. DE-014 fixed the packaging; this ADR only
+records why the dependency classification is intentionally left as-is.
+
+**Consequences:** A consumer must directly declare only the `@tiptap/*` packages it imports itself;
+the rest arrive transitively through core. If core is ever flipped to peer, every consumer must then
+re-declare the full set — supersede this ADR at that point.
+
+---
+
+### [2026-07-20] ADR-008 — Editor content styling ships as opt-in, token-driven themes (not folded into the chrome barrel)
+
+**Context:** `document-engine-angular` published only **chrome** styles (`/styles` → toolbar, buttons,
+select, wrapper). The **content prose** that makes the editing surface render correctly (blockquote,
+inline code, hr, img, and the engine's `data-list-style-type` ordered-list counters) lived only in the
+demo app's private `_editor.scss` and was never published — so every consumer got an unstyled content
+area and had to reverse-engineer engine-coupled CSS it cannot reasonably know (the clearest case: the
+editor preflight resets `list-style` and paints markers via CSS counters keyed off a data attribute, so
+a consumer writing `ol { list-style: decimal }` is simply wrong). Scoping revealed headings and bullet
+markers are missing from the **engine** too, not just unpublished (class-less `<h*>` + preflight reset).
+
+**Decision:** Ship the content styling as **two opt-in subpath entries** —
+`…/styles/editor-content` (prose floor) and `…/styles/editor-interaction` (editing-surface chrome:
+widget handles, table editing, dynamic fields, placeholders, selected-node outline). Both are
+**token-driven** (every value is `var(--token, fallback)`), **scoped to `.tiptap-editor`** (the class
+the editor directive sets on its host), and **NOT** folded into the main `/styles` barrel — which stays
+**chrome-only**. The demo app dogfoods them via `@forward`, replacing its private `_editor.scss`.
+
+**Rationale:**
+- Splits content styling by ownership: **structural correctness** (counters, list restore, code/quote/
+  hr/img structure, and — per the scoping finding — a heading scale + bullet markers + block rhythm the
+  engine strips) is engine-coupled → the **lib owns it**; **aesthetics** (exact colours, sizes, fonts)
+  stay the **consumer's** via CSS-var remapping. Mirrors `@tailwindcss/typography`'s `prose` and
+  CodeMirror's base theme.
+- **Opt-in, not imposed:** a consumer that wants to style content entirely themselves imports only the
+  chrome barrel and is never handed a look. Splitting content vs interaction lets a consumer take prose
+  without the editing handles (e.g. a read-only render).
+- Published SCSS is **Tailwind-free** — the demo's `@apply` utilities were inlined to plain CSS so the
+  theme works for non-Tailwind consumers, matching the existing chrome files' convention (`button.scss`).
+
+**Consequences:**
+- New content rules must land on the correct side of the split (engine-coupled → theme; aesthetic →
+  consumer) and reference a CSS var with a fallback, never a hard-coded look.
+- Demo-only colour vars (`--blue`/`--green`/`--light-blue`) were remapped to shadcn tokens
+  (`--ring`/`--accent`/`--muted-foreground`) plus documented `--de-*` custom props
+  (`--de-dynamic-field`, `--de-selected-cell`) for engine-specific accents a shadcn set has no
+  token for; the **full-floor** additions (heading scale, bullet
+  markers, paragraph rhythm the preflight had zeroed) intentionally change the demo's *content*
+  rendering from flat → styled. "Renders identically" therefore holds for the **ported** rules
+  (blockquote/code/hr/img/ol counters), which are preserved verbatim; the floor additions are a
+  deliberate dogfood improvement.
+- Adds two entries to the package `exports` map; a packed tarball must be verified to resolve the new
+  sass subpaths (not just the workspace).
+
+---
+
 ## Template
 
 ### [Date] Decision Title
