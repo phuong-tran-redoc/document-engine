@@ -23,10 +23,11 @@ import { TableBubbleConfig, TableCreateBubbleConfig } from '../../configs/table.
 import { TemplateBubbleConfig } from '../../configs/template.config';
 import {
   FONT_SIZE_OPTIONS,
-  HEADING_OPTIONS,
+  HeadingOption,
   LINE_HEIGHT_OPTIONS,
   TEXT_ALIGN_OPTIONS,
   TEXT_CASE_OPTIONS,
+  buildHeadingOptions,
 } from '../../constants/text-style.constant';
 import { LIST_STYLE_OPTIONS } from '../../constants/list.constant';
 import { DocumentEngineConfig } from '../../core/kit/kit.type';
@@ -95,7 +96,10 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   readonly fontSizeOptions = FONT_SIZE_OPTIONS;
   readonly lineHeightOptions = LINE_HEIGHT_OPTIONS;
   readonly textCaseOptions = TEXT_CASE_OPTIONS as { value: TextCaseType; label: string }[];
-  readonly headingOptions = HEADING_OPTIONS;
+  // Derived from the editor's configured heading levels in ngOnInit so the
+  // block-type dropdown lists exactly the levels the config allows (no dead
+  // entry, no unreachable level). Seeded with the default set for first paint.
+  headingOptions: HeadingOption[] = buildHeadingOptions();
   readonly textAlignOptions = TEXT_ALIGN_OPTIONS;
   readonly listStyleOptions = LIST_STYLE_OPTIONS as { value: ListStyleType; label: string; example: string }[];
 
@@ -156,6 +160,11 @@ export class ToolbarComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
+    // Build the block-type dropdown from the configured heading levels (semantic
+    // mode = 2/3/4, etc.) rather than a fixed 1/2/3 set. Done before the first
+    // updateToolbarState() so its heading-active scan iterates the real options.
+    this.headingOptions = buildHeadingOptions(this.resolveHeadingLevels());
+
     // Subscribe to selectionUpdate to keep toolbar state in sync when cursor/selection changes
     this.editor.on('update', this.updateToolbarState);
     this.editor.on('transaction', this.throttleUpdateToolbarState);
@@ -174,6 +183,20 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
     this.toolbarService.ngOnDestroy();
     this.editor.destroy();
+  }
+
+  /**
+   * Read the configured heading levels off `config.heading`. It may be a boolean
+   * (`true` = default levels, handled by buildHeadingOptions' fallback) or a
+   * `Partial<HeadingOptions>` carrying a `levels` array. Returns undefined when no
+   * explicit levels are set so the caller falls back to the default set.
+   */
+  private resolveHeadingLevels(): readonly number[] | undefined {
+    const heading = this.config?.heading;
+    if (heading && typeof heading === 'object' && Array.isArray(heading.levels)) {
+      return heading.levels;
+    }
+    return undefined;
   }
 
   runAndEmit(actionName: string, chain: () => void): void {
