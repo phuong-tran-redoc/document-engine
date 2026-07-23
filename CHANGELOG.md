@@ -1,3 +1,9 @@
+## 0.1.4 (2026-07-23)
+
+### 🩹 Fixes
+
+- **angular:** derive toolbar heading options from config levels ([18dd63b](https://github.com/phuong-tran-redoc/document-engine/commit/18dd63b))
+
 ## 0.1.3 (2026-07-20)
 
 ### 🚀 Features
