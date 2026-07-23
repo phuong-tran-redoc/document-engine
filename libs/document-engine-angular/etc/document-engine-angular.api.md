@@ -655,6 +655,16 @@ export const FORMAT_UNDERLINE = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewB
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 // @public (undocumented)
+export interface HeadingOption {
+    // (undocumented)
+    class: string;
+    // (undocumented)
+    label: string;
+    // (undocumented)
+    value: HeadingLevel | null;
+}
+
+// @public (undocumented)
 export type IconButton = {
     type: 'icon-button';
     id: string;
@@ -1548,15 +1558,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     // (undocumented)
     handleCustomSelectButton(button: ToolbarButton, value: string): void;
     // (undocumented)
-    readonly headingOptions: ({
-        value: null;
-        label: string;
-        class: string;
-    } | {
-        value: number;
-        label: string;
-        class: string;
-    })[];
+    headingOptions: HeadingOption[];
     // (undocumented)
     readonly imageBubbleConfig: ToolbarBubbleMenuConfig;
     // (undocumented)
