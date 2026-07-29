@@ -246,6 +246,66 @@ the editor directive sets on its host), and **NOT** folded into the main `/style
 
 ---
 
+### [2026-07-28] ADR-009 — Panels own their surface; theming becomes a published contract (DE-016)
+
+**Context:** `0.1.4` shipped six defects that were invisible in `apps/document-engine` and broke
+immediately in a real consumer app. The common cause was not six bugs but one unstated dependency:
+the library's own templates painted panels with Tailwind utilities (`bg-card`, `border-border`,
+`shadow-elevation-2`, `z-30`, `hidden`) that only exist if the **host** app extends its Tailwind
+theme with those keys. The demo app does; a consumer with its own theme does not, and there the class
+names generate no CSS at all. Alongside it: `--popover` / `--shadow-elevation-*` were consumed with
+no definition and no fallback, three link views hardcoded light hex, `computePosition` was called
+without `strategy` while the host was pinned `position: fixed`, the toolbar bubble hand-rolled a
+one-shot position, and nothing gave the editing surface a height. Two secondary findings needed
+decisions of their own (S1: a duplicate popover directive; S2: `[popover]` colliding with the
+platform's native popover attribute; S3: an unbounded panel width).
+
+**Decision:**
+1. **Panels carry their own surface.** The library no longer uses any host-theme Tailwind utility in
+   its own templates. A shared `styles/_panel-surface.scss` mixin supplies background, text colour,
+   border, radius, elevation and stacking, each from a token *with* a fallback.
+2. **Theming is a published contract**, `docs/THEMING.md`, listing every custom property the library
+   reads. The chrome barrel additionally ships defaults for all of them via `styles/tokens.scss`,
+   emitted on `:where(:root)` so any consumer declaration wins with zero specificity fight. The token
+   defaults are also exported as a mixin (`.../styles/tokens`) so they can be rescoped onto a
+   container.
+3. **floating-ui is asked for the strategy it is given.** Both `PopoverDirective` and the toolbar
+   bubble use `strategy: 'fixed'` + `autoUpdate` + `flip` + `shift`; the toolbar bubble's hand-rolled
+   positioning is deleted.
+4. **The editing surface has two documented sizing hooks** — `--de-editor-min-height` as a floor and
+   flex participation so a real parent height drives it.
+5. **S1: delete the duplicate.** `core/floating-popover.directive.ts` exported a second class also
+   named `PopoverDirective` on the same selector; it was never exported from `core/index.ts` and never
+   imported, so it was dead code, not a trade-off.
+6. **S2: rename, keep an alias.** The selector becomes `documentEnginePopover`, with `[popover]` and
+   the `popover` input retained as deprecated aliases. Additive, so no consumer breaks now; the alias
+   goes at the next major.
+7. **S3: bound the width, never with `overflow`.** The two table panels gain
+   `max-inline-size: calc(100vw - 2rem)`. `overflow` is explicitly rejected — these panels contain
+   selects and a colour popover positioned *inside* them, and an overflow ancestor clips them.
+8. **A bare-consumer fixture is the guard**, plus a `pnpm gate:css` invariant check in CI.
+
+**Rationale:** A component library must not require a specific utility framework, let alone a
+specific config, in its host — the alternative (ship a Tailwind preset and document it as mandatory)
+still forces Tailwind on every consumer and still fails silently when someone misses the docs.
+Fallback-carrying tokens fail *soft*: a consumer who reads nothing gets a usable panel, and one who
+themes gets exactly what they declared. On S2, an alias costs one selector and one input and removes
+the only reason not to rename before 1.0.
+
+**Consequences:**
+- `docs/THEMING.md` is now part of the public contract; `pnpm gate:css` fails CI on a library
+  template that reaches for a host-theme utility, a view stylesheet that hardcodes a colour, or a
+  `var(--…)` that the contract does not list. Adding a token means documenting it.
+- One new `exports` entry (`./styles/tokens`); a packed tarball must be verified to resolve it.
+- `--de-editor-min-height` defaults to `12rem`, so an empty editor is now 12rem tall rather than one
+  line. Consumers who want the old behaviour set it to `0`.
+- The demo app can no longer catch this class of defect on its own, by construction. The guard is
+  `/test-bench/bare-consumer` plus its `@ci`-tagged spec — do not "tidy away" its dark background,
+  its spacer, its fixed-height frame or its token reset; each one is an assertion's precondition.
+- `[popover]` is deprecated. Removing it is a breaking change and belongs to the next major.
+
+---
+
 ## Template
 
 ### [Date] Decision Title
