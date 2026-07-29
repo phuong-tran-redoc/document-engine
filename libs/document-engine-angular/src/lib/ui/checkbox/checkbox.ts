@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   forwardRef,
   HostBinding,
+  inject,
   Input,
   Output,
 } from '@angular/core';
@@ -61,6 +63,8 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   @HostBinding('class.document-engine-checkbox-container') hostClass = true;
 
+  private readonly cdr = inject(ChangeDetectorRef);
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private onChange: (value: boolean) => void = () => {};
 
@@ -77,9 +81,16 @@ export class CheckboxComponent implements ControlValueAccessor {
     this.onTouched();
   }
 
-  // ControlValueAccessor implementation
+  // ControlValueAccessor implementation.
+  //
+  // The forms package calls these from outside any template binding, so on an
+  // OnPush component they must mark the view dirty explicitly. Without it a
+  // programmatic `setValue()` — including a bubble-menu view being re-activated
+  // with different attributes on a reused instance — updates the model while the
+  // rendered tick keeps showing the previous state.
   writeValue(value: boolean): void {
     this.checked = value;
+    this.cdr.markForCheck();
   }
 
   registerOnChange(fn: (value: boolean) => void): void {
@@ -92,5 +103,6 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+    this.cdr.markForCheck();
   }
 }
