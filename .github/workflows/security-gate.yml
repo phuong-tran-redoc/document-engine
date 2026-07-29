@@ -129,7 +129,7 @@ jobs:
           # angular is an ESM-only ng-packagr build (type: module, fesm2022). esm-only is the
           # right profile (CJS consumers use dynamic import, as expected). The "./styles*" subpaths
           # are Sass-only entries (exports.sass, no JS/types), so they are excluded from type checks.
-          npx --yes @arethetypeswrong/cli --pack dist/libs/document-engine-angular --profile esm-only --exclude-entrypoints ./styles ./styles/editor-content ./styles/editor-interaction
+          npx --yes @arethetypeswrong/cli --pack dist/libs/document-engine-angular --profile esm-only --exclude-entrypoints ./styles ./styles/tokens ./styles/editor-content ./styles/editor-interaction
 
       # --- BLOCKING (DE-014): Node-ESM runtime load. publint/attw validate wiring + type
       # resolution but never LOAD the JS under bare Node, so core ≤0.1.1's ERR_UNSUPPORTED_DIR_IMPORT

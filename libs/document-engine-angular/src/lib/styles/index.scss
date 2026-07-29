@@ -23,7 +23,15 @@
  *
  * All styles use class/element selectors and CSS-variable-driven values, so you
  * can also override them with your own CSS without importing these files.
+ *
+ * Theming: this barrel also ships zero-specificity DEFAULTS for every custom
+ * property the library reads (`_tokens.scss`, emitted on `:where(:root)`), so it
+ * looks right out of the box and any token you declare yourself wins without a
+ * specificity fight. The full list is in `docs/THEMING.md`.
  */
+
+// Token defaults first, so they sit at the top of the emitted sheet.
+@use 'tokens';
 
 @forward 'icon';
 @forward 'button';
