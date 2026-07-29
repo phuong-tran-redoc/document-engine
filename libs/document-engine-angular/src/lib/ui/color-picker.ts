@@ -18,6 +18,7 @@ import { IconComponent } from './icon';
             type="button"
             class="swatch"
             [style.background-color]="color.value"
+            [attr.data-color]="color.value"
             (click)="colorSelected.emit(color)"
             [attr.title]="color.name"
           >

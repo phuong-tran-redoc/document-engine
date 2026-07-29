@@ -1,0 +1,98 @@
+@use '@phuong-tran-redoc/document-engine-angular/styles/tokens' as de-tokens;
+
+/**
+ * Styles for the DE-016 bare-consumer fixture. Every rule here is part of the
+ * test, not decoration — see the component's doc comment.
+ */
+
+/* Dark page. Applied to <body> by the component so it really is the page's
+ * surface, not a nested box the panels could accidentally sit outside of. */
+:root body.bare-consumer-page {
+  background: #101014;
+  color: #e6e6ea;
+}
+
+.bare-consumer {
+  min-height: 100vh;
+}
+
+.bare-consumer__spacer {
+  /* Deliberate: pushes the editor past the first viewport so a panel positioned
+   * with the wrong floating-ui strategy misses its trigger by the scroll
+   * offset — the failure mode that shipped in 0.1.4. */
+  min-height: 150vh;
+  padding: 2rem;
+}
+
+.bare-consumer__spacer--tail {
+  /* Room to keep scrolling once the editor is on screen, so the "panel stays on
+   * its target while the page scrolls" assertion has somewhere to go. */
+  min-height: 150vh;
+}
+
+.bare-consumer__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.bare-consumer__note {
+  margin-top: 0.5rem;
+  opacity: 0.7;
+}
+
+/**
+ * Undo this app's theme.
+ *
+ * The demo app remaps every token the library reads, which is exactly why it
+ * could not see DE-016. Here the subtree is planted with the LIBRARY's own
+ * defaults via its published mixin — so this models a consumer that imported the
+ * styles barrel (as the README instructs) and themed nothing. Using the mixin
+ * rather than copied values means the fixture cannot drift from the library.
+ */
+.bare-consumer__reset {
+  @include de-tokens.token-defaults;
+
+  padding: 0 2rem 2rem;
+}
+
+/**
+ * The harsher variant (`?tokens=none`): every token back to `initial`, i.e. a
+ * consumer that imported no stylesheet at all, so only the auto-injected
+ * component styles apply. Any library rule that is load-bearing on an undefined
+ * variable goes transparent right here — which is what B2 was.
+ */
+.bare-consumer__reset--no-tokens {
+  --background: initial;
+  --foreground: initial;
+  --card: initial;
+  --card-foreground: initial;
+  --popover: initial;
+  --popover-foreground: initial;
+  --primary: initial;
+  --primary-foreground: initial;
+  --secondary: initial;
+  --secondary-foreground: initial;
+  --muted: initial;
+  --muted-foreground: initial;
+  --accent: initial;
+  --accent-foreground: initial;
+  --destructive: initial;
+  --destructive-foreground: initial;
+  --warning: initial;
+  --border: initial;
+  --input: initial;
+  --ring: initial;
+  --shadow-elevation-1: initial;
+  --shadow-elevation-2: initial;
+  --shadow-elevation-3: initial;
+}
+
+/* Fixed-height container: the condition that exposed the collapsed editing
+ * surface. 482px is the height measured in the consumer app that filed DE-016. */
+.bare-consumer__frame {
+  height: 482px;
+}
+
+.bare-consumer__editor {
+  height: 100%;
+}

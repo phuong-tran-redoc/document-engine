@@ -22,7 +22,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
   template: `
     <div class="table-main-view">
       <!-- Column actions -->
-      <document-engine-select [(value)]="colAction" (valueChange)="handleColAction($event)" labelMode="static">
+      <document-engine-select data-testid="column-actions" [(value)]="colAction" (valueChange)="handleColAction($event)" labelMode="static">
         <document-engine-icon documentEngineSelectLabel name="table_column"></document-engine-icon>
 
         <button documentEngineSelectOption value="add-before">Insert column left</button>
@@ -32,7 +32,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
       </document-engine-select>
 
       <!-- Row actions -->
-      <document-engine-select [(value)]="rowAction" (valueChange)="handleRowAction($event)" labelMode="static">
+      <document-engine-select data-testid="row-actions" [(value)]="rowAction" (valueChange)="handleRowAction($event)" labelMode="static">
         <document-engine-icon documentEngineSelectLabel name="table_row"></document-engine-icon>
 
         <button documentEngineSelectOption value="add-before">Insert row above</button>
@@ -45,8 +45,12 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
       <document-engine-select [(value)]="cellAction" (valueChange)="handleCellAction($event)" labelMode="static">
         <document-engine-icon documentEngineSelectLabel name="table_merge_cell"></document-engine-icon>
 
-        <button documentEngineSelectOption value="merge" [disabled]="!canMerge">Merge cells</button>
-        <button documentEngineSelectOption value="split" [disabled]="!canSplit">Split cell</button>
+        <button documentEngineSelectOption data-testid="merge-cells" value="merge" [disabled]="!canMerge">
+          Merge cells
+        </button>
+        <button documentEngineSelectOption data-testid="split-cell" value="split" [disabled]="!canSplit">
+          Split cell
+        </button>
       </document-engine-select>
 
       <!-- Table style -->
@@ -55,6 +59,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
         size="icon"
         variant="ghost"
         title="Table Properties"
+        data-testid="table-properties"
         (click)="navigateTo?.('table-style')"
       >
         <document-engine-icon name="table_property"></document-engine-icon>
@@ -66,6 +71,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
         size="icon"
         variant="ghost"
         title="Cell Properties"
+        data-testid="cell-properties"
         (click)="navigateTo?.('cell-style')"
       >
         <document-engine-icon name="table_cell_property"></document-engine-icon>

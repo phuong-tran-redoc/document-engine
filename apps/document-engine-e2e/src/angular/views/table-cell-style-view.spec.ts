@@ -15,17 +15,17 @@ test.describe('Table Cell Style View - Border Styling @high', () => {
     // Navigate to cell style view
     await page.locator('table td').first().click();
     await page.waitForTimeout(200);
-    await page.locator('document-engine-button[data-testid="cell-properties"]').click();
+    await page.locator('button[data-testid="cell-properties"]').click();
     await page.waitForTimeout(200);
   });
 
   test('should set border width', async ({ page }) => {
     // Set border width
-    await page.locator('document-engine-input[data-testid="border-width"]').fill('2');
+    await page.locator('input[data-testid="border-width"]').fill('2');
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border width applied
@@ -42,11 +42,11 @@ test.describe('Table Cell Style View - Border Styling @high', () => {
     // Select solid border style
     await page.locator('document-engine-select[data-testid="border-style"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-select-option[value="solid"]').click();
+    await page.locator('button[documentEngineSelectOption][value="solid"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border style applied
@@ -63,11 +63,11 @@ test.describe('Table Cell Style View - Border Styling @high', () => {
     // Select dashed border style
     await page.locator('document-engine-select[data-testid="border-style"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-select-option[value="dashed"]').click();
+    await page.locator('button[documentEngineSelectOption][value="dashed"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border style applied
@@ -84,11 +84,11 @@ test.describe('Table Cell Style View - Border Styling @high', () => {
     // Select dotted border style
     await page.locator('document-engine-select[data-testid="border-style"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-select-option[value="dotted"]').click();
+    await page.locator('button[documentEngineSelectOption][value="dotted"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border style applied
@@ -105,11 +105,11 @@ test.describe('Table Cell Style View - Border Styling @high', () => {
     // Select none border style
     await page.locator('document-engine-select[data-testid="border-style"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-select-option[value="none"]').click();
+    await page.locator('button[documentEngineSelectOption][value="none"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border style applied
@@ -128,11 +128,11 @@ test.describe('Table Cell Style View - Border Styling @high', () => {
     await page.waitForTimeout(100);
 
     // Select a color (e.g., red)
-    await page.locator('document-engine-color-swatch[data-color="#ff0000"]').click();
+    await page.locator('button.swatch[data-color="#ff0000"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border color applied
@@ -147,11 +147,11 @@ test.describe('Table Cell Style View - Border Styling @high', () => {
 
   test('should clear border color', async ({ page }) => {
     // Click clear button
-    await page.locator('document-engine-button[data-testid="clear-border-color"]').click();
+    await page.locator('button[data-testid="clear-border-color"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border color cleared
@@ -173,7 +173,7 @@ test.describe('Table Cell Style View - Background Styling @high', () => {
     // Navigate to cell style view
     await page.locator('table td').first().click();
     await page.waitForTimeout(200);
-    await page.locator('document-engine-button[data-testid="cell-properties"]').click();
+    await page.locator('button[data-testid="cell-properties"]').click();
     await page.waitForTimeout(200);
   });
 
@@ -183,11 +183,11 @@ test.describe('Table Cell Style View - Background Styling @high', () => {
     await page.waitForTimeout(100);
 
     // Select a color (e.g., blue)
-    await page.locator('document-engine-color-swatch[data-color="#0000ff"]').click();
+    await page.locator('button.swatch[data-color="#0000ff"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify background color applied
@@ -202,11 +202,11 @@ test.describe('Table Cell Style View - Background Styling @high', () => {
 
   test('should clear background color', async ({ page }) => {
     // Click clear button
-    await page.locator('document-engine-button[data-testid="clear-background-color"]').click();
+    await page.locator('button[data-testid="clear-background-color"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify background color cleared
@@ -228,17 +228,17 @@ test.describe('Table Cell Style View - Text Alignment @high', () => {
     // Navigate to cell style view
     await page.locator('table td').first().click();
     await page.waitForTimeout(200);
-    await page.locator('document-engine-button[data-testid="cell-properties"]').click();
+    await page.locator('button[data-testid="cell-properties"]').click();
     await page.waitForTimeout(200);
   });
 
   test('should set text alignment to left', async ({ page }) => {
     // Click left alignment button
-    await page.locator('document-engine-toggle-button[value="left"]').click();
+    await page.locator('button[documentEngineToggleOption][value="left"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify text alignment applied
@@ -253,11 +253,11 @@ test.describe('Table Cell Style View - Text Alignment @high', () => {
 
   test('should set text alignment to center', async ({ page }) => {
     // Click center alignment button
-    await page.locator('document-engine-toggle-button[value="center"]').click();
+    await page.locator('button[documentEngineToggleOption][value="center"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify text alignment applied
@@ -272,11 +272,11 @@ test.describe('Table Cell Style View - Text Alignment @high', () => {
 
   test('should set text alignment to right', async ({ page }) => {
     // Click right alignment button
-    await page.locator('document-engine-toggle-button[value="right"]').click();
+    await page.locator('button[documentEngineToggleOption][value="right"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify text alignment applied
@@ -291,11 +291,11 @@ test.describe('Table Cell Style View - Text Alignment @high', () => {
 
   test('should set text alignment to justify', async ({ page }) => {
     // Click justify alignment button
-    await page.locator('document-engine-toggle-button[value="justify"]').click();
+    await page.locator('button[documentEngineToggleOption][value="justify"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify text alignment applied
@@ -319,17 +319,17 @@ test.describe('Table Cell Style View - Vertical Alignment @high', () => {
     // Navigate to cell style view
     await page.locator('table td').first().click();
     await page.waitForTimeout(200);
-    await page.locator('document-engine-button[data-testid="cell-properties"]').click();
+    await page.locator('button[data-testid="cell-properties"]').click();
     await page.waitForTimeout(200);
   });
 
   test('should set vertical alignment to top', async ({ page }) => {
     // Click top alignment button
-    await page.locator('document-engine-toggle-button[value="top"]').click();
+    await page.locator('button[documentEngineToggleOption][value="top"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify vertical alignment applied
@@ -344,11 +344,11 @@ test.describe('Table Cell Style View - Vertical Alignment @high', () => {
 
   test('should set vertical alignment to middle', async ({ page }) => {
     // Click middle alignment button
-    await page.locator('document-engine-toggle-button[value="middle"]').click();
+    await page.locator('button[documentEngineToggleOption][value="middle"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify vertical alignment applied
@@ -363,11 +363,11 @@ test.describe('Table Cell Style View - Vertical Alignment @high', () => {
 
   test('should set vertical alignment to bottom', async ({ page }) => {
     // Click bottom alignment button
-    await page.locator('document-engine-toggle-button[value="bottom"]').click();
+    await page.locator('button[documentEngineToggleOption][value="bottom"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify vertical alignment applied
@@ -391,17 +391,17 @@ test.describe('Table Cell Style View - Actions @high', () => {
     // Navigate to cell style view
     await page.locator('table td').first().click();
     await page.waitForTimeout(200);
-    await page.locator('document-engine-button[data-testid="cell-properties"]').click();
+    await page.locator('button[data-testid="cell-properties"]').click();
     await page.waitForTimeout(200);
   });
 
   test('should save cell styles when clicking Save button', async ({ page }) => {
     // Set border width
-    await page.locator('document-engine-input[data-testid="border-width"]').fill('3');
+    await page.locator('input[data-testid="border-width"]').fill('3');
     await page.waitForTimeout(100);
 
     // Click Save button
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify we're back to main view
@@ -420,11 +420,11 @@ test.describe('Table Cell Style View - Actions @high', () => {
 
   test('should cancel and return to main view when clicking Cancel button', async ({ page }) => {
     // Make some changes
-    await page.locator('document-engine-input[data-testid="border-width"]').fill('5');
+    await page.locator('input[data-testid="border-width"]').fill('5');
     await page.waitForTimeout(100);
 
     // Click Cancel button
-    await page.locator('document-engine-button[data-testid="cancel"]').click();
+    await page.locator('button[data-testid="cancel"]').click();
     await page.waitForTimeout(200);
 
     // Verify we're back to main view
@@ -443,21 +443,21 @@ test.describe('Table Cell Style View - Actions @high', () => {
 
   test('should apply multiple style changes together', async ({ page }) => {
     // Set border width
-    await page.locator('document-engine-input[data-testid="border-width"]').fill('2');
+    await page.locator('input[data-testid="border-width"]').fill('2');
     await page.waitForTimeout(100);
 
     // Set background color
     await page.locator('document-engine-color-picker[data-testid="background-color"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-color-swatch[data-color="#ffff00"]').click();
+    await page.locator('button.swatch[data-color="#ffff00"]').click();
     await page.waitForTimeout(100);
 
     // Set text alignment
-    await page.locator('document-engine-toggle-button[value="center"]').click();
+    await page.locator('button[documentEngineToggleOption][value="center"]').click();
     await page.waitForTimeout(100);
 
     // Save all changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify all styles were applied
