@@ -1,0 +1,14 @@
+@use '../../styles/panel-surface' as panel;
+
+/**
+ * Surface for the selection-driven bubble menu (link, colour, table, special
+ * characters, templates, dynamic fields — every panel routed through this
+ * wrapper).
+ *
+ * Show/hide and placement are owned by Tiptap's BubbleMenuPlugin (it writes
+ * `position` and `visibility` on this element), so this file only supplies the
+ * surface.
+ */
+.bubble-menu-wrapper {
+  @include panel.panel-surface(30);
+}

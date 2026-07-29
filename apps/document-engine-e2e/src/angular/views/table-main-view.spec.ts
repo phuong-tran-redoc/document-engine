@@ -23,7 +23,7 @@ test.describe('Table Main View - Column Actions @critical', () => {
     await page.waitForTimeout(100);
 
     // Select "Add Before" option
-    await page.locator('document-engine-select-option[value="add-before"]').click();
+    await page.locator('button[documentEngineSelectOption][value="add-before"]').click();
     await page.waitForTimeout(200);
 
     // Verify new column was added (should have 3 columns now)
@@ -41,7 +41,7 @@ test.describe('Table Main View - Column Actions @critical', () => {
     await page.waitForTimeout(100);
 
     // Select "Add After" option
-    await page.locator('document-engine-select-option[value="add-after"]').click();
+    await page.locator('button[documentEngineSelectOption][value="add-after"]').click();
     await page.waitForTimeout(200);
 
     // Verify new column was added
@@ -59,7 +59,7 @@ test.describe('Table Main View - Column Actions @critical', () => {
     await page.waitForTimeout(100);
 
     // Select "Delete" option
-    await page.locator('document-engine-select-option[value="delete"]').click();
+    await page.locator('button[documentEngineSelectOption][value="delete"]').click();
     await page.waitForTimeout(200);
 
     // Verify column was deleted (should have 1 column now)
@@ -77,7 +77,7 @@ test.describe('Table Main View - Column Actions @critical', () => {
     await page.waitForTimeout(100);
 
     // Select "Select Column" option
-    await page.locator('document-engine-select-option[value="select"]').click();
+    await page.locator('button[documentEngineSelectOption][value="select"]').click();
     await page.waitForTimeout(200);
 
     // Verify column is selected by checking selection state
@@ -109,7 +109,7 @@ test.describe('Table Main View - Row Actions @critical', () => {
     await page.waitForTimeout(100);
 
     // Select "Add Before" option
-    await page.locator('document-engine-select-option[value="add-before"]').click();
+    await page.locator('button[documentEngineSelectOption][value="add-before"]').click();
     await page.waitForTimeout(200);
 
     // Verify new row was added (should have 3 rows now)
@@ -127,7 +127,7 @@ test.describe('Table Main View - Row Actions @critical', () => {
     await page.waitForTimeout(100);
 
     // Select "Add After" option
-    await page.locator('document-engine-select-option[value="add-after"]').click();
+    await page.locator('button[documentEngineSelectOption][value="add-after"]').click();
     await page.waitForTimeout(200);
 
     // Verify new row was added
@@ -145,7 +145,7 @@ test.describe('Table Main View - Row Actions @critical', () => {
     await page.waitForTimeout(100);
 
     // Select "Delete" option
-    await page.locator('document-engine-select-option[value="delete"]').click();
+    await page.locator('button[documentEngineSelectOption][value="delete"]').click();
     await page.waitForTimeout(200);
 
     // Verify row was deleted (should have 1 row now)
@@ -163,7 +163,7 @@ test.describe('Table Main View - Row Actions @critical', () => {
     await page.waitForTimeout(100);
 
     // Select "Select Row" option
-    await page.locator('document-engine-select-option[value="select"]').click();
+    await page.locator('button[documentEngineSelectOption][value="select"]').click();
     await page.waitForTimeout(200);
 
     // Verify row is selected by checking selection state
@@ -198,7 +198,7 @@ test.describe('Table Main View - Cell Actions @critical', () => {
     await page.waitForTimeout(200);
 
     // Verify merge button is enabled
-    const mergeButton = page.locator('document-engine-button[data-testid="merge-cells"]');
+    const mergeButton = page.locator('button[data-testid="merge-cells"]');
     await expect(mergeButton).not.toBeDisabled();
 
     // Click merge button
@@ -219,7 +219,7 @@ test.describe('Table Main View - Cell Actions @critical', () => {
       .nth(1)
       .click({ modifiers: ['Shift'] });
     await page.waitForTimeout(200);
-    await page.locator('document-engine-button[data-testid="merge-cells"]').click();
+    await page.locator('button[data-testid="merge-cells"]').click();
     await page.waitForTimeout(200);
 
     // Click on merged cell
@@ -227,7 +227,7 @@ test.describe('Table Main View - Cell Actions @critical', () => {
     await page.waitForTimeout(200);
 
     // Verify split button is enabled
-    const splitButton = page.locator('document-engine-button[data-testid="split-cell"]');
+    const splitButton = page.locator('button[data-testid="split-cell"]');
     await expect(splitButton).not.toBeDisabled();
 
     // Click split button
@@ -245,7 +245,7 @@ test.describe('Table Main View - Cell Actions @critical', () => {
     await page.waitForTimeout(200);
 
     // Verify merge button is disabled
-    const mergeButton = page.locator('document-engine-button[data-testid="merge-cells"]');
+    const mergeButton = page.locator('button[data-testid="merge-cells"]');
     await expect(mergeButton).toBeDisabled();
   });
 
@@ -255,7 +255,7 @@ test.describe('Table Main View - Cell Actions @critical', () => {
     await page.waitForTimeout(200);
 
     // Verify split button is disabled
-    const splitButton = page.locator('document-engine-button[data-testid="split-cell"]');
+    const splitButton = page.locator('button[data-testid="split-cell"]');
     await expect(splitButton).toBeDisabled();
   });
 });
@@ -274,7 +274,7 @@ test.describe('Table Main View - Navigation @critical', () => {
     await page.waitForTimeout(200);
 
     // Click table properties button
-    await page.locator('document-engine-button[data-testid="table-properties"]').click();
+    await page.locator('button[data-testid="table-properties"]').click();
     await page.waitForTimeout(200);
 
     // Verify navigation to table style view
@@ -288,7 +288,7 @@ test.describe('Table Main View - Navigation @critical', () => {
     await page.waitForTimeout(200);
 
     // Click cell properties button
-    await page.locator('document-engine-button[data-testid="cell-properties"]').click();
+    await page.locator('button[data-testid="cell-properties"]').click();
     await page.waitForTimeout(200);
 
     // Verify navigation to cell style view

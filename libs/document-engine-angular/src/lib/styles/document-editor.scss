@@ -7,10 +7,31 @@
   color: var(--card-foreground, #000);
   box-shadow: none;
 
+  // Participate in a parent that has a real height (a fixed-height container, a
+  // flex/grid cell) instead of only ever sizing to content. `flex: 1 1 auto` is
+  // what actually claims that height: without it this box stays content-sized as
+  // a flex item of :host, and a fixed-height container is left with a band of
+  // dead, unclickable space under the editable.
+  //
+  // `max-height: 100%` is inert when the parent's height is indefinite (a
+  // percentage against an auto height resolves to none), so an unconstrained
+  // consumer still gets a box that simply grows.
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+
   &__content {
     padding: 1rem;
     border: 1px solid var(--border, #e5e7eb);
     background-color: var(--card, #fff);
+
+    // Take the leftover space so the editing surface below can stretch into it.
+    // Deliberately no `overflow` here: the panels rendered inside carry selects
+    // and colour popovers, and an overflow ancestor can clip them.
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
   }
 }
 
@@ -18,3 +39,43 @@
 // document-engine-toolbar ~ .document-engine-document-editor__content {
 //   border-top: 1px solid var(--border, #e5e7eb);
 // }
+
+/**
+ * Editing-surface sizing.
+ *
+ * The library used to size the contenteditable to its content and nothing else,
+ * so an emptied editor collapsed to a single line. In a fixed-height container
+ * that left a ~28px editable inside a ~480px box that plainly looks like a text
+ * field, and clicking anywhere but that one line did nothing.
+ *
+ * Two hooks, one rule:
+ *   - `--de-editor-min-height` is the floor (default `12rem`). Remap it, or set
+ *     it to `0` to opt out entirely.
+ *   - `flex: 1 1 auto` lets an ancestor with a real height drive the surface, so
+ *     the editable fills a fixed-height container without any magic number.
+ *
+ * `.tiptap-editor` is the class `TiptapEditorDirective` puts on its host;
+ * `.tiptap` / `.ProseMirror` is the contenteditable Tiptap creates inside it.
+ */
+.tiptap-editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+
+  // The editing surface is the scroll container. Without this, `max-height: 100%`
+  // above caps the wrapper while nothing scrolls, so a long document paints
+  // straight through the bottom of a fixed-height container and over whatever
+  // follows it on the page.
+  //
+  // Safe to put overflow here: the floating panels are rendered inside
+  // `document-engine-toolbar`, a sibling of the content box, never a descendant
+  // of this element — so there is nothing of theirs for this to clip.
+  overflow-y: auto;
+
+  > .tiptap,
+  > .ProseMirror {
+    flex: 1 1 auto;
+    min-height: var(--de-editor-min-height, 12rem);
+  }
+}

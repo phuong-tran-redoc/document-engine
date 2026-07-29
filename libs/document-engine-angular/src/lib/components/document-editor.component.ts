@@ -49,6 +49,16 @@ import { ToolbarComponent } from '../ui/toolbar/toolbar.component';
   },
   styles: [
     `
+      /* A custom element defaults to display: inline, which makes the editor
+       * impossible to size from the outside. Make it a stretchable column so a
+       * consumer can give this element a height and have the editing surface
+       * fill it (see --de-editor-min-height in docs/THEMING.md). */
+      :host {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
       :host ::ng-deep {
         *,
         *::before,

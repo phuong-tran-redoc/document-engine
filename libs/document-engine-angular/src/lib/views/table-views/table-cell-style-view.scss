@@ -1,7 +1,15 @@
+@use '../../styles/panel-surface' as panel;
+
 .table-cell-style-view {
   display: flex;
   flex-direction: column;
+
+  /* S3: a fixed 32.5rem could not fit a narrow pane. `max-inline-size` lets the
+   * panel shrink instead. Deliberately NOT solved with `overflow`: this panel
+   * contains selects and a colour popover positioned inside it, and an overflow
+   * ancestor clips them (verified — it cut the table dropdown's options in half). */
   width: 32.5rem;
+  max-inline-size: calc(100vw - 2rem);
 }
 
 .table-cell-style-view__header {
@@ -95,13 +103,11 @@
 }
 
 .table-cell-style-view__color-picker-dropdown {
-  z-index: 50;
-  background: var(--popover);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-elevation-2);
+  // Surface comes from the shared panel mixin so an undefined --popover can
+  // never leave this dropdown transparent. Position and visibility are handled
+  // by PopoverDirective.
+  @include panel.panel-surface(50, 0.5rem);
   padding: 0.5rem;
-  // Position and visibility are handled by PopoverDirective
 }
 
 .table-cell-style-view__actions {

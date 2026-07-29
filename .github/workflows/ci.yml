@@ -37,6 +37,14 @@ jobs:
         run: pnpm nx affected --target=lint --exclude=document-engine-e2e --parallel=3 -- --max-warnings=999
         continue-on-error: false
 
+      # Consumer-portability gate for the published CSS: no library template may
+      # depend on the HOST app's Tailwind theme keys, no view stylesheet may
+      # hardcode a theme colour, and every token the library reads must be listed
+      # in docs/THEMING.md. Not `nx affected` — it is a whole-library invariant.
+      - name: CSS portability gate
+        run: pnpm gate:css
+        continue-on-error: false
+
       # Test affected projects
       # Exclude E2E project - it has its own job
       - name: Test

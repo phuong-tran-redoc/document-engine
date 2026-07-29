@@ -5,7 +5,7 @@
 
 .link-main-view__header {
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border, hsl(214.3 31.8% 91.4%));
   font-weight: 500;
   font-size: 0.875rem;
 }
@@ -23,13 +23,12 @@
   white-space: nowrap;
   max-width: 200px;
   font-size: 0.875rem;
-  color: #3b82f6;
+  color: var(--primary, hsl(222.2 47.4% 11.2%));
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .link-main-view__url:hover {
-  color: #2563eb;
   text-decoration: underline;
 }
 

@@ -94,6 +94,13 @@ export const appRoutes: Route[] = [
         path: 'test-bench/image-insert',
         loadComponent: () => import('@document-engine/test-bench').then((m) => m.ImageInsertViewTestBenchComponent),
       },
+      // DE-016 regression guard. Deliberately hostile: no consumer theme, dark
+      // page, fixed-height editor container, editor below the fold — the four
+      // conditions the demo app satisfies none of.
+      {
+        path: 'test-bench/bare-consumer',
+        loadComponent: () => import('@document-engine/test-bench').then((m) => m.BareConsumerTestBenchComponent),
+      },
     ],
   },
 

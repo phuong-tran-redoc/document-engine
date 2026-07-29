@@ -30,6 +30,7 @@
     "release:next": "nx release prerelease --preid=next --skip-publish",
     "release:push": "git push --follow-tags",
     "guard:ng-floor": "node tools/check-angular-floor.mjs",
+    "gate:css": "node tools/check-css-portability.mjs",
     "api:check": "pnpm build:libs && (cd libs/document-engine-core && api-extractor run --verbose) && (cd libs/document-engine-angular && api-extractor run --verbose)",
     "api:update": "pnpm build:libs && (cd libs/document-engine-core && api-extractor run --local) && (cd libs/document-engine-angular && api-extractor run --local)"
   },

@@ -15,17 +15,17 @@ test.describe('Table Style View - Border Styling @high', () => {
     // Navigate to table style view
     await page.locator('table td').first().click();
     await page.waitForTimeout(200);
-    await page.locator('document-engine-button[data-testid="table-properties"]').click();
+    await page.locator('button[data-testid="table-properties"]').click();
     await page.waitForTimeout(200);
   });
 
   test('should set table border width', async ({ page }) => {
     // Set border width
-    await page.locator('document-engine-input[data-testid="border-width"]').fill('3');
+    await page.locator('input[data-testid="border-width"]').fill('3');
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border width applied to table
@@ -39,11 +39,11 @@ test.describe('Table Style View - Border Styling @high', () => {
     // Select solid border style
     await page.locator('document-engine-select[data-testid="border-style"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-select-option[value="solid"]').click();
+    await page.locator('button[documentEngineSelectOption][value="solid"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border style applied
@@ -57,11 +57,11 @@ test.describe('Table Style View - Border Styling @high', () => {
     // Select double border style (unique to table-level borders)
     await page.locator('document-engine-select[data-testid="border-style"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-select-option[value="double"]').click();
+    await page.locator('button[documentEngineSelectOption][value="double"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border style applied
@@ -75,11 +75,11 @@ test.describe('Table Style View - Border Styling @high', () => {
     // Select dashed border style
     await page.locator('document-engine-select[data-testid="border-style"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-select-option[value="dashed"]').click();
+    await page.locator('button[documentEngineSelectOption][value="dashed"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border style applied
@@ -93,11 +93,11 @@ test.describe('Table Style View - Border Styling @high', () => {
     // Select dotted border style
     await page.locator('document-engine-select[data-testid="border-style"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-select-option[value="dotted"]').click();
+    await page.locator('button[documentEngineSelectOption][value="dotted"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border style applied
@@ -111,11 +111,11 @@ test.describe('Table Style View - Border Styling @high', () => {
     // Select none border style
     await page.locator('document-engine-select[data-testid="border-style"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-select-option[value="none"]').click();
+    await page.locator('button[documentEngineSelectOption][value="none"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border style applied
@@ -131,11 +131,11 @@ test.describe('Table Style View - Border Styling @high', () => {
     await page.waitForTimeout(100);
 
     // Select a color (e.g., green)
-    await page.locator('document-engine-color-swatch[data-color="#00ff00"]').click();
+    await page.locator('button.swatch[data-color="#00ff00"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border color applied
@@ -147,11 +147,11 @@ test.describe('Table Style View - Border Styling @high', () => {
 
   test('should clear table border color', async ({ page }) => {
     // Click clear button
-    await page.locator('document-engine-button[data-testid="clear-border-color"]').click();
+    await page.locator('button[data-testid="clear-border-color"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify border color cleared
@@ -173,7 +173,7 @@ test.describe('Table Style View - Background Styling @high', () => {
     // Navigate to table style view
     await page.locator('table td').first().click();
     await page.waitForTimeout(200);
-    await page.locator('document-engine-button[data-testid="table-properties"]').click();
+    await page.locator('button[data-testid="table-properties"]').click();
     await page.waitForTimeout(200);
   });
 
@@ -183,11 +183,11 @@ test.describe('Table Style View - Background Styling @high', () => {
     await page.waitForTimeout(100);
 
     // Select a color (e.g., yellow)
-    await page.locator('document-engine-color-swatch[data-color="#ffff00"]').click();
+    await page.locator('button.swatch[data-color="#ffff00"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify background color applied
@@ -199,11 +199,11 @@ test.describe('Table Style View - Background Styling @high', () => {
 
   test('should clear table background color', async ({ page }) => {
     // Click clear button
-    await page.locator('document-engine-button[data-testid="clear-background-color"]').click();
+    await page.locator('button[data-testid="clear-background-color"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify background color cleared
@@ -225,17 +225,17 @@ test.describe('Table Style View - Actions @high', () => {
     // Navigate to table style view
     await page.locator('table td').first().click();
     await page.waitForTimeout(200);
-    await page.locator('document-engine-button[data-testid="table-properties"]').click();
+    await page.locator('button[data-testid="table-properties"]').click();
     await page.waitForTimeout(200);
   });
 
   test('should save table styles when clicking Save button', async ({ page }) => {
     // Set border width
-    await page.locator('document-engine-input[data-testid="border-width"]').fill('4');
+    await page.locator('input[data-testid="border-width"]').fill('4');
     await page.waitForTimeout(100);
 
     // Click Save button
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify we're back to main view
@@ -251,11 +251,11 @@ test.describe('Table Style View - Actions @high', () => {
 
   test('should cancel and return to main view when clicking Cancel button', async ({ page }) => {
     // Make some changes
-    await page.locator('document-engine-input[data-testid="border-width"]').fill('6');
+    await page.locator('input[data-testid="border-width"]').fill('6');
     await page.waitForTimeout(100);
 
     // Click Cancel button
-    await page.locator('document-engine-button[data-testid="cancel"]').click();
+    await page.locator('button[data-testid="cancel"]').click();
     await page.waitForTimeout(200);
 
     // Verify we're back to main view
@@ -271,23 +271,23 @@ test.describe('Table Style View - Actions @high', () => {
 
   test('should apply multiple style changes together', async ({ page }) => {
     // Set border width
-    await page.locator('document-engine-input[data-testid="border-width"]').fill('2');
+    await page.locator('input[data-testid="border-width"]').fill('2');
     await page.waitForTimeout(100);
 
     // Set border style
     await page.locator('document-engine-select[data-testid="border-style"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-select-option[value="double"]').click();
+    await page.locator('button[documentEngineSelectOption][value="double"]').click();
     await page.waitForTimeout(100);
 
     // Set background color
     await page.locator('document-engine-color-picker[data-testid="background-color"]').click();
     await page.waitForTimeout(100);
-    await page.locator('document-engine-color-swatch[data-color="#ff00ff"]').click();
+    await page.locator('button.swatch[data-color="#ff00ff"]').click();
     await page.waitForTimeout(100);
 
     // Save all changes
-    await page.locator('document-engine-button[data-testid="save"]').click();
+    await page.locator('button[data-testid="save"]').click();
     await page.waitForTimeout(200);
 
     // Verify all styles were applied

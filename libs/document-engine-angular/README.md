@@ -50,8 +50,12 @@ Add the SCSS entry to your global styles (or `angular.json` styles array):
 
 ```scss
 // styles.scss
-@import '@phuong-tran-redoc/document-engine-angular/styles';
+@use '@phuong-tran-redoc/document-engine-angular/styles';
 ```
+
+That one import is the whole baseline — it ships the editor chrome **and** a default value for every
+design token the library reads, so it looks right with no theming at all. **Tailwind CSS is not
+required**; the library does not depend on your Tailwind config.
 
 ---
 
@@ -167,11 +171,43 @@ The feature-toggle object passed to `[config]`. Each key is a boolean or an opti
 
 > The package entry `index.ts` is the public contract — additive changes only between minor versions.
 
+### Deprecations
+
+| Deprecated | Use instead | Removed in |
+| --- | --- | --- |
+| `[popover]` selector/input on `PopoverDirective` | `[documentEnginePopover]` | next major |
+
+`[popover]` still works, so no consumer breaks on upgrade. It is being retired because it collides with
+the platform's native [`popover`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/popover)
+HTML attribute — an element carrying both gets the browser's top-layer behaviour *and* ours.
+
+```html
+<!-- before -->
+<div [popover]="triggerRef">…</div>
+<!-- after -->
+<div [documentEnginePopover]="triggerRef">…</div>
+```
+
 ---
 
-## 🎨 Styling
+## 🎨 Styling & theming
 
-Import the SCSS entry (see [Installation](#importing-styles)). The editor ships a Tailwind + SCSS design system; theme it through your global stylesheet alongside your app's design tokens.
+Import the SCSS entry (see [Importing Styles](#importing-styles)), then theme by **redeclaring CSS
+custom properties** — never by overriding rule bodies.
+
+**[`docs/THEMING.md`](https://github.com/phuong-tran-redoc/document-engine/blob/main/docs/THEMING.md) is
+the contract.** It lists every token the library reads
+(colour, elevation, sizing), its default, and what it paints. Highlights:
+
+- The barrel's defaults are emitted on `:where(:root)`, which has **zero specificity** — anything you
+  declare (`:root`, `.dark`, `[data-theme]`, an inline style) wins regardless of source order. No
+  `!important`, no matching a selector shape.
+- Dark mode is purely a matter of redeclaring the tokens on your dark selector; nothing in the library
+  hardcodes a colour.
+- `--de-editor-min-height` (default `12rem`) sets the editing surface's floor; alternatively give the
+  `document-engine-editor` element a real height and the surface fills it.
+- Prose and editing-affordance styles are **opt-in** subpaths (`styles/editor-content`,
+  `styles/editor-interaction`), so the baseline can never impose a look on your documents.
 
 ---
 
