@@ -6,7 +6,7 @@
 
 .link-edit-view__header {
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border, hsl(214.3 31.8% 91.4%));
   font-weight: 500;
   font-size: 0.875rem;
 }
@@ -24,12 +24,12 @@
   gap: 1rem;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border, hsl(214.3 31.8% 91.4%));
   padding: 1rem 0.5rem;
 }
 
 .link-edit-view__shortcuts-label {
-  color: #6b7280;
+  color: var(--muted-foreground, hsl(215.4 16.3% 46.9%));
   font-size: 0.875rem;
 }
 
@@ -38,7 +38,7 @@
   gap: 0.5rem;
   justify-content: flex-end;
   padding: 0.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border, hsl(214.3 31.8% 91.4%));
 }
 
 /* Form field styles */
@@ -61,11 +61,11 @@
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.75rem;
-  background-color: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  background-color: var(--muted, hsl(210 40% 96.1%));
+  border: 1px solid var(--border, hsl(214.3 31.8% 91.4%));
   border-radius: 9999px;
   font-size: 0.875rem;
-  color: #374151;
+  color: var(--foreground, hsl(222.2 84% 4.9%));
   cursor: pointer;
   transition:
     background-color 0.2s,
@@ -73,10 +73,12 @@
 }
 
 .chip:hover {
-  background-color: #e5e7eb;
-  border-color: #d1d5db;
+  background-color: var(--accent, hsl(210 40% 96.1%));
+  color: var(--accent-foreground, hsl(222.2 47.4% 11.2%));
+  border-color: var(--ring, hsl(222.2 84% 4.9%));
 }
 
 .chip:active {
-  background-color: #d1d5db;
+  background-color: var(--secondary, hsl(210 40% 96.1%));
+  color: var(--secondary-foreground, hsl(222.2 47.4% 11.2%));
 }

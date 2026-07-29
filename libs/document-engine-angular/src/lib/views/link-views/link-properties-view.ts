@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Editor } from '@tiptap/core';
 import { BubbleMenuViewContent } from '../../core/bubble-menu/bubble-menu.type';
 import { ButtonDirective } from '../../ui/button';
+import { CheckboxComponent } from '../../ui/checkbox/checkbox';
 
 interface LinkAttrs {
   href?: string;
@@ -19,7 +20,7 @@ interface LinkAttrs {
 @Component({
   selector: 'document-engine-link-properties-view',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonDirective],
+  imports: [CommonModule, ReactiveFormsModule, ButtonDirective, CheckboxComponent],
   template: `
     <div class="link-properties-view">
       <!-- Title -->
@@ -29,27 +30,30 @@ interface LinkAttrs {
       <!-- Content -->
       <div class="link-properties-view__content">
         <!-- Open in new tab -->
-        <label class="checkbox-label">
-          <input type="checkbox" class="checkbox-input" [formControl]="newTabControl" />
-          <span class="checkbox-text">Open in new tab</span>
-        </label>
+        <div class="link-properties-view__option">
+          <document-engine-checkbox [formControl]="newTabControl">Open in new tab</document-engine-checkbox>
+        </div>
 
         <!-- No follow -->
-        <label class="checkbox-label">
-          <input type="checkbox" class="checkbox-input" [formControl]="noFollowControl" />
-          <span class="checkbox-text"> Add <code class="inline-code">rel="nofollow"</code> </span>
-        </label>
+        <div class="link-properties-view__option">
+          <document-engine-checkbox [formControl]="noFollowControl">
+            Add <code class="inline-code">rel="nofollow"</code>
+          </document-engine-checkbox>
+        </div>
 
         <!-- No opener -->
-        <label class="checkbox-label">
-          <input type="checkbox" class="checkbox-input" [formControl]="noOpenerControl" />
-          <span class="checkbox-text"> Add <code class="inline-code">rel="noopener"</code> </span>
-        </label>
+        <div class="link-properties-view__option">
+          <document-engine-checkbox [formControl]="noOpenerControl">
+            Add <code class="inline-code">rel="noopener"</code>
+          </document-engine-checkbox>
+        </div>
 
-        <label class="checkbox-label">
-          <input type="checkbox" class="checkbox-input" [formControl]="noReferrerControl" />
-          <span class="checkbox-text"> Add <code class="inline-code">rel="noreferrer"</code> </span>
-        </label>
+        <!-- No referrer -->
+        <div class="link-properties-view__option">
+          <document-engine-checkbox [formControl]="noReferrerControl">
+            Add <code class="inline-code">rel="noreferrer"</code>
+          </document-engine-checkbox>
+        </div>
       </div>
 
       <!-- Actions -->

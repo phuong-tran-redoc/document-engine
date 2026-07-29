@@ -6,7 +6,7 @@
 
 .link-properties-view__header {
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border, hsl(214.3 31.8% 91.4%));
   font-weight: 500;
   font-size: 0.875rem;
 }
@@ -23,36 +23,23 @@
   gap: 0.5rem;
   justify-content: flex-end;
   padding: 0.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border, hsl(214.3 31.8% 91.4%));
 }
 
-/* Checkbox styles */
-.checkbox-label {
+/* Checkbox rows. The control itself is `document-engine-checkbox`, which is
+ * already token-driven (--primary / --input / --ring), so nothing here styles a
+ * tick or a box — only the row's spacing. */
+.link-properties-view__option {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  user-select: none;
   padding: 0.25rem;
-}
-
-.checkbox-input {
-  width: 1rem;
-  height: 1rem;
-  cursor: pointer;
-  accent-color: #3b82f6;
-}
-
-.checkbox-text {
-  font-size: 0.875rem;
-  color: #374151;
 }
 
 .inline-code {
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--muted, hsl(210 40% 96.1%));
+  color: var(--muted-foreground, hsl(215.4 16.3% 46.9%));
   font-family: 'Courier New', monospace;
   font-size: 0.813rem;
 }
-
