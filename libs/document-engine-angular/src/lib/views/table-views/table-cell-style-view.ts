@@ -55,6 +55,7 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
               <div class="table-cell-style-view__field-label">Width</div>
               <input
                 documentEngineInput
+                data-testid="border-width"
                 [(ngModel)]="borderWidth"
                 (ngModelChange)="onBorderWidthChange()"
                 placeholder="1px"
@@ -64,7 +65,7 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
             <div class="table-cell-style-view__field">
               <div class="table-cell-style-view__field-label">Style</div>
 
-              <document-engine-select [(value)]="borderStyle" variant="outline">
+              <document-engine-select data-testid="border-style" [(value)]="borderStyle" variant="outline">
                 <button documentEngineSelectOption value="solid">Solid</button>
                 <button documentEngineSelectOption value="dashed">Dashed</button>
                 <button documentEngineSelectOption value="dotted">Dotted</button>
@@ -85,6 +86,7 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
                   size="icon"
                   variant="ghost"
                   class="table-cell-style-view__color-clear"
+                  data-testid="clear-border-color"
                   (click)="borderColor = null"
                 >
                   <document-engine-icon name="close"></document-engine-icon>
@@ -105,13 +107,14 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
               <!-- Color picker for border -->
               <div
                 *ngIf="showColorPicker === 'border'"
-                [popover]="borderColorTrigger"
+                [documentEnginePopover]="borderColorTrigger"
                 [isOpen]="showColorPicker === 'border'"
                 class="table-cell-style-view__color-picker-dropdown"
                 (click)="$event.stopPropagation()"
               >
                 <document-engine-color-picker
                   [colorPalette]="colorPalette"
+                  data-testid="border-color"
                   [activeColor]="borderColorObj"
                   (colorSelected)="onBorderColorSelected($event)"
                   (colorRemoved)="onBorderColorRemoved()"
@@ -136,6 +139,7 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
                 size="icon"
                 variant="ghost"
                 class="table-cell-style-view__color-clear"
+                data-testid="clear-background-color"
                 (click)="backgroundColor = null"
               >
                 <document-engine-icon name="close"></document-engine-icon>
@@ -156,13 +160,14 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
             <!-- Color picker for background -->
             <div
               *ngIf="showColorPicker === 'bg'"
-              [popover]="bgColorTrigger"
+              [documentEnginePopover]="bgColorTrigger"
               [isOpen]="showColorPicker === 'bg'"
               class="table-cell-style-view__color-picker-dropdown"
               (click)="$event.stopPropagation()"
             >
               <document-engine-color-picker
                 [colorPalette]="colorPalette"
+                data-testid="background-color"
                 [activeColor]="backgroundColorObj"
                 (colorSelected)="onBackgroundColorSelected($event)"
                 (colorRemoved)="onBackgroundColorRemoved()"
@@ -209,8 +214,8 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
 
       <!-- Actions -->
       <div class="table-cell-style-view__actions">
-        <button documentEngineButton variant="ghost" (click)="cancel()">Cancel</button>
-        <button documentEngineButton variant="default" (click)="onSave()">Save</button>
+        <button documentEngineButton data-testid="cancel" variant="ghost" (click)="cancel()">Cancel</button>
+        <button documentEngineButton data-testid="save" variant="default" (click)="onSave()">Save</button>
       </div>
     </div>
   `,

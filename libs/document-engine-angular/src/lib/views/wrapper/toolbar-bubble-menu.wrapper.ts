@@ -13,6 +13,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
+import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
 import { Editor } from '@tiptap/core';
 import {
   BubbleMenuViewConfig,
@@ -34,30 +35,18 @@ import { FocusTrapService } from '../../core/focus-trap.service';
   template: `
     <div
       #bubbleElement
-      class="toolbar-bubble-menu rounded border bg-card text-card-foreground border-border shadow-elevation-2 z-50"
-      [class.hidden]="!isVisible"
+      class="toolbar-bubble-menu"
+      [class.toolbar-bubble-menu--hidden]="!isVisible"
       [style.width]="config.width || 'auto'"
       [style.maxWidth]="config.maxWidth || '320px'"
     >
       <ng-container #viewContainer></ng-container>
     </div>
   `,
-  styles: [
-    `
-      .toolbar-bubble-menu {
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: opacity 200ms ease-out, transform 200ms ease-out;
-        pointer-events: none;
-      }
-
-      .toolbar-bubble-menu:not(.hidden) {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-      }
-    `,
-  ],
+  // The panel's surface ships as library CSS (see the .scss), not as Tailwind
+  // utilities in the template: utilities like `bg-card` / `shadow-elevation-2`
+  // only exist if the HOST app's tailwind.config.js defines those theme keys.
+  styleUrls: ['./toolbar-bubble-menu.wrapper.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToolbarBubbleMenuComponent implements AfterViewInit, OnDestroy {
@@ -74,6 +63,8 @@ export class ToolbarBubbleMenuComponent implements AfterViewInit, OnDestroy {
   private currentViewRef: ComponentRef<BubbleMenuViewContent> | null = null;
   private currentViewId: string | null = null;
   private currentAttributes: Record<string, unknown> = {};
+  private cleanupAutoUpdate?: () => void;
+  private positionTimeout?: ReturnType<typeof setTimeout>;
 
   isVisible = false;
 
@@ -124,7 +115,8 @@ export class ToolbarBubbleMenuComponent implements AfterViewInit, OnDestroy {
 
     // Position the bubble relative to the target element
     // TODO: It make the bubble jump when the bubble is opened
-    setTimeout(() => this.positionBubble(targetElement), 0);
+    clearTimeout(this.positionTimeout);
+    this.positionTimeout = setTimeout(() => this.positionBubble(targetElement), 0);
 
     // Attach outside click/escape listeners using the bubble element, not the toolbar button
     const bubbleEl = this.bubbleElement?.nativeElement;
@@ -140,6 +132,15 @@ export class ToolbarBubbleMenuComponent implements AfterViewInit, OnDestroy {
    */
   hideBubble(): void {
     this.isVisible = false;
+    // Cancel a positioning pass that has not run yet. `showBubble` defers it by a
+    // tick, so a show-then-immediately-hide (or a teardown) would otherwise let it
+    // fire afterwards and register a fresh `autoUpdate` — scroll/resize listeners
+    // plus a Resize and an Intersection observer — on a hidden or detached
+    // element, with the handle for disposing it already thrown away.
+    clearTimeout(this.positionTimeout);
+    this.positionTimeout = undefined;
+    this.cleanupAutoUpdate?.();
+    this.cleanupAutoUpdate = undefined;
     this.eventManager.detach(this.config.pluginKey);
     this.destroyCurrentView();
     this.cdr.markForCheck();
@@ -262,34 +263,40 @@ export class ToolbarBubbleMenuComponent implements AfterViewInit, OnDestroy {
     return this.config.views.find((v) => v.id === viewId) || null;
   }
 
+  /**
+   * Anchor the bubble to its trigger with floating-ui, matching
+   * `PopoverDirective`.
+   *
+   * The hand-rolled version this replaces measured the trigger exactly once, so
+   * scrolling left the panel welded to the viewport while its target slid away.
+   * It also had no third case: a panel that fit neither below nor above got a
+   * negative `top`, putting its own header off the top edge of the screen.
+   * `flip` handles the second placement and `shift` clamps the panel into the
+   * viewport instead, so there is no unhandled case left.
+   *
+   * `strategy: 'fixed'` matches the `position: fixed` written below — asking for
+   * the default `'absolute'` coordinates would offset the panel by the page's
+   * scroll amount.
+   */
   private positionBubble(targetElement: HTMLElement): void {
     const bubble = this.bubbleElement?.nativeElement;
     if (!bubble) return;
 
-    const targetRect = targetElement.getBoundingClientRect();
-    const bubbleRect = bubble.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    // Default position: below the target element, centered
-    let top = targetRect.bottom + 8;
-    let left = targetRect.left + targetRect.width / 2 - bubbleRect.width / 2;
-
-    // Adjust horizontal position to stay within viewport
-    if (left < 8) {
-      left = 8;
-    } else if (left + bubbleRect.width > viewportWidth - 8) {
-      left = viewportWidth - bubbleRect.width - 8;
-    }
-
-    // If bubble would go below viewport, position it above the target
-    if (top + bubbleRect.height > viewportHeight - 8) {
-      top = targetRect.top - bubbleRect.height - 8;
-    }
-
-    // Apply position
     bubble.style.position = 'fixed';
-    bubble.style.top = `${top}px`;
-    bubble.style.left = `${left}px`;
+
+    this.cleanupAutoUpdate?.();
+    this.cleanupAutoUpdate = autoUpdate(targetElement, bubble, () => {
+      computePosition(targetElement, bubble, {
+        strategy: 'fixed',
+        placement: 'bottom',
+        middleware: [offset(8), flip({ padding: 8 }), shift({ padding: 8 })],
+      })
+        .then(({ x, y }) => {
+          Object.assign(bubble.style, { left: `${x}px`, top: `${y}px` });
+        })
+        .catch((error) => {
+          console.error('[ToolbarBubbleMenu] Error computing position', error);
+        });
+    });
   }
 }

@@ -46,6 +46,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
 
               <input
                 documentEngineInput
+                data-testid="border-width"
                 [(ngModel)]="borderWidth"
                 (ngModelChange)="onBorderWidthChange()"
                 placeholder="1px"
@@ -55,7 +56,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
             <div class="table-style-view__field">
               <div class="table-style-view__field-label">Style</div>
 
-              <document-engine-select [(value)]="borderStyle" variant="outline">
+              <document-engine-select data-testid="border-style" [(value)]="borderStyle" variant="outline">
                 <button documentEngineSelectOption value="solid">Solid</button>
                 <button documentEngineSelectOption value="double">Double</button>
                 <button documentEngineSelectOption value="dashed">Dashed</button>
@@ -76,6 +77,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
                   size="icon"
                   variant="ghost"
                   class="table-style-view__color-clear"
+                  data-testid="clear-border-color"
                   (click)="borderColor = null"
                 >
                   <document-engine-icon name="close"></document-engine-icon>
@@ -96,13 +98,14 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
               <!-- Color picker for border -->
               <div
                 *ngIf="showColorPicker === 'border'"
-                [popover]="borderColorTrigger"
+                [documentEnginePopover]="borderColorTrigger"
                 [isOpen]="showColorPicker === 'border'"
                 class="table-style-view__color-picker-dropdown"
                 (click)="$event.stopPropagation()"
               >
                 <document-engine-color-picker
                   [colorPalette]="colorPalette"
+                  data-testid="border-color"
                   [activeColor]="borderColorObj"
                   (colorSelected)="onBorderColorSelected($event)"
                   (colorRemoved)="onBorderColorRemoved()"
@@ -127,6 +130,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
                 size="icon"
                 variant="ghost"
                 class="table-style-view__color-clear"
+                data-testid="clear-background-color"
                 (click)="tableBg = null"
               >
                 <document-engine-icon name="close"></document-engine-icon>
@@ -147,13 +151,14 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
             <!-- Color picker for background -->
             <div
               *ngIf="showColorPicker === 'bg'"
-              [popover]="bgColorTrigger"
+              [documentEnginePopover]="bgColorTrigger"
               [isOpen]="showColorPicker === 'bg'"
               class="table-style-view__color-picker-dropdown"
               (click)="$event.stopPropagation()"
             >
               <document-engine-color-picker
                 [colorPalette]="colorPalette"
+                data-testid="background-color"
                 [activeColor]="tableBgObj"
                 (colorSelected)="onTableBgSelected($event)"
                 (colorRemoved)="onTableBgRemoved()"
@@ -165,8 +170,8 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
 
       <!-- Actions -->
       <div class="table-style-view__actions">
-        <button documentEngineButton variant="ghost" (click)="cancel()">Cancel</button>
-        <button documentEngineButton variant="default" (click)="onSave()">Save</button>
+        <button documentEngineButton data-testid="cancel" variant="ghost" (click)="cancel()">Cancel</button>
+        <button documentEngineButton data-testid="save" variant="default" (click)="onSave()">Save</button>
       </div>
     </div>
   `,
