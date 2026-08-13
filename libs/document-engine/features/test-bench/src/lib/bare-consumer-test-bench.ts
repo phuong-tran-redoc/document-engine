@@ -52,6 +52,17 @@ export class BareConsumerTestBenchComponent implements OnInit, OnDestroy {
    */
   noTokens = false;
 
+  /**
+   * `?frame=<px>` — shrink the editor container.
+   *
+   * A panel that overflows the editing surface is the only way to observe whether
+   * something on that path is clipping it, and at the default 482px every bubble
+   * dropdown happens to fit. Being able to shorten the frame is what lets the B7
+   * guard put a dropdown outside the surface on purpose instead of hoping one lands
+   * there — a guard that cannot reach the failing state is not a guard.
+   */
+  frameHeight: string | null = null;
+
   // Keys must match DocumentEngineConfig exactly — `tables`, not `table`. A wrong
   // key silently leaves the extension unregistered, so the panel it feeds never
   // opens and the assertion that depends on it never really ran.
@@ -80,6 +91,11 @@ export class BareConsumerTestBenchComponent implements OnInit, OnDestroy {
       this.value = '';
     }
     this.noTokens = params.get('tokens') === 'none';
+
+    const frame = Number(params.get('frame'));
+    if (Number.isFinite(frame) && frame > 0) {
+      this.frameHeight = `${frame}px`;
+    }
   }
 
   ngOnDestroy(): void {
