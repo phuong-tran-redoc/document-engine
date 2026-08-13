@@ -21,7 +21,7 @@ test.describe('Table Style View - Border Styling @high', () => {
 
   test('should set table border width', async ({ page }) => {
     // Set border width
-    await page.locator('input[data-testid="border-width"]').fill('3');
+    await page.locator('input[data-testid="border-width"]').fill('3px');
     await page.waitForTimeout(100);
 
     // Save changes
@@ -29,6 +29,21 @@ test.describe('Table Style View - Border Styling @high', () => {
     await page.waitForTimeout(200);
 
     // Verify border width applied to table
+    const borderWidth = await page.locator('table').evaluate((el) => {
+      return window.getComputedStyle(el).borderWidth;
+    });
+    expect(borderWidth).toBe('3px');
+  });
+
+  test('should complete a unit-less border width to px', async ({ page }) => {
+    // `border-width: 3` is invalid CSS. A bare number is the most likely thing to
+    // type, so it is completed to px on save rather than silently doing nothing.
+    await page.locator('input[data-testid="border-width"]').fill('3');
+    await page.waitForTimeout(100);
+
+    await page.locator('button[data-testid="save"]').click();
+    await page.waitForTimeout(200);
+
     const borderWidth = await page.locator('table').evaluate((el) => {
       return window.getComputedStyle(el).borderWidth;
     });
@@ -127,11 +142,14 @@ test.describe('Table Style View - Border Styling @high', () => {
 
   test('should set table border color using color picker', async ({ page }) => {
     // Click color picker
-    await page.locator('document-engine-color-picker[data-testid="border-color"]').click();
+    // The picker sits behind *ngIf="showColorPicker === '...'"; its swatch trigger opens it.
+    await page.locator('button[data-testid="border-color-trigger"]').click();
+    await page.waitForTimeout(100);
+    await expect(page.locator('document-engine-color-picker[data-testid="border-color"]')).toBeVisible();
     await page.waitForTimeout(100);
 
     // Select a color (e.g., green)
-    await page.locator('button.swatch[data-color="#00ff00"]').click();
+    await page.locator('button.swatch[data-color="#008000"]').click();
     await page.waitForTimeout(100);
 
     // Save changes
@@ -142,7 +160,7 @@ test.describe('Table Style View - Border Styling @high', () => {
     const borderColor = await page.locator('table').evaluate((el) => {
       return window.getComputedStyle(el).borderColor;
     });
-    expect(borderColor).toContain('rgb(0, 255, 0)');
+    expect(borderColor).toContain('rgb(0, 128, 0)');
   });
 
   test('should clear table border color', async ({ page }) => {
@@ -179,7 +197,10 @@ test.describe('Table Style View - Background Styling @high', () => {
 
   test('should set table background color using color picker', async ({ page }) => {
     // Click color picker
-    await page.locator('document-engine-color-picker[data-testid="background-color"]').click();
+    // The picker sits behind *ngIf="showColorPicker === '...'"; its swatch trigger opens it.
+    await page.locator('button[data-testid="background-color-trigger"]').click();
+    await page.waitForTimeout(100);
+    await expect(page.locator('document-engine-color-picker[data-testid="background-color"]')).toBeVisible();
     await page.waitForTimeout(100);
 
     // Select a color (e.g., yellow)
@@ -198,7 +219,13 @@ test.describe('Table Style View - Background Styling @high', () => {
   });
 
   test('should clear table background color', async ({ page }) => {
-    // Click clear button
+    // The clear button is behind *ngIf on the colour — set one before clearing.
+    await page.locator('button[data-testid="background-color-trigger"]').click();
+    await page.waitForTimeout(100);
+    await page.locator('button.swatch[data-color="#ffff00"]').click();
+    await page.waitForTimeout(100);
+
+    // Now clear it
     await page.locator('button[data-testid="clear-background-color"]').click();
     await page.waitForTimeout(100);
 
@@ -231,7 +258,7 @@ test.describe('Table Style View - Actions @high', () => {
 
   test('should save table styles when clicking Save button', async ({ page }) => {
     // Set border width
-    await page.locator('input[data-testid="border-width"]').fill('4');
+    await page.locator('input[data-testid="border-width"]').fill('4px');
     await page.waitForTimeout(100);
 
     // Click Save button
@@ -251,7 +278,7 @@ test.describe('Table Style View - Actions @high', () => {
 
   test('should cancel and return to main view when clicking Cancel button', async ({ page }) => {
     // Make some changes
-    await page.locator('input[data-testid="border-width"]').fill('6');
+    await page.locator('input[data-testid="border-width"]').fill('6px');
     await page.waitForTimeout(100);
 
     // Click Cancel button
@@ -271,7 +298,7 @@ test.describe('Table Style View - Actions @high', () => {
 
   test('should apply multiple style changes together', async ({ page }) => {
     // Set border width
-    await page.locator('input[data-testid="border-width"]').fill('2');
+    await page.locator('input[data-testid="border-width"]').fill('2px');
     await page.waitForTimeout(100);
 
     // Set border style
@@ -281,9 +308,12 @@ test.describe('Table Style View - Actions @high', () => {
     await page.waitForTimeout(100);
 
     // Set background color
-    await page.locator('document-engine-color-picker[data-testid="background-color"]').click();
+    // The picker sits behind *ngIf="showColorPicker === '...'"; its swatch trigger opens it.
+    await page.locator('button[data-testid="background-color-trigger"]').click();
     await page.waitForTimeout(100);
-    await page.locator('button.swatch[data-color="#ff00ff"]').click();
+    await expect(page.locator('document-engine-color-picker[data-testid="background-color"]')).toBeVisible();
+    await page.waitForTimeout(100);
+    await page.locator('button.swatch[data-color="#800080"]').click();
     await page.waitForTimeout(100);
 
     // Save all changes
@@ -300,6 +330,6 @@ test.describe('Table Style View - Actions @high', () => {
     expect(borderStyle).toContain('double');
 
     const bgColor = await table.evaluate((el) => window.getComputedStyle(el).backgroundColor);
-    expect(bgColor).toContain('rgb(255, 0, 255)');
+    expect(bgColor).toContain('rgb(128, 0, 128)');
   });
 });

@@ -197,6 +197,11 @@ test.describe('Table Main View - Cell Actions @critical', () => {
       .click({ modifiers: ['Shift'] });
     await page.waitForTimeout(200);
 
+    // merge/split are OPTIONS of the cell-actions select — they are not in the
+    // DOM until the select is opened.
+    await page.locator('document-engine-select[data-testid="cell-actions"]').click();
+    await page.waitForTimeout(200);
+
     // Verify merge button is enabled
     const mergeButton = page.locator('button[data-testid="merge-cells"]');
     await expect(mergeButton).not.toBeDisabled();
@@ -205,9 +210,9 @@ test.describe('Table Main View - Cell Actions @critical', () => {
     await mergeButton.click();
     await page.waitForTimeout(200);
 
-    // Verify cells were merged (check for colspan attribute)
-    const mergedCell = await page.locator('table td[colspan]').count();
-    expect(mergedCell).toBeGreaterThan(0);
+    // A merged cell is one with colspan > 1. Plain `td[colspan]` also matches the
+    // ordinary colspan="1" cells the table ships with, so it proved nothing.
+    await expect(page.locator('table td[colspan]:not([colspan="1"])')).not.toHaveCount(0);
   });
 
   test('should split cell when merged cell is selected', async ({ page }) => {
@@ -219,11 +224,23 @@ test.describe('Table Main View - Cell Actions @critical', () => {
       .nth(1)
       .click({ modifiers: ['Shift'] });
     await page.waitForTimeout(200);
+    await page.locator('document-engine-select[data-testid="cell-actions"]').click();
+    await page.waitForTimeout(200);
     await page.locator('button[data-testid="merge-cells"]').click();
     await page.waitForTimeout(200);
 
-    // Click on merged cell
-    await page.locator('table td[colspan]').click();
+    // Click on merged cell. Off-centre on purpose: a merged cell's centre lands on
+    // the column boundary, where ProseMirror's `.pm-col-resizer` widget sits and
+    // swallows the click.
+    await page
+      .locator('table td[colspan]:not([colspan="1"])')
+      .first()
+      .click({ position: { x: 24, y: 16 } });
+    await page.waitForTimeout(200);
+
+    // merge/split are OPTIONS of the cell-actions select — they are not in the
+    // DOM until the select is opened.
+    await page.locator('document-engine-select[data-testid="cell-actions"]').click();
     await page.waitForTimeout(200);
 
     // Verify split button is enabled
@@ -234,14 +251,18 @@ test.describe('Table Main View - Cell Actions @critical', () => {
     await splitButton.click();
     await page.waitForTimeout(200);
 
-    // Verify cell was split (no more colspan)
-    const mergedCells = await page.locator('table td[colspan]').count();
-    expect(mergedCells).toBe(0);
+    // Verify cell was split (no cell spans more than one column any more)
+    await expect(page.locator('table td[colspan]:not([colspan="1"])')).toHaveCount(0);
   });
 
   test('should disable merge button when single cell is selected', async ({ page }) => {
     // Click single cell
     await page.locator('table td').first().click();
+    await page.waitForTimeout(200);
+
+    // merge/split are OPTIONS of the cell-actions select — they are not in the
+    // DOM until the select is opened.
+    await page.locator('document-engine-select[data-testid="cell-actions"]').click();
     await page.waitForTimeout(200);
 
     // Verify merge button is disabled
@@ -252,6 +273,11 @@ test.describe('Table Main View - Cell Actions @critical', () => {
   test('should disable split button when non-merged cell is selected', async ({ page }) => {
     // Click single non-merged cell
     await page.locator('table td').first().click();
+    await page.waitForTimeout(200);
+
+    // merge/split are OPTIONS of the cell-actions select — they are not in the
+    // DOM until the select is opened.
+    await page.locator('document-engine-select[data-testid="cell-actions"]').click();
     await page.waitForTimeout(200);
 
     // Verify split button is disabled

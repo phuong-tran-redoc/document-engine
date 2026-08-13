@@ -206,6 +206,12 @@ the contract.** It lists every token the library reads
   hardcodes a colour.
 - `--de-editor-min-height` (default `12rem`) sets the editing surface's floor; alternatively give the
   `document-engine-editor` element a real height and the surface fills it.
+- **The editing surface does not scroll internally — it grows, and the page scrolls.** `0.1.5` briefly
+  made it a scroll container; that was reverted in `0.1.6` because the selection bubble menu is an
+  absolutely-positioned descendant of it, so the scroller became the panel's clip rect and a dropdown
+  opening upward lost its top options to the clip. If you need a fixed-height box that scrolls its
+  content, put `overflow: auto` on **your own** wrapper around `document-engine-editor`, never on
+  `.tiptap-editor`.
 - Prose and editing-affordance styles are **opt-in** subpaths (`styles/editor-content`,
   `styles/editor-interaction`), so the baseline can never impose a look on your documents.
 

@@ -16,7 +16,7 @@
     [class.bare-consumer__reset--no-tokens]="noTokens"
     data-testid="bare-consumer-root"
   >
-    <div class="bare-consumer__frame" data-testid="bare-editor-frame">
+    <div class="bare-consumer__frame" data-testid="bare-editor-frame" [style.height]="frameHeight">
       <document-engine-editor
         #docEditor
         class="bare-consumer__editor"

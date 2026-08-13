@@ -268,6 +268,119 @@ test.describe('Bare consumer — floating positions on a scrolled page @ci', () 
   });
 });
 
+test.describe('Bare consumer — panels are not clipped by the editing surface @ci', () => {
+  /**
+   * B7 — the regression `0.1.5` shipped, and the reason this describe exists.
+   *
+   * Fixing B6 put `overflow-y: auto` on `.tiptap-editor`. That element is
+   * `position: relative`, which makes it the containing block for
+   * `.bubble-menu-wrapper` — so the scroller became the panel's clip rect. A select
+   * inside a bubble menu that opens upward lost its top options, and the clicks fell
+   * through to the sticky toolbar behind it.
+   *
+   * Ancestry that produced it, innermost first:
+   *   button.document-engine-select-option
+   *     → div.document-engine-select__dropdown  [absolute z=1000]
+   *       → div.bubble-menu-wrapper             [absolute z=30]
+   *         → tiptap-editor                     [relative]  ← clip rect lived here
+   *
+   * The invariant is cheap to state and was the exact thing that broke, so it is
+   * asserted structurally as well as behaviourally. B6's assertion cannot cover this:
+   * it uses an empty editor, so it is green with or without the scroller.
+   */
+  test('B7: no scroll container sits between a bubble panel and the editing surface', async ({ page }) => {
+    await openFixture(page);
+    await setContent(page, '<table><tbody><tr><td><p>cell</p></td><td><p>cell</p></td></tr></tbody></table>');
+
+    await page.locator('.tiptap td').first().click();
+    await page.waitForTimeout(300);
+
+    const panel = page.locator('.bubble-menu-wrapper:has(.table-main-view)');
+    await expect(panel).toBeVisible();
+
+    const scrollers = await panel.evaluate((el) => {
+      const found: string[] = [];
+      let node = el.parentElement;
+      while (node && !node.classList.contains('document-engine-document-editor')) {
+        const s = window.getComputedStyle(node);
+        if (s.overflowX !== 'visible' || s.overflowY !== 'visible') {
+          found.push(`${node.tagName.toLowerCase()}.${node.className} → ${s.overflowX}/${s.overflowY}`);
+        }
+        node = node.parentElement;
+      }
+      return found;
+    });
+
+    expect(
+      scrollers,
+      `these ancestors clip the bubble menu: ${scrollers.join(', ')} — a panel that extends past the editing surface loses the overflowing part`,
+    ).toEqual([]);
+  });
+
+  test('B7: a select inside a bubble panel stays clickable where it overflows the surface', async ({ page }) => {
+    // A short frame is the point: at the fixture's default 482px every bubble
+    // dropdown fits inside the surface, so nothing is ever asked to overflow and the
+    // assertion below cannot reach the failing state. At 240px the cell-actions
+    // dropdown lands 18px above the surface's top edge.
+    await openFixture(page, '?frame=240');
+    // Filler *after* the table pushes the table to the top of the surface, where the
+    // bubble raises its dropdown upward — out through the top edge.
+    await setContent(
+      page,
+      `<table><tbody><tr><td><p>cell</p></td><td><p>cell</p></td></tr></tbody></table>${'<p>filler paragraph</p>'.repeat(12)}`,
+    );
+
+    await page.locator('.tiptap td').first().click();
+    await page.waitForTimeout(300);
+
+    // Deliberately the *selection* bubble, not a toolbar panel. Toolbar panels render
+    // inside `document-engine-toolbar`, a sibling of the content box, so they are
+    // never on the clipped path and would prove nothing here.
+    const bubble = page.locator('.bubble-menu-wrapper:has(.table-main-view)');
+    await expect(bubble).toBeVisible();
+
+    await bubble.locator('document-engine-select[data-testid="cell-actions"]').click();
+    const dropdown = bubble.locator('.document-engine-select__dropdown').first();
+    await expect(dropdown).toBeVisible();
+
+    const ddBox = await boxOf(dropdown);
+
+    // No assertion that the dropdown overflows the surface, deliberately: on correct
+    // code it never does. Without a scroller `.tiptap-editor` is not height-capped, so
+    // it grows to its content and always contains the panel — that *is* the fix. The
+    // overflow only exists in the broken state, so requiring it as a precondition
+    // would make this test unrunnable on the code it is guarding.
+    //
+    // Proven red against the regression before being accepted: with
+    // `overflow-y: auto` restored, the surface caps at the 240px frame, the dropdown
+    // lands 18px above its top edge, and this probe hits
+    // `div.document-engine-document-editor__content` instead of the option.
+    //
+    // Probe the top strip, not the first option's centre: that centre sits within a
+    // pixel or two of the edge and stays hittable even when the strip above it is
+    // clipped, which is how a weaker version of this test passed on broken code.
+    const probeY = ddBox.y + 4;
+    const hit = await page.evaluate(
+      ({ x, y }) => {
+        const el = document.elementFromPoint(x, y);
+        return el ? `${el.tagName.toLowerCase()}.${el.className}` : 'nothing';
+      },
+      { x: ddBox.x + ddBox.width / 2, y: probeY },
+    );
+
+    expect(
+      hit,
+      `the part of the dropdown that overflows the editing surface is not hittable — at (${Math.round(ddBox.x + ddBox.width / 2)}, ${Math.round(probeY)}) the click lands on ${hit}`,
+    ).toContain('select');
+
+    // No click assertion on top of this. Every option of `cell-actions` is disabled
+    // while a single unmerged cell is selected, and a disabled button is never
+    // "actionable" for Playwright, so a click here would only ever measure the
+    // disabled state. Hit-testing is what distinguishes clipped from painted, and it
+    // is what goes red on the regression.
+  });
+});
+
 test.describe('Bare consumer — editing surface sizing @ci', () => {
   test('B6: an empty editor fills its fixed-height container and is clickable throughout', async ({ page }) => {
     await openFixture(page, '?empty=1');

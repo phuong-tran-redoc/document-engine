@@ -21,7 +21,7 @@ test.describe('Table Cell Style View - Border Styling @high', () => {
 
   test('should set border width', async ({ page }) => {
     // Set border width
-    await page.locator('input[data-testid="border-width"]').fill('2');
+    await page.locator('input[data-testid="border-width"]').fill('2px');
     await page.waitForTimeout(100);
 
     // Save changes
@@ -124,7 +124,10 @@ test.describe('Table Cell Style View - Border Styling @high', () => {
 
   test('should set border color using color picker', async ({ page }) => {
     // Click color picker
-    await page.locator('document-engine-color-picker[data-testid="border-color"]').click();
+    // The picker sits behind *ngIf="showColorPicker === '...'"; its swatch trigger opens it.
+    await page.locator('button[data-testid="border-color-trigger"]').click();
+    await page.waitForTimeout(100);
+    await expect(page.locator('document-engine-color-picker[data-testid="border-color"]')).toBeVisible();
     await page.waitForTimeout(100);
 
     // Select a color (e.g., red)
@@ -146,7 +149,14 @@ test.describe('Table Cell Style View - Border Styling @high', () => {
   });
 
   test('should clear border color', async ({ page }) => {
-    // Click clear button
+    // The clear button is behind *ngIf="borderColor" — there is nothing to clear
+    // until a colour is actually set, so set one first.
+    await page.locator('button[data-testid="border-color-trigger"]').click();
+    await page.waitForTimeout(100);
+    await page.locator('button.swatch[data-color="#ff0000"]').click();
+    await page.waitForTimeout(100);
+
+    // Now clear it
     await page.locator('button[data-testid="clear-border-color"]').click();
     await page.waitForTimeout(100);
 
@@ -179,7 +189,10 @@ test.describe('Table Cell Style View - Background Styling @high', () => {
 
   test('should set background color using color picker', async ({ page }) => {
     // Click color picker
-    await page.locator('document-engine-color-picker[data-testid="background-color"]').click();
+    // The picker sits behind *ngIf="showColorPicker === '...'"; its swatch trigger opens it.
+    await page.locator('button[data-testid="background-color-trigger"]').click();
+    await page.waitForTimeout(100);
+    await expect(page.locator('document-engine-color-picker[data-testid="background-color"]')).toBeVisible();
     await page.waitForTimeout(100);
 
     // Select a color (e.g., blue)
@@ -201,7 +214,13 @@ test.describe('Table Cell Style View - Background Styling @high', () => {
   });
 
   test('should clear background color', async ({ page }) => {
-    // Click clear button
+    // The clear button is behind *ngIf on the colour — set one before clearing.
+    await page.locator('button[data-testid="background-color-trigger"]').click();
+    await page.waitForTimeout(100);
+    await page.locator('button.swatch[data-color="#0000ff"]').click();
+    await page.waitForTimeout(100);
+
+    // Now clear it
     await page.locator('button[data-testid="clear-background-color"]').click();
     await page.waitForTimeout(100);
 
@@ -397,7 +416,7 @@ test.describe('Table Cell Style View - Actions @high', () => {
 
   test('should save cell styles when clicking Save button', async ({ page }) => {
     // Set border width
-    await page.locator('input[data-testid="border-width"]').fill('3');
+    await page.locator('input[data-testid="border-width"]').fill('3px');
     await page.waitForTimeout(100);
 
     // Click Save button
@@ -420,7 +439,7 @@ test.describe('Table Cell Style View - Actions @high', () => {
 
   test('should cancel and return to main view when clicking Cancel button', async ({ page }) => {
     // Make some changes
-    await page.locator('input[data-testid="border-width"]').fill('5');
+    await page.locator('input[data-testid="border-width"]').fill('5px');
     await page.waitForTimeout(100);
 
     // Click Cancel button
@@ -443,11 +462,14 @@ test.describe('Table Cell Style View - Actions @high', () => {
 
   test('should apply multiple style changes together', async ({ page }) => {
     // Set border width
-    await page.locator('input[data-testid="border-width"]').fill('2');
+    await page.locator('input[data-testid="border-width"]').fill('2px');
     await page.waitForTimeout(100);
 
     // Set background color
-    await page.locator('document-engine-color-picker[data-testid="background-color"]').click();
+    // The picker sits behind *ngIf="showColorPicker === '...'"; its swatch trigger opens it.
+    await page.locator('button[data-testid="background-color-trigger"]').click();
+    await page.waitForTimeout(100);
+    await expect(page.locator('document-engine-color-picker[data-testid="background-color"]')).toBeVisible();
     await page.waitForTimeout(100);
     await page.locator('button.swatch[data-color="#ffff00"]').click();
     await page.waitForTimeout(100);
