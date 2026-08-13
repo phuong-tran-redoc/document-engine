@@ -39,7 +39,7 @@ jobs:
 
       - name: Setup pnpm
         # pnpm version is read from the "packageManager" field in package.json
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       # Deterministic install with NO dependency lifecycle scripts.
       - name: Install (frozen, no scripts)
@@ -76,7 +76,7 @@ jobs:
       # Confirmed green on PR #26: osv-scanner scanned 57 + 4 packages, "No issues found", exit 0.
       # The full-lockfile dev-tooling/peer noise that once forced this advisory does not apply here. ---
       - name: Dependency vulnerabilities (OSV-Scanner — published prod closure)
-        uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+        uses: google/osv-scanner-action/osv-scanner-action@8deb546fdb875b9996d27d4950be7312dac076a1 # v2.5.0
         with:
           scan-args: |-
             --config=osv-scanner.toml
@@ -166,7 +166,7 @@ jobs:
 
       - name: Setup pnpm
         # pnpm version is read from the "packageManager" field in package.json
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       # Functional install (allowed build scripts only — needed to build the libs).
       - name: Install (frozen)
