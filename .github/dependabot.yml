@@ -20,6 +20,24 @@ updates:
         update-types: ['version-update:semver-major']
       - dependency-name: 'rxjs'
         update-types: ['version-update:semver-major']
+      # ng-packagr and angular-eslint are the same spine by another name: both v22 hard-require
+      # Angular 22 + TypeScript 6 ("TypeScript versions older than 6.0 are no longer supported"),
+      # so a PR for either is really an Angular-major migration wearing a dev-dependency label.
+      # ng-packagr additionally decides the .d.ts format the published lib emits, which is what
+      # sets the >=16 Angular peer floor (ADR-006 / DE-013) — moving it silently moves a
+      # published contract. PRs #38 and #40 were both red on arrival for exactly this reason.
+      - dependency-name: 'ng-packagr'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'angular-eslint'
+        update-types: ['version-update:semver-major']
+      # Dependabot can only ever bump `nx` on its own, never the ten `@nx/*` plugins pinned
+      # alongside it — so every major nx PR it opens is cohort-skewed by construction (nx core at
+      # 23 against plugins at 22) and can never be merged as delivered. PR #39 was green and still
+      # unmergeable. Majors here are a lock-step `pnpm up` done by hand; see the /dep-bump runbook.
+      - dependency-name: 'nx'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@nx/*'
+        update-types: ['version-update:semver-major']
     # Groups are matched top-down; a dep lands in the first group it matches. The split keeps
     # dev/build tooling (auto-merge eligible) cleanly separate from shipped/peer deps (manual),
     # so dependabot-auto-merge.yml sees an unambiguous dependency-type per grouped PR.
