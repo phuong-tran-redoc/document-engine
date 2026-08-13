@@ -13,12 +13,17 @@
   // a flex item of :host, and a fixed-height container is left with a band of
   // dead, unclickable space under the editable.
   //
-  // `max-height: 100%` is inert when the parent's height is indefinite (a
-  // percentage against an auto height resolves to none), so an unconstrained
-  // consumer still gets a box that simply grows.
+  // Deliberately NO `max-height` and no `overflow` anywhere in this subtree: the
+  // selection bubble menu is `position: absolute` inside `.tiptap-editor`, so any
+  // scroll container on an ancestor becomes its clip rect and silently eats the
+  // part of a panel that extends past the editing surface — a dropdown opening
+  // upward loses its top options to the clip and the clicks land on the toolbar
+  // behind it. Capping the height without a scroller is worse still (content
+  // paints straight through the bottom edge), so the box grows and the page
+  // scrolls. Giving a fixed-height container a real scroller requires the bubble
+  // to become `position: fixed` first — tracked separately.
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 100%;
 
   &__content {
     padding: 1rem;
@@ -26,8 +31,9 @@
     background-color: var(--card, #fff);
 
     // Take the leftover space so the editing surface below can stretch into it.
-    // Deliberately no `overflow` here: the panels rendered inside carry selects
-    // and colour popovers, and an overflow ancestor can clip them.
+    // Deliberately no `overflow` here — see the note on `.tiptap-editor` below:
+    // the selection bubble is an absolutely-positioned descendant, so a scroller
+    // anywhere on this path clips it.
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
@@ -63,15 +69,17 @@
   flex: 1 1 auto;
   min-height: 0;
 
-  // The editing surface is the scroll container. Without this, `max-height: 100%`
-  // above caps the wrapper while nothing scrolls, so a long document paints
-  // straight through the bottom of a fixed-height container and over whatever
-  // follows it on the page.
+  // No `overflow` here. This element is `position: relative`, which makes it the
+  // containing block for `.bubble-menu-wrapper` (`position: absolute`, z-index 30)
+  // — so a scroll container here clips the selection bubble to the editing
+  // surface. The visible symptom is a select dropdown that opens upward: its top
+  // options are clipped away and the clicks fall through to the sticky toolbar.
   //
-  // Safe to put overflow here: the floating panels are rendered inside
-  // `document-engine-toolbar`, a sibling of the content box, never a descendant
-  // of this element — so there is nothing of theirs for this to clip.
-  overflow-y: auto;
+  // Measured ancestry, for anyone tempted to add it back:
+  //   button.document-engine-select-option
+  //     → div.document-engine-select__dropdown  [absolute z=1000]
+  //       → div.bubble-menu-wrapper             [absolute z=30]
+  //         → tiptap-editor                     [relative]  ← clip rect lives here
 
   > .tiptap,
   > .ProseMirror {
