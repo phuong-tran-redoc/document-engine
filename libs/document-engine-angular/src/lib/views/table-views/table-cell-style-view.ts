@@ -20,6 +20,7 @@ import { SelectComponent } from '../../ui/select/select.component';
 import { SelectOptionDirective } from '../../ui/select/select-option.directive';
 import { ToggleGroupComponent } from '../../ui/toggle-button/toggle-button';
 import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
+import { normalizeBorderWidth } from './border-width.util';
 
 /**
  * Cell style view for table bubble menu
@@ -95,6 +96,7 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
                 <button
                   #borderColorTrigger
                   type="button"
+                  data-testid="border-color-trigger"
                   class="table-cell-style-view__color-swatch"
                   [style.background-color]="borderColor || 'transparent'"
                   (click)="toggleColorPicker('border')"
@@ -148,6 +150,7 @@ import { ToggleOptionDirective } from '../../ui/toggle-button/toggle-button';
               <button
                 #bgColorTrigger
                 type="button"
+                data-testid="background-color-trigger"
                 class="table-cell-style-view__color-swatch"
                 [style.background-color]="backgroundColor || 'transparent'"
                 (click)="toggleColorPicker('bg')"
@@ -358,10 +361,15 @@ export class TableCellStyleViewComponent implements BubbleMenuViewContent {
   }
 
   onSave(): void {
+    // See `normalizeBorderWidth`: a bare number is completed to `px` so the field does
+    // not silently do nothing, and unusable input yields `undefined` so the command
+    // leaves the width the cell already has rather than clearing it.
+    const width = normalizeBorderWidth(this.borderWidth);
+
     this.editor
       ?.chain()
       .focus()
-      .setCellBorder({ style: this.borderStyle, color: this.borderColor, width: this.borderWidth })
+      .setCellBorder({ style: this.borderStyle, color: this.borderColor, width })
       .setCellBackgroundColor(this.backgroundColor)
       .setCellTextAlign(this.textAlign)
       .setCellVerticalAlign(this.vAlign)

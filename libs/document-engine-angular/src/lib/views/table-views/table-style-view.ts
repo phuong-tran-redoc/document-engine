@@ -12,6 +12,7 @@ import { IconComponent } from '../../ui/icon/icon.component';
 import { InputDirective } from '../../ui/input/input';
 import { SelectComponent } from '../../ui/select/select.component';
 import { SelectOptionDirective } from '../../ui/select/select-option.directive';
+import { normalizeBorderWidth } from './border-width.util';
 
 /**
  * Table style view for table bubble menu
@@ -86,6 +87,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
                 <button
                   #borderColorTrigger
                   type="button"
+                  data-testid="border-color-trigger"
                   class="table-style-view__color-swatch"
                   [style.background-color]="borderColor || 'transparent'"
                   (click)="toggleColorPicker('border')"
@@ -139,6 +141,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
               <button
                 #bgColorTrigger
                 type="button"
+                data-testid="background-color-trigger"
                 class="table-style-view__color-swatch"
                 [style.background-color]="tableBg || 'transparent'"
                 (click)="toggleColorPicker('bg')"
@@ -296,10 +299,15 @@ export class TableStyleViewComponent implements BubbleMenuViewContent {
     const editor = this.editor;
     if (!editor) return;
 
+    // Complete a bare number to `px` before it reaches the command; `border-width: 3`
+    // is invalid CSS and would be dropped without any feedback. `undefined` here means
+    // the input was not a width at all, and the command leaves the current one alone.
+    const width = normalizeBorderWidth(this.borderWidth);
+
     editor
       .chain()
       .focus()
-      .setTableBorder({ style: this.borderStyle, color: this.borderColor, width: this.borderWidth })
+      .setTableBorder({ style: this.borderStyle, color: this.borderColor, width })
       .setTableBackgroundColor(this.tableBg)
       .run();
 
