@@ -1,10 +1,10 @@
 import { Extension, Node, NodeViewRenderer, NodeViewRendererProps, RawCommands } from '@tiptap/core';
 import { Table, TableCell, TableHeader, TableKitOptions, TableOptions, TableRow } from '@tiptap/extension-table';
 import { Node as PMNode } from '@tiptap/pm/model';
-import { TextSelection } from '@tiptap/pm/state';
+import { EditorState, TextSelection } from '@tiptap/pm/state';
 import { addColumnAfter, addColumnBefore, deleteColumn, selectionCell, TableMap } from '@tiptap/pm/tables';
 import { MIN_NEW_COL_WIDTH } from '../constants/table.constant';
-import { getCursorCellInfo } from '../utils';
+import { getCursorCellInfo, getSelectedCells } from '../utils';
 import { createTableNodeView } from '../views';
 import { PercentageColumnResizing } from './table-resizing.extension';
 
@@ -40,6 +40,31 @@ function calculateColumnWidthsForNewColumn(oldColWidths: number[]): number[] {
   // Not enough space even from columns above min, reduce proportionally
   const reduction = MIN_NEW_COL_WIDTH / oldColWidths.length;
   return oldColWidths.map((w) => w - reduction);
+}
+
+/**
+ * Read the `border` attrs of the cell the command should merge against.
+ *
+ * `$from.node(-1)` alone is only the cell for a collapsed cursor: with a `CellSelection`
+ * prosemirror-tables resolves `$from` *before* the head cell, so that lookup lands on the
+ * row and reports an empty border — which, now that an omitted field means "leave this
+ * one alone", would clear every field the caller did not pass. `getSelectedCells` covers
+ * the cell-selection and cursor cases; the depth walk covers a text selection inside one
+ * cell, which `getSelectedCells` returns nothing for.
+ */
+function getCurrentCellBorder(state: EditorState): NonNullable<TableBorder> {
+  const [firstSelected] = getSelectedCells(state);
+  if (firstSelected) return (firstSelected.node.attrs?.['border'] as TableBorder) ?? {};
+
+  const { $from } = state.selection;
+  for (let depth = $from.depth; depth > 0; depth--) {
+    const node = $from.node(depth);
+    if (node.type.name === 'tableCell' || node.type.name === 'tableHeader') {
+      return (node.attrs?.['border'] as TableBorder) ?? {};
+    }
+  }
+
+  return {};
 }
 
 export const TableDefaultAttributes = {
@@ -464,15 +489,16 @@ export const StyledTable = Table.extend<TableOptions & { enableNodeView?: boolea
               .run();
 
           // Get current border and merge with new values
-          const { selection } = state;
-          const { $from } = selection;
-          const cellPos = $from.node(-1);
-          const currentBorder = cellPos?.attrs?.['border'] || {};
+          const currentBorder = getCurrentCellBorder(state);
 
+          // `undefined` means "leave this field alone"; an explicit `null` clears it.
+          // A truthiness check conflates the two, so clearing a cell's border colour
+          // fell straight back to the colour being cleared and the UI could never
+          // remove one. Matches `setTableBorder` above.
           const mergedBorder = {
-            style: border.style ? border.style : currentBorder.style || null,
-            color: border.color ? border.color : currentBorder.color || null,
-            width: border.width ? border.width : currentBorder.width || null,
+            style: border.style !== undefined ? border.style : currentBorder.style || null,
+            color: border.color !== undefined ? border.color : currentBorder.color || null,
+            width: border.width !== undefined ? border.width : currentBorder.width || null,
           };
 
           return chain()

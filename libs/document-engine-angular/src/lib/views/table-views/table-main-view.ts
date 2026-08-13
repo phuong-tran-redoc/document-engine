@@ -42,7 +42,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
       </document-engine-select>
 
       <!-- Cell actions -->
-      <document-engine-select [(value)]="cellAction" (valueChange)="handleCellAction($event)" labelMode="static">
+      <document-engine-select data-testid="cell-actions" [(value)]="cellAction" (valueChange)="handleCellAction($event)" labelMode="static">
         <document-engine-icon documentEngineSelectLabel name="table_merge_cell"></document-engine-icon>
 
         <button documentEngineSelectOption data-testid="merge-cells" value="merge" [disabled]="!canMerge">
