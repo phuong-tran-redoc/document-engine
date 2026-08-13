@@ -1,0 +1,27 @@
+@use '../../styles/panel-surface' as panel;
+
+/**
+ * Surface for the toolbar-triggered bubble menu (table create, table/cell
+ * properties, colour, special characters, templates).
+ *
+ * Placement is done in the component with floating-ui (`strategy: 'fixed'` +
+ * `autoUpdate`), so this file supplies the surface and the open/closed state.
+ */
+.toolbar-bubble-menu {
+  @include panel.panel-surface(50);
+
+  opacity: 1;
+  pointer-events: auto;
+  /* Only opacity animates: a transform would move the box floating-ui has just
+   * measured, so `autoUpdate` would end up chasing its own animation. */
+  transition: opacity 200ms ease-out;
+}
+
+/* Own rule rather than Tailwind's `hidden`: in a consumer without Tailwind that
+ * utility does not exist, so `display: none` never arrived and a closed panel
+ * kept its box in the flow. */
+.toolbar-bubble-menu--hidden {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+}

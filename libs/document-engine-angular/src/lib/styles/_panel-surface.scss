@@ -1,0 +1,43 @@
+/**
+ * Floating-panel surface — the look every bubble menu / popover panel needs to
+ * be legible: an opaque background, a rule, a radius, an elevation and a
+ * stacking order.
+ *
+ * Why this is a mixin and not Tailwind utilities in a template:
+ * utilities like `bg-card`, `border-border` or `shadow-elevation-2` only exist
+ * if the HOST app's `tailwind.config.js` extends its theme with exactly those
+ * keys. The demo app happens to; a consumer with its own theme does not, and
+ * there the class names generate no rule at all — the panel then renders as
+ * transparent text floating over the page. A component library must not put
+ * that requirement on its host, so the panel carries its own surface.
+ *
+ * Every value resolves from a CSS custom property WITH a fallback, so:
+ *   - a consumer that remaps the tokens gets its own theme, and
+ *   - a consumer that remaps nothing still gets a usable, opaque panel.
+ *
+ * Tokens read here (all optional, all documented in docs/THEMING.md):
+ *   --popover / --card                       panel background
+ *   --popover-foreground / --card-foreground panel text
+ *   --border                                 panel rule
+ *   --shadow-elevation-2                     panel elevation
+ */
+
+/* Light-mode floors, used only when the consumer defines nothing. */
+$de-fallback-surface: hsl(0 0% 100%) !default;
+$de-fallback-surface-foreground: hsl(222.2 84% 4.9%) !default;
+$de-fallback-border: hsl(214.3 31.8% 91.4%) !default;
+
+@mixin panel-surface($z-index: 30, $radius: 0.25rem) {
+  box-sizing: border-box;
+  z-index: $z-index;
+  border-radius: $radius;
+  border: 1px solid var(--border, #{$de-fallback-border});
+
+  /* `--popover` is the semantic token for a floating surface; `--card` is the
+   * broader surface token most consumers already define, so it is the second
+   * chance before the hardcoded floor. */
+  background-color: var(--popover, var(--card, #{$de-fallback-surface}));
+  color: var(--popover-foreground, var(--card-foreground, #{$de-fallback-surface-foreground}));
+
+  box-shadow: var(--shadow-elevation-2, 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1));
+}

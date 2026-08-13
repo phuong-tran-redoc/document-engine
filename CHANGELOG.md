@@ -1,3 +1,27 @@
+## 0.1.6 (2026-08-13)
+
+### 🚀 Features
+
+- **angular:** complete a bare border-width to px on save ([257cbd6](https://github.com/phuong-tran-redoc/document-engine/commit/257cbd6))
+
+### 🩹 Fixes
+
+- **angular:** stop the editing surface clipping its bubble menus ([be98027](https://github.com/phuong-tran-redoc/document-engine/commit/be98027))
+- **core:** let setCellBorder clear a field and read the real cell ([97bec38](https://github.com/phuong-tran-redoc/document-engine/commit/97bec38))
+
+## 0.1.5 (2026-07-29)
+
+### 🚀 Features
+
+- **angular:** expose token defaults via a styles/tokens sass subpath ([4181c71](https://github.com/phuong-tran-redoc/document-engine/commit/4181c71))
+
+### 🩹 Fixes
+
+- **angular:** render floating panels without the host tailwind theme ([7ef2474](https://github.com/phuong-tran-redoc/document-engine/commit/7ef2474))
+- **angular:** anchor floating panels to their trigger on a scrolled page ([a22e87d](https://github.com/phuong-tran-redoc/document-engine/commit/a22e87d))
+- **angular:** let the editing surface fill a fixed-height container ([31e8c03](https://github.com/phuong-tran-redoc/document-engine/commit/31e8c03))
+- **angular:** mark the checkbox view dirty on programmatic writes ([a46400b](https://github.com/phuong-tran-redoc/document-engine/commit/a46400b))
+
 ## 0.1.4 (2026-07-23)
 
 ### 🩹 Fixes

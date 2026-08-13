@@ -4,7 +4,9 @@
   "type": "module",
   "license": "MIT",
   "author": "Realestatedoc (Redoc)",
-  "contributors": ["Duc Phuong (Jack) <tdp99.business@gmail.com>"],
+  "contributors": [
+    "Duc Phuong (Jack) <tdp99.business@gmail.com>"
+  ],
   "description": "Angular wrapper for @phuong-tran-redoc/document-engine-core",
   "keywords": [
     "angular",
@@ -72,6 +74,9 @@
   "exports": {
     "./styles": {
       "sass": "./src/lib/styles/index.scss"
+    },
+    "./styles/tokens": {
+      "sass": "./src/lib/styles/tokens.scss"
     },
     "./styles/editor-content": {
       "sass": "./src/lib/styles/editor-content.scss"

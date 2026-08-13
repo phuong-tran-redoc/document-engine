@@ -12,6 +12,7 @@ import { IconComponent } from '../../ui/icon/icon.component';
 import { InputDirective } from '../../ui/input/input';
 import { SelectComponent } from '../../ui/select/select.component';
 import { SelectOptionDirective } from '../../ui/select/select-option.directive';
+import { normalizeBorderWidth } from './border-width.util';
 
 /**
  * Table style view for table bubble menu
@@ -46,6 +47,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
 
               <input
                 documentEngineInput
+                data-testid="border-width"
                 [(ngModel)]="borderWidth"
                 (ngModelChange)="onBorderWidthChange()"
                 placeholder="1px"
@@ -55,7 +57,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
             <div class="table-style-view__field">
               <div class="table-style-view__field-label">Style</div>
 
-              <document-engine-select [(value)]="borderStyle" variant="outline">
+              <document-engine-select data-testid="border-style" [(value)]="borderStyle" variant="outline">
                 <button documentEngineSelectOption value="solid">Solid</button>
                 <button documentEngineSelectOption value="double">Double</button>
                 <button documentEngineSelectOption value="dashed">Dashed</button>
@@ -76,6 +78,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
                   size="icon"
                   variant="ghost"
                   class="table-style-view__color-clear"
+                  data-testid="clear-border-color"
                   (click)="borderColor = null"
                 >
                   <document-engine-icon name="close"></document-engine-icon>
@@ -84,6 +87,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
                 <button
                   #borderColorTrigger
                   type="button"
+                  data-testid="border-color-trigger"
                   class="table-style-view__color-swatch"
                   [style.background-color]="borderColor || 'transparent'"
                   (click)="toggleColorPicker('border')"
@@ -96,13 +100,14 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
               <!-- Color picker for border -->
               <div
                 *ngIf="showColorPicker === 'border'"
-                [popover]="borderColorTrigger"
+                [documentEnginePopover]="borderColorTrigger"
                 [isOpen]="showColorPicker === 'border'"
                 class="table-style-view__color-picker-dropdown"
                 (click)="$event.stopPropagation()"
               >
                 <document-engine-color-picker
                   [colorPalette]="colorPalette"
+                  data-testid="border-color"
                   [activeColor]="borderColorObj"
                   (colorSelected)="onBorderColorSelected($event)"
                   (colorRemoved)="onBorderColorRemoved()"
@@ -127,6 +132,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
                 size="icon"
                 variant="ghost"
                 class="table-style-view__color-clear"
+                data-testid="clear-background-color"
                 (click)="tableBg = null"
               >
                 <document-engine-icon name="close"></document-engine-icon>
@@ -135,6 +141,7 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
               <button
                 #bgColorTrigger
                 type="button"
+                data-testid="background-color-trigger"
                 class="table-style-view__color-swatch"
                 [style.background-color]="tableBg || 'transparent'"
                 (click)="toggleColorPicker('bg')"
@@ -147,13 +154,14 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
             <!-- Color picker for background -->
             <div
               *ngIf="showColorPicker === 'bg'"
-              [popover]="bgColorTrigger"
+              [documentEnginePopover]="bgColorTrigger"
               [isOpen]="showColorPicker === 'bg'"
               class="table-style-view__color-picker-dropdown"
               (click)="$event.stopPropagation()"
             >
               <document-engine-color-picker
                 [colorPalette]="colorPalette"
+                data-testid="background-color"
                 [activeColor]="tableBgObj"
                 (colorSelected)="onTableBgSelected($event)"
                 (colorRemoved)="onTableBgRemoved()"
@@ -165,8 +173,8 @@ import { SelectOptionDirective } from '../../ui/select/select-option.directive';
 
       <!-- Actions -->
       <div class="table-style-view__actions">
-        <button documentEngineButton variant="ghost" (click)="cancel()">Cancel</button>
-        <button documentEngineButton variant="default" (click)="onSave()">Save</button>
+        <button documentEngineButton data-testid="cancel" variant="ghost" (click)="cancel()">Cancel</button>
+        <button documentEngineButton data-testid="save" variant="default" (click)="onSave()">Save</button>
       </div>
     </div>
   `,
@@ -291,10 +299,15 @@ export class TableStyleViewComponent implements BubbleMenuViewContent {
     const editor = this.editor;
     if (!editor) return;
 
+    // Complete a bare number to `px` before it reaches the command; `border-width: 3`
+    // is invalid CSS and would be dropped without any feedback. `undefined` here means
+    // the input was not a width at all, and the command leaves the current one alone.
+    const width = normalizeBorderWidth(this.borderWidth);
+
     editor
       .chain()
       .focus()
-      .setTableBorder({ style: this.borderStyle, color: this.borderColor, width: this.borderWidth })
+      .setTableBorder({ style: this.borderStyle, color: this.borderColor, width })
       .setTableBackgroundColor(this.tableBg)
       .run();
 

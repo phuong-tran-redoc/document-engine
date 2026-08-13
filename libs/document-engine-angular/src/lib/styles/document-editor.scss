@@ -7,10 +7,37 @@
   color: var(--card-foreground, #000);
   box-shadow: none;
 
+  // Participate in a parent that has a real height (a fixed-height container, a
+  // flex/grid cell) instead of only ever sizing to content. `flex: 1 1 auto` is
+  // what actually claims that height: without it this box stays content-sized as
+  // a flex item of :host, and a fixed-height container is left with a band of
+  // dead, unclickable space under the editable.
+  //
+  // Deliberately NO `max-height` and no `overflow` anywhere in this subtree: the
+  // selection bubble menu is `position: absolute` inside `.tiptap-editor`, so any
+  // scroll container on an ancestor becomes its clip rect and silently eats the
+  // part of a panel that extends past the editing surface — a dropdown opening
+  // upward loses its top options to the clip and the clicks land on the toolbar
+  // behind it. Capping the height without a scroller is worse still (content
+  // paints straight through the bottom edge), so the box grows and the page
+  // scrolls. Giving a fixed-height container a real scroller requires the bubble
+  // to become `position: fixed` first — tracked separately.
+  flex: 1 1 auto;
+  min-height: 0;
+
   &__content {
     padding: 1rem;
     border: 1px solid var(--border, #e5e7eb);
     background-color: var(--card, #fff);
+
+    // Take the leftover space so the editing surface below can stretch into it.
+    // Deliberately no `overflow` here — see the note on `.tiptap-editor` below:
+    // the selection bubble is an absolutely-positioned descendant, so a scroller
+    // anywhere on this path clips it.
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
   }
 }
 
@@ -18,3 +45,45 @@
 // document-engine-toolbar ~ .document-engine-document-editor__content {
 //   border-top: 1px solid var(--border, #e5e7eb);
 // }
+
+/**
+ * Editing-surface sizing.
+ *
+ * The library used to size the contenteditable to its content and nothing else,
+ * so an emptied editor collapsed to a single line. In a fixed-height container
+ * that left a ~28px editable inside a ~480px box that plainly looks like a text
+ * field, and clicking anywhere but that one line did nothing.
+ *
+ * Two hooks, one rule:
+ *   - `--de-editor-min-height` is the floor (default `12rem`). Remap it, or set
+ *     it to `0` to opt out entirely.
+ *   - `flex: 1 1 auto` lets an ancestor with a real height drive the surface, so
+ *     the editable fills a fixed-height container without any magic number.
+ *
+ * `.tiptap-editor` is the class `TiptapEditorDirective` puts on its host;
+ * `.tiptap` / `.ProseMirror` is the contenteditable Tiptap creates inside it.
+ */
+.tiptap-editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+
+  // No `overflow` here. This element is `position: relative`, which makes it the
+  // containing block for `.bubble-menu-wrapper` (`position: absolute`, z-index 30)
+  // — so a scroll container here clips the selection bubble to the editing
+  // surface. The visible symptom is a select dropdown that opens upward: its top
+  // options are clipped away and the clicks fall through to the sticky toolbar.
+  //
+  // Measured ancestry, for anyone tempted to add it back:
+  //   button.document-engine-select-option
+  //     → div.document-engine-select__dropdown  [absolute z=1000]
+  //       → div.bubble-menu-wrapper             [absolute z=30]
+  //         → tiptap-editor                     [relative]  ← clip rect lives here
+
+  > .tiptap,
+  > .ProseMirror {
+    flex: 1 1 auto;
+    min-height: var(--de-editor-min-height, 12rem);
+  }
+}

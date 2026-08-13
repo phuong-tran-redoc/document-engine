@@ -1,0 +1,32 @@
+<div class="bare-consumer">
+  <!-- Pushes the editor well below the first viewport. A panel positioned with
+       the wrong floating-ui strategy lands here-plus-the-scroll-offset, i.e.
+       off screen — which is exactly what shipped in 0.1.4. -->
+  <div class="bare-consumer__spacer" data-testid="bare-spacer">
+    <h1 class="bare-consumer__title">Bare-consumer fixture</h1>
+    <p class="bare-consumer__note">
+      No token remapping, dark surface, fixed-height editor container, editor below the fold. Scroll down.
+    </p>
+  </div>
+
+  <!-- The reset lives on the editor's own ancestor so the library's fallbacks,
+       not this app's theme, are what paint. -->
+  <div
+    class="bare-consumer__reset"
+    [class.bare-consumer__reset--no-tokens]="noTokens"
+    data-testid="bare-consumer-root"
+  >
+    <div class="bare-consumer__frame" data-testid="bare-editor-frame" [style.height]="frameHeight">
+      <document-engine-editor
+        #docEditor
+        class="bare-consumer__editor"
+        [config]="editorConfig"
+        (editorReady)="onEditorReady($event)"
+      >
+        <tiptap-editor [editor]="docEditor.editor" [(ngModel)]="value"></tiptap-editor>
+      </document-engine-editor>
+    </div>
+  </div>
+
+  <div class="bare-consumer__spacer bare-consumer__spacer--tail"></div>
+</div>

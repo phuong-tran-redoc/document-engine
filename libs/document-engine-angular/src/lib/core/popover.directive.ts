@@ -17,12 +17,20 @@ import { computePosition, flip, offset, shift, autoUpdate, Placement } from '@fl
  *
  * Usage:
  * <button #trigger>Open</button>
- * <div [popover]="trigger" [isOpen]="isOpen">
+ * <div [documentEnginePopover]="trigger" [isOpen]="isOpen">
  *   Content
  * </div>
+ *
+ * The host is pinned `position: fixed`, so floating-ui is asked for viewport-
+ * relative coordinates (`strategy: 'fixed'`). Omitting the strategy yields
+ * offset-parent-relative numbers, which are off by the page's scroll offset
+ * once written onto a fixed element.
  */
 @Directive({
-  selector: '[popover]',
+  // `documentEnginePopover` is the supported selector. `[popover]` is kept as a
+  // deprecated alias for consumers on <= 0.1.4; it collides with the platform's
+  // native popover attribute and will be removed in the next major.
+  selector: '[documentEnginePopover], [popover]',
   standalone: true,
   host: {
     '[style.position]': '"fixed"',
@@ -36,7 +44,20 @@ export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
   /**
    * The trigger element reference (ElementRef or HTMLElement)
    */
-  @Input() popover!: ElementRef<HTMLElement> | HTMLElement;
+  @Input() documentEnginePopover?: ElementRef<HTMLElement> | HTMLElement;
+
+  /**
+   * The trigger element reference (ElementRef or HTMLElement)
+   *
+   * @deprecated Use `documentEnginePopover`. `[popover]` collides with the
+   * native HTML popover attribute and will be removed in the next major.
+   */
+  @Input() popover?: ElementRef<HTMLElement> | HTMLElement;
+
+  /** The trigger, whichever input supplied it. */
+  private get trigger(): ElementRef<HTMLElement> | HTMLElement | undefined {
+    return this.documentEnginePopover ?? this.popover;
+  }
 
   /**
    * Whether the popover is open
@@ -70,7 +91,10 @@ export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.viewInitialized && (changes['isOpen'] || changes['popover'])) {
+    if (
+      this.viewInitialized &&
+      (changes['isOpen'] || changes['popover'] || changes['documentEnginePopover'])
+    ) {
       this.updateVisibility();
     }
   }
@@ -82,7 +106,7 @@ export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
   private updateVisibility(): void {
     if (!this.viewInitialized) return;
 
-    if (this.isOpen && this.popover) {
+    if (this.isOpen && this.trigger) {
       // Wait for next tick to ensure element is rendered
       setTimeout(() => {
         this.setupFloating();
@@ -101,8 +125,9 @@ export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
 
   private _setupFloatingInternal(): void {
     let triggerEl: HTMLElement | undefined;
+    const trigger = this.trigger;
 
-    if (!this.popover) {
+    if (!trigger) {
       if (this.retryCount < this.maxRetries) {
         this.retryCount++;
         setTimeout(() => this._setupFloatingInternal(), 10);
@@ -110,8 +135,8 @@ export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
       return;
     }
 
-    if (this.popover instanceof ElementRef) {
-      triggerEl = this.popover.nativeElement;
+    if (trigger instanceof ElementRef) {
+      triggerEl = trigger.nativeElement;
       // If ElementRef exists but nativeElement is not yet available, retry
       if (!triggerEl) {
         if (this.retryCount < this.maxRetries) {
@@ -121,7 +146,7 @@ export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
         return;
       }
     } else {
-      triggerEl = this.popover;
+      triggerEl = trigger;
     }
 
     const dropdownEl = this.elRef.nativeElement;
@@ -136,13 +161,8 @@ export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
     }
 
     // Compute initial position before showing dropdown to prevent flash
-    computePosition(triggerEl, dropdownEl, {
-      placement: this.placement,
-      middleware: [offset(this.offset), flip(), shift({ padding: this.padding })],
-    })
-      .then(({ x, y }) => {
-        // Set position first, then make visible
-        Object.assign(dropdownEl.style, { left: `${x}px`, top: `${y}px` });
+    this.reposition(triggerEl, dropdownEl)
+      .then(() => {
         this.isPositioned = true;
         // Trigger change detection to update visibility binding
         this.cdr.markForCheck();
@@ -151,14 +171,28 @@ export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
         console.error('[PopoverDirective] Error computing position', error);
       });
 
-    // Use autoUpdate to automatically reposition on scroll/resize
+    // Use autoUpdate to automatically reposition on scroll/resize. It must use
+    // the SAME strategy as the initial call, or the first scroll undoes the fix.
     this.cleanupAutoUpdate = autoUpdate(triggerEl, dropdownEl, () => {
-      computePosition(triggerEl, dropdownEl, {
-        placement: this.placement,
-        middleware: [offset(this.offset), flip(), shift({ padding: this.padding })],
-      }).then(({ x, y }) => {
-        Object.assign(dropdownEl.style, { left: `${x}px`, top: `${y}px` });
-      });
+      void this.reposition(triggerEl as HTMLElement, dropdownEl);
+    });
+  }
+
+  /**
+   * Position `dropdownEl` against `triggerEl`.
+   *
+   * `strategy: 'fixed'` is required: the host binding pins this element to
+   * `position: fixed`, so the coordinates must be viewport-relative. Without it
+   * floating-ui returns offset-parent-relative numbers and the panel lands the
+   * page's scroll offset away from its trigger.
+   */
+  private reposition(triggerEl: HTMLElement, dropdownEl: HTMLElement): Promise<void> {
+    return computePosition(triggerEl, dropdownEl, {
+      strategy: 'fixed',
+      placement: this.placement,
+      middleware: [offset(this.offset), flip(), shift({ padding: this.padding })],
+    }).then(({ x, y }) => {
+      Object.assign(dropdownEl.style, { left: `${x}px`, top: `${y}px` });
     });
   }
 

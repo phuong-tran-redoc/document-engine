@@ -886,6 +886,7 @@ export const PHOTO = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 -960
 
 // @public
 export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
+    documentEnginePopover?: ElementRef<HTMLElement> | HTMLElement;
     isOpen: boolean;
     // (undocumented)
     isPositioned: boolean;
@@ -898,9 +899,10 @@ export class PopoverDirective implements OnChanges, AfterViewInit, OnDestroy {
     offset: number;
     padding: number;
     placement: Placement;
-    popover: ElementRef<HTMLElement> | HTMLElement;
+    // @deprecated
+    popover?: ElementRef<HTMLElement> | HTMLElement;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<PopoverDirective, "[popover]", never, { "popover": { "alias": "popover"; "required": false; }; "isOpen": { "alias": "isOpen"; "required": false; }; "placement": { "alias": "placement"; "required": false; }; "offset": { "alias": "offset"; "required": false; }; "padding": { "alias": "padding"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<PopoverDirective, "[documentEnginePopover], [popover]", never, { "documentEnginePopover": { "alias": "documentEnginePopover"; "required": false; }; "popover": { "alias": "popover"; "required": false; }; "isOpen": { "alias": "isOpen"; "required": false; }; "placement": { "alias": "placement"; "required": false; }; "offset": { "alias": "offset"; "required": false; }; "padding": { "alias": "padding"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PopoverDirective, never>;
 }

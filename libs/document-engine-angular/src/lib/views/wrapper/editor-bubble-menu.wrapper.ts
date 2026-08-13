@@ -32,7 +32,7 @@ import { TiptapBubbleMenuDirective } from '../../core/bubble-menu/bubble-menu.di
   template: `
     <div
       #bubbleElement
-      class="bubble-menu-wrapper rounded border bg-card text-card-foreground border-border shadow-elevation-2 z-30"
+      class="bubble-menu-wrapper"
       tiptapBubbleMenu
       [editor]="editor"
       [props]="config.props!"
@@ -43,6 +43,7 @@ import { TiptapBubbleMenuDirective } from '../../core/bubble-menu/bubble-menu.di
       <ng-container #viewContainer></ng-container>
     </div>
   `,
+  styleUrls: ['./editor-bubble-menu.wrapper.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditorBubbleMenuComponent implements OnInit, AfterViewInit, OnDestroy {
