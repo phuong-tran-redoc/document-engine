@@ -2,9 +2,10 @@ import { Editor, Extensions } from '@tiptap/core';
 import { TrailingNode } from '@tiptap/extensions';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CkCompat, createCkDomParser, fromCkHtml, toCkHtml, verifyCkRoundTrip } from '../../compat';
+import { CK_UNSUPPORTED_CONTENT, CkCompat, createCkDomParser, fromCkHtml, toCkHtml, verifyCkRoundTrip } from '../../compat';
 import { generateHTML } from '../../kit/generate-html';
 import { Indent } from '../../extensions/indent.extension';
+import { EditableRegion, RestrictedEditing } from '../../extensions/restricted-editing.extension';
 import { defaultExtensions } from '../../kit/default-extensions';
 import { BP1, BP_2, BP_ANNEX, BP_Multi, BP_Single } from './fixtures/ck-letter-of-offer';
 
@@ -240,6 +241,96 @@ describe('CKEditor HTML compatibility', () => {
       );
       editor.destroy();
     });
+  });
+});
+
+describe('restricted-editing exceptions', () => {
+  const CLAUSE =
+    '<div class="ck ck-content ck-print"><p>The rate is <span class="restricted-editing-exception">3.5</span>% p.a., payable <span class="restricted-editing-exception"><strong>monthly</strong></span>.</p><p>Notes: <span class="restricted-editing-exception">&nbsp;</span></p></div>';
+
+  const withRegions = (mode: 'standard' | 'restricted'): Extensions => [
+    ...kitExtensions,
+    EditableRegion,
+    RestrictedEditing.configure({ initialMode: mode }),
+  ];
+
+  function load(html: string, mode: 'standard' | 'restricted' = 'standard') {
+    const { html: loaded, wrapperClass, unsupported } = fromCkHtml(html);
+    const editor = new Editor({ extensions: withRegions(mode) });
+    editor.chain().setMeta('restrictedEditing', { allow: true }).setContent(loaded, { emitUpdate: false }).run();
+    const save = () => toCkHtml(editor.getHTML(), { wrapperClass: wrapperClass ?? false });
+    return { editor, save, unsupported };
+  }
+
+  /** Position just inside the first editable region that contains `text`. */
+  function insideRegion(editor: Editor, text: string): number {
+    let found = -1;
+    editor.state.doc.descendants((node, pos) => {
+      if (found < 0 && node.type.name === 'editableRegion' && node.textContent.includes(text)) found = pos + 1;
+    });
+    return found;
+  }
+
+  it('loads them as editable regions and saves byte-identical HTML', () => {
+    const { editor, save, unsupported } = load(CLAUSE);
+    expect(unsupported).toEqual([]);
+    expect(editor.getHTML()).toContain('data-editable-region');
+    expect(save()).toBe(CLAUSE);
+  });
+
+  it('saves an edit inside a region as CKEditor markup', () => {
+    const { editor, save } = load(CLAUSE, 'restricted');
+    editor.chain().setTextSelection(insideRegion(editor, '3.5')).insertContent('1').run();
+    expect(save()).toBe(CLAUSE.replace('>3.5<', '>13.5<'));
+  });
+
+  it('blocks edits outside the regions in restricted mode', () => {
+    const { editor, save } = load(CLAUSE, 'restricted');
+    editor.chain().setTextSelection(2).insertContent('X').run();
+    expect(save()).toBe(CLAUSE);
+  });
+
+  it('keeps a region the user emptied in restricted mode', () => {
+    const { editor, save } = load(CLAUSE, 'restricted');
+    const from = insideRegion(editor, '3.5');
+    editor.commands.deleteRange({ from, to: from + 3 });
+    expect(save()).toContain('is <span class="restricted-editing-exception">&nbsp;</span>%');
+  });
+
+  it('writes a region created in the editor as an exception', () => {
+    const { editor, save } = load('<div class="ck ck-content ck-print"><p>Pay by cheque.</p></div>');
+    editor.chain().setTextSelection({ from: 8, to: 14 }).toggleEditableRegion().run();
+    expect(save()).toBe(
+      '<div class="ck ck-content ck-print"><p>Pay by <span class="restricted-editing-exception">cheque</span>.</p></div>'
+    );
+  });
+
+  it('round-trips regions in table cells and list items, and extra recorded attributes', () => {
+    const html =
+      '<div class="ck ck-content ck-print"><figure class="table"><table><tbody><tr><td>Rate <span class="restricted-editing-exception">3.5</span></td></tr></tbody></table></figure><ul><li><span class="restricted-editing-exception" data-id="r2">Name</span></li></ul></div>';
+    const { save, unsupported } = load(html);
+    expect(unsupported).toEqual([]);
+    expect(save()).toBe(html);
+  });
+
+  it('keeps the exception class when a region carries a foreign record', () => {
+    const editor = new Editor({ extensions: withRegions('standard') });
+    editor.commands.setContent(`<p>a <span data-editable-region data-ck='{"a":[["title","x"]]}'>b</span></p>`);
+    expect(toCkHtml(editor.getHTML(), { wrapperClass: false })).toBe(
+      '<p>a <span title="x" class="restricted-editing-exception">b</span></p>'
+    );
+  });
+
+  it('still exposes the deprecated unsupported key without reporting it', () => {
+    expect(CK_UNSUPPORTED_CONTENT.restrictedEditingException).toBe('.restricted-editing-exception');
+  });
+
+  it('writes an empty region created in the editor without its placeholder character', () => {
+    const { editor, save } = load('<div class="ck ck-content ck-print"><p>Name .</p></div>');
+    editor.chain().setTextSelection(6).toggleEditableRegion().run();
+    expect(save()).toBe(
+      '<div class="ck ck-content ck-print"><p>Name <span class="restricted-editing-exception">&nbsp;</span>.</p></div>'
+    );
   });
 });
 

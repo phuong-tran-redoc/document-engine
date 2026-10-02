@@ -9,8 +9,8 @@
  *   `data-ck` attribute that the {@link CkCompat} extension carries through editing.
  * - {@link toCkHtml} runs on `editor.getHTML()`. It rebuilds the CKEditor markup from those
  *   records: attribute order, `prop:value;` style formatting, `<figure class="table">`,
- *   `<colgroup>`, bare text in single-paragraph cells, `<i>`, page breaks, dynamic fields and
- *   the wrapper. Anything the user changed is taken from the editor; anything the editor does
+ *   `<colgroup>`, bare text in single-paragraph cells, `<i>`, page breaks, dynamic fields,
+ *   restricted-editing exceptions and the wrapper. Anything the user changed is taken from the editor; anything the editor does
  *   not model is kept verbatim.
  *
  * Both functions need a `DOMParser`. In the browser the global one is used. In Node (no global DOM)
@@ -70,6 +70,7 @@ export const CK_UNSUPPORTED_CONTENT = {
   dynamicImage: '.redr-dynamic-image',
   dealTable: '.redr-deal-table',
   editorColumn: '.redr-editor-column',
+  /** @deprecated Supported since 0.1.8 (loads as an editable region); no longer reported. */
   restrictedEditingException: '.restricted-editing-exception',
   image: 'img, figure.image',
 } as const;
@@ -132,6 +133,9 @@ const NEUTRAL_DECLARATIONS = new Set(['margin-left:0px', 'margin-left:0', 'margi
 
 const DYNAMIC_FIELD_BASE_CLASSES = ['red-dynamic-field', 'inline-field', 'redr-handlebar-field'];
 const DYNAMIC_FIELD_HAS_VALUE_CLASS = 'red-dynamic-field--has-value';
+
+/** Markup of CKEditor's restricted-editing exception (an editable region). */
+const EDITABLE_REGION_CK_CLASS = 'restricted-editing-exception';
 
 const PAGE_BREAK_HTML =
   '<div class="page-break" style="page-break-after:always;"><span style="display:none;">&nbsp;</span></div>';
@@ -269,8 +273,8 @@ export function fromCkHtml(html: string, options: CkDomOptions = {}): CkLoadResu
     writeOrigin(table, origin);
   });
 
-  const unsupported = (Object.keys(CK_UNSUPPORTED_CONTENT) as CkUnsupportedContent[]).filter((key) =>
-    body.querySelector(CK_UNSUPPORTED_CONTENT[key])
+  const unsupported = (Object.keys(CK_UNSUPPORTED_CONTENT) as CkUnsupportedContent[]).filter(
+    (key) => key !== 'restrictedEditingException' && body.querySelector(CK_UNSUPPORTED_CONTENT[key])
   );
 
   return { html: body.innerHTML, wrapperClass, unsupported };
@@ -506,6 +510,30 @@ function exportDynamicFields(body: HTMLElement): void {
 }
 
 /**
+ * Write editable regions as CKEditor restricted-editing exceptions. The editor fills a region it
+ * creates empty with a zero-width space (and refills one emptied in restricted mode with a space);
+ * a region left without text is written as `&nbsp;` so it stays in the document (CKEditor's
+ * empty-content convention). The exception class is always kept, whatever the record says: it is
+ * what identifies the region in stored HTML.
+ */
+function exportEditableRegions(body: HTMLElement): void {
+  body.querySelectorAll('span[data-editable-region]').forEach((el) => {
+    const span = el.ownerDocument.createElement('span');
+    setAttributesInOrder(span, readOrigin(el)?.a ?? [['class', EDITABLE_REGION_CK_CLASS]]);
+    if (!span.classList.contains(EDITABLE_REGION_CK_CLASS)) span.classList.add(EDITABLE_REGION_CK_CLASS);
+    span.append(...Array.from(el.childNodes));
+    stripZeroWidthSpaces(span);
+    if (!span.textContent?.trim()) span.textContent = '\u00a0';
+    el.replaceWith(span);
+  });
+}
+
+function stripZeroWidthSpaces(node: Node): void {
+  if (node.nodeType === 3) node.nodeValue = (node.nodeValue ?? '').replace(/\u200b/g, '');
+  node.childNodes.forEach(stripZeroWidthSpaces);
+}
+
+/**
  * Tiptap's `TrailingNode` appends an empty paragraph whenever a document ends in a table or other
  * non-paragraph block. CKEditor allows that ending, so drop the paragraph unless the source had it.
  */
@@ -580,11 +608,13 @@ export function toCkHtml(html: string, options: CkHtmlOptions = {}): string {
 
   exportDynamicFields(body);
   exportPageBreaks(body);
+  exportEditableRegions(body);
 
   // Reconcile plain elements before tables restructure cells (so `<p>` attributes are final).
   body.querySelectorAll('*').forEach((el) => {
     const tag = el.tagName.toLowerCase();
     if (tag === 'col' || el.closest('div.page-break') || el.matches('span[id^="red-dynamic-field"]')) return;
+    if (el.matches(`span.${EDITABLE_REGION_CK_CLASS}`)) return;
     reconcileElement(el, readOrigin(el)?.a ?? null, probe);
   });
 

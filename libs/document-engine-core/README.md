@@ -112,6 +112,11 @@ const saved = toCkHtml(editor.getHTML(), { wrapperClass: wrapperClass ?? false }
 verifyCkRoundTrip(storedHtml, saved); // before editing: is the document reproduced exactly?
 ```
 
+CKEditor restricted-editing exceptions (`<span class="restricted-editing-exception">`) load as editable
+regions when `EditableRegion` and `RestrictedEditing` are registered, and are saved back in that markup. In
+restricted mode, set content with `editor.chain().setMeta('restrictedEditing', { allow: true }).setContent(html).run()`
+— otherwise the restriction blocks the change once the document is not empty.
+
 On a backend (no DOM) pass a parser. `createCkDomParser()` uses happy-dom, which `@tiptap/html` already installs:
 
 ```typescript
