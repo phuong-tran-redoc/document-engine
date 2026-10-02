@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
-import { ROUTE } from '@document-engine/util';
 
 @Component({
   selector: 'document-engine-home-page',
   standalone: true,
-  imports: [RouterModule, MatButtonModule],
+  imports: [MatButtonModule],
   template: `
     <div class="px-4 py-6 max-w-5xl mx-auto">
       <div class="space-y-6">
@@ -115,21 +113,12 @@ import { ROUTE } from '@document-engine/util';
         </section>
 
         <div class="mt-8 pt-6 border-t border-border">
-          <p class="mb-2">
-            <strong>Feel free to try it!</strong> You can use the editor above to experience all the features.
-          </p>
           <p>
-            <strong>About Developer:</strong> I'm <strong>Duc Phuong (Jack)</strong>, the architect behind this project.
-            To learn more about my background, please visit my
-            <a [routerLink]="['/', route.CONTACT]" class="text-theme-blue hover:underline"
-              ><strong>About page</strong></a
-            >.
+            <strong>Feel free to try it!</strong> You can use the editor above to experience all the features.
           </p>
         </div>
       </div>
     </div>
   `,
 })
-export class HomePageComponent {
-  readonly route = ROUTE;
-}
+export class HomePageComponent {}
