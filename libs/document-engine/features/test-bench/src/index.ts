@@ -6,3 +6,4 @@ export * from './lib/template-test-bench';
 export * from './lib/tiptap-editor-test-bench';
 export * from './lib/image-insert-view-test-bench';
 export * from './lib/bare-consumer-test-bench';
+export * from './lib/ck-compat-test-bench';

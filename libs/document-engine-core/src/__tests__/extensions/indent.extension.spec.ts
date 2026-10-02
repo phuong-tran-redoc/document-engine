@@ -32,6 +32,21 @@ describe('Indent Extension', () => {
         expect(json.content?.[0]?.attrs?.['indent']).toBe(80);
       });
 
+      it('should convert absolute units to px', () => {
+        editor.commands.setContent('<p style="margin-left: 36pt">pt</p><p style="margin-left: 1cm">cm</p>');
+
+        const json = editor.getJSON();
+        expect(json.content?.[0]?.attrs?.['indent']).toBe(48);
+        expect(json.content?.[1]?.attrs?.['indent']).toBe(37.8);
+      });
+
+      it('should indent further from a value it cannot express in px', () => {
+        editor.commands.setContent('<p style="margin-left: 2em">em</p>');
+        editor.commands.increaseIndent();
+
+        expect(editor.getJSON().content?.[0]?.attrs?.['indent']).toBe(40);
+      });
+
       it('should parse indent on heading', () => {
         editor.commands.setContent('<h1 style="margin-left: 40px">Indented heading</h1>');
 

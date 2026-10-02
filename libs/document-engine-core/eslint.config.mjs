@@ -11,6 +11,8 @@ export default [
           ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
           ignoredDependencies: [
             'tslib',
+            // Optional peer, imported at runtime by createCkDomParser (a dynamic specifier the check cannot see).
+            'happy-dom',
             '@tiptap/extension-blockquote',
             '@tiptap/extension-bold',
             '@tiptap/extension-bubble-menu',

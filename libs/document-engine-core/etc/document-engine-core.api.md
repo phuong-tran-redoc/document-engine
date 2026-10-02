@@ -21,6 +21,65 @@ import { TableKitOptions } from '@tiptap/extension-table';
 import { TableMap } from '@tiptap/pm/tables';
 import { TableOptions } from '@tiptap/extension-table';
 
+// @public
+export const CK_COMPAT_TYPES: readonly string[];
+
+// @public
+export const CK_ORIGIN_ATTRIBUTE = "data-ck";
+
+// @public
+export const CK_UNSUPPORTED_CONTENT: {
+    readonly signatureField: ".redr-signature-field";
+    readonly inlineField: ".redr-inline-field";
+    readonly dynamicImage: ".redr-dynamic-image";
+    readonly dealTable: ".redr-deal-table";
+    readonly editorColumn: ".redr-editor-column";
+    readonly restrictedEditingException: ".restricted-editing-exception";
+    readonly image: "img, figure.image";
+};
+
+// @public
+export const CK_WRAPPER_BASE_CLASS = "ck ck-content ck-print";
+
+// @public
+export const CkCompat: Extension<any, any>;
+
+// @public (undocumented)
+export interface CkDomOptions {
+    domParser?: CkDomParser;
+}
+
+// @public
+export interface CkDomParser {
+    // (undocumented)
+    parseFromString(source: string, type: 'text/html'): Document;
+}
+
+// @public (undocumented)
+export interface CkHtmlOptions extends CkDomOptions {
+    wrapperClass?: string | false;
+}
+
+// @public (undocumented)
+export interface CkLoadResult {
+    html: string;
+    unsupported: CkUnsupportedContent[];
+    wrapperClass: string | null;
+}
+
+// @public (undocumented)
+export interface CkRoundTripReport {
+    difference: {
+        index: number;
+        expected: string;
+        actual: string;
+    } | null;
+    identical: boolean;
+}
+
+// @public (undocumented)
+export type CkUnsupportedContent = keyof typeof CK_UNSUPPORTED_CONTENT;
+
 // @public (undocumented)
 export const ClearContent: Extension<any, any>;
 
@@ -45,6 +104,9 @@ export class Color {
     // (undocumented)
     readonly value: string;
 }
+
+// @public
+export function createCkDomParser(): Promise<CkDomParser>;
 
 // @public (undocumented)
 export const createPageBreakNodeView: (props: NodeViewRendererProps) => PageBreakNodeView;
@@ -120,6 +182,9 @@ export interface EditorDocument {
     content: JSONContent;
     schemaVersion: number;
 }
+
+// @public
+export function fromCkHtml(html: string, options?: CkDomOptions): CkLoadResult;
 
 // @public
 export function generateHTML(doc: JSONContent, extensions?: Extensions): Promise<string>;
@@ -318,6 +383,12 @@ export interface TextCaseOptions {
 
 // @public (undocumented)
 export type TextCaseType = 'uppercase' | 'lowercase' | 'capitalize';
+
+// @public
+export function toCkHtml(html: string, options?: CkHtmlOptions): string;
+
+// @public
+export function verifyCkRoundTrip(original: string, saved: string): CkRoundTripReport;
 
 // (No @packageDocumentation comment for this package)
 

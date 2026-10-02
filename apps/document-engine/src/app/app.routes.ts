@@ -35,11 +35,6 @@ export const appRoutes: Route[] = [
         data: { breadcrumb: 'Template' },
         loadChildren: () => import('@document-engine/template').then((m) => m.TEMPLATE_ROUTES),
       },
-      {
-        path: ROUTE.CONTACT,
-        data: { breadcrumb: 'About' },
-        loadComponent: () => import('@document-engine/contact').then((m) => m.ContactPageComponent),
-      },
       // {
       //   path: ROUTE.PLAYGROUND,
       //   data: { breadcrumb: 'Playground' },
@@ -89,6 +84,10 @@ export const appRoutes: Route[] = [
       {
         path: 'test-bench/tiptap-editor',
         loadComponent: () => import('@document-engine/test-bench').then((m) => m.TiptapEditorTestBenchComponent),
+      },
+      {
+        path: 'test-bench/ck-compat',
+        loadComponent: () => import('@document-engine/test-bench').then((m) => m.CkCompatTestBenchComponent),
       },
       {
         path: 'test-bench/image-insert',
