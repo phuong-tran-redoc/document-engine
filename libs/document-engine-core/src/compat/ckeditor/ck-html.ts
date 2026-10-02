@@ -13,6 +13,10 @@
  *   restricted-editing exceptions and the wrapper. Anything the user changed is taken from the editor; anything the editor does
  *   not model is kept verbatim.
  *
+ * A document stored as several wrappers side by side (sections joined after CKEditor saved them) loads
+ * as one document; the first block of each later section records its wrapper, and saving splits the
+ * document there again.
+ *
  * Both functions need a `DOMParser`. In the browser the global one is used. In Node (no global DOM)
  * pass one in, e.g. from {@link createCkDomParser}:
  *
@@ -51,7 +55,10 @@ export interface CkHtmlOptions extends CkDomOptions {
 export interface CkLoadResult {
   /** HTML ready to be set into the editor. */
   html: string;
-  /** Class list of the wrapper that was stripped, or `null` when the input had none. */
+  /**
+   * Class list of the wrapper that was stripped (the first one, when the document is several wrappers
+   * side by side), or `null` when the input had none.
+   */
   wrapperClass: string | null;
   /**
    * Keys of {@link CK_UNSUPPORTED_CONTENT} found in the input. The editor has no node for these, so
@@ -93,10 +100,20 @@ interface CkOrigin {
   f?: AttrList;
   /** Attributes of each `<col>` in the table's `<colgroup>`. */
   c?: AttrList[];
+  /** Class list of the wrapper this block opens, when the document was several wrappers side by side. */
+  w?: string;
+  /** Whitespace stored between that wrapper and the one before it. */
+  s?: string;
 }
 
 /** Elements whose original attributes are recorded on load. */
 const TRACKED_SELECTOR = 'p,h1,h2,h3,h4,h5,h6,span,table,tr,td,th,blockquote,li,ol,ul,a,div.page-break';
+
+/**
+ * Top-level blocks that can carry the record of the wrapper they open. Not `ol`: the numbered list
+ * rewrites its markup and does not keep its record.
+ */
+const SECTION_START_SELECTOR = 'p,h1,h2,h3,h4,h5,h6,table,blockquote,ul,div.page-break';
 
 /** Style properties the editor itself writes, per element. A recorded value for one of these
  * that the editor no longer emits was removed by the user and is dropped. */
@@ -226,6 +243,14 @@ function readOrigin(el: Element): CkOrigin | null {
     if (c.some((x) => !x)) return null;
     origin.c = c as AttrList[];
   }
+  if (record['w'] !== undefined) {
+    if (typeof record['w'] !== 'string') return null;
+    origin.w = record['w'];
+  }
+  if (record['s'] !== undefined) {
+    if (typeof record['s'] !== 'string' || !WHITESPACE.test(record['s'])) return null;
+    origin.s = record['s'];
+  }
   return origin;
 }
 
@@ -245,10 +270,23 @@ export function fromCkHtml(html: string, options: CkDomOptions = {}): CkLoadResu
   const body = parse(html ?? '', options.domParser);
 
   let wrapperClass: string | null = null;
+  // The block that opens each wrapper after the first, with that wrapper's class list.
+  const sectionStarts: [Element, SectionBoundary][] = [];
   const only = body.children.length === 1 ? body.firstElementChild : null;
-  if (only && only.tagName === 'DIV' && only.classList.contains('ck-content') && only.classList.contains('ck')) {
+  const sections = only ? null : sideBySideWrappers(body);
+  if (only && isCkWrapper(only)) {
     wrapperClass = only.getAttribute('class');
     only.replaceWith(...Array.from(only.childNodes));
+  } else if (sections) {
+    wrapperClass = sections[0].wrapper.getAttribute('class');
+    sections.forEach(({ wrapper, separator }, i) => {
+      const start = wrapper.firstElementChild as Element;
+      const block = start.matches('figure.table') ? (start.querySelector(':scope > table') as Element) : start;
+      if (i > 0) sectionStarts.push([block, { cls: wrapper.getAttribute('class') ?? '', separator }]);
+      wrapper.replaceWith(...Array.from(wrapper.childNodes));
+    });
+    // The whitespace between the wrappers is in the records; between blocks it is not content.
+    Array.from(body.childNodes).forEach((node) => isWhitespaceText(node) && node.remove());
   }
 
   body.querySelectorAll(TRACKED_SELECTOR).forEach((el) => {
@@ -273,11 +311,66 @@ export function fromCkHtml(html: string, options: CkDomOptions = {}): CkLoadResu
     writeOrigin(table, origin);
   });
 
+  sectionStarts.forEach(([block, { cls, separator }]) => {
+    const origin = readOrigin(block) ?? { a: attrsOf(block) };
+    origin.w = cls;
+    if (separator) origin.s = separator;
+    writeOrigin(block, origin);
+  });
+
   const unsupported = (Object.keys(CK_UNSUPPORTED_CONTENT) as CkUnsupportedContent[]).filter(
     (key) => key !== 'restrictedEditingException' && body.querySelector(CK_UNSUPPORTED_CONTENT[key])
   );
 
   return { html: body.innerHTML, wrapperClass, unsupported };
+}
+
+function isCkWrapper(el: Element): boolean {
+  return el.tagName === 'DIV' && el.classList.contains('ck-content') && el.classList.contains('ck');
+}
+
+/** Whitespace only (no `&nbsp;`): what an HTML serializer or a string join puts between documents. */
+const WHITESPACE = /^[ \t\n\r\f]*$/;
+
+const isWhitespaceText = (node: Node) => node.nodeType === 3 && WHITESPACE.test(node.nodeValue ?? '');
+
+interface SectionBoundary {
+  /** Class list of the wrapper the section is stored in. */
+  cls: string;
+  /** Whitespace stored before that wrapper, after the previous one. */
+  separator: string;
+}
+
+/**
+ * The wrappers of a document stored as several CKEditor documents side by side, with the whitespace
+ * between each one and the one before it, or `null` when the body is anything else. Whitespace around
+ * the wrappers is allowed (as with a single wrapper). Each wrapper must open with a block that can
+ * carry its record, so that saving can split the document at the same places.
+ */
+function sideBySideWrappers(body: HTMLElement): { wrapper: Element; separator: string }[] | null {
+  const sections: { wrapper: Element; separator: string }[] = [];
+  let separator = '';
+  for (const node of Array.from(body.childNodes)) {
+    if (isWhitespaceText(node)) {
+      separator += node.nodeValue;
+      continue;
+    }
+    if (node.nodeType !== 1 || !isCkWrapper(node as Element)) return null;
+    const block = (node as Element).firstElementChild;
+    if (!block || Array.from(node.childNodes).indexOf(block) !== leadingWhitespace(node)) return null;
+    const opensWithTable = block.matches('figure.table') && !!block.querySelector(':scope > table');
+    if (!opensWithTable && !block.matches(SECTION_START_SELECTOR)) return null;
+    sections.push({ wrapper: node as Element, separator });
+    separator = '';
+  }
+  return sections.length > 1 ? sections : null;
+}
+
+/** Number of whitespace-only text nodes at the start of an element. */
+function leadingWhitespace(el: Node): number {
+  const nodes = Array.from(el.childNodes);
+  const first = nodes.findIndex((n) => !isWhitespaceText(n));
+  return first < 0 ? nodes.length : first;
 }
 
 /**
@@ -605,6 +698,8 @@ function hasMeaningfulAttributes(el: Element): boolean {
 export function toCkHtml(html: string, options: CkHtmlOptions = {}): string {
   const body = parse(html ?? '', options.domParser);
   const probe = body.ownerDocument.createElement('span');
+  // Marked first: the export passes below replace some blocks, and their records with them.
+  const sections = markSections(body);
 
   exportDynamicFields(body);
   exportPageBreaks(body);
@@ -639,10 +734,48 @@ export function toCkHtml(html: string, options: CkHtmlOptions = {}): string {
   body.querySelectorAll(`[${CK_ORIGIN_ATTRIBUTE}]`).forEach((el) => el.removeAttribute(CK_ORIGIN_ATTRIBUTE));
 
   const wrapperClass = options.wrapperClass ?? CK_WRAPPER_BASE_CLASS;
-  if (wrapperClass === false) return body.innerHTML;
-  // Built as an element so a class read from stored HTML is escaped like any attribute value.
-  const wrapper = body.ownerDocument.createElement('div');
-  wrapper.setAttribute('class', wrapperClass);
-  wrapper.append(...Array.from(body.childNodes));
-  return wrapper.outerHTML;
+  if (wrapperClass === false) {
+    sections.forEach((_, marker) => marker.remove());
+    return body.innerHTML;
+  }
+  return wrapSections(body, wrapperClass, sections);
+}
+
+/**
+ * Put a marker before each top-level block that opens a wrapper of its own (see {@link fromCkHtml}),
+ * mapped to that wrapper.
+ */
+function markSections(body: HTMLElement): Map<Comment, SectionBoundary> {
+  const sections = new Map<Comment, SectionBoundary>();
+  Array.from(body.children).forEach((block) => {
+    const origin = readOrigin(block);
+    if (origin?.w === undefined) return;
+    const marker = body.ownerDocument.createComment('ck-section');
+    block.before(marker);
+    sections.set(marker, { cls: origin.w, separator: origin.s ?? '' });
+  });
+  return sections;
+}
+
+/**
+ * Wrap the document, starting a new wrapper at each section marker. A wrapper left empty (its
+ * section was deleted) is dropped, with the whitespace stored before it.
+ */
+function wrapSections(body: HTMLElement, firstClass: string, sections: Map<Comment, SectionBoundary>): string {
+  const doc = body.ownerDocument;
+  // Built as elements so a class read from stored HTML is escaped like any attribute value.
+  const open = ({ cls, separator }: SectionBoundary) => {
+    const wrapper = doc.createElement('div');
+    wrapper.setAttribute('class', cls);
+    return { wrapper, separator };
+  };
+  const wrappers = [open({ cls: firstClass, separator: '' })];
+  Array.from(body.childNodes).forEach((node) => {
+    const boundary = sections.get(node as Comment);
+    if (boundary === undefined) wrappers[wrappers.length - 1].wrapper.append(node);
+    else wrappers.push(open(boundary));
+  });
+  const kept = wrappers.filter((w) => w.wrapper.childNodes.length);
+  if (!kept.length) return wrappers[0].wrapper.outerHTML;
+  return kept.map((w, i) => (i ? w.separator : '') + w.wrapper.outerHTML).join('');
 }

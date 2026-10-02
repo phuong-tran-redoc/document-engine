@@ -117,6 +117,14 @@ regions when `EditableRegion` and `RestrictedEditing` are registered, and are sa
 restricted mode, set content with `editor.chain().setMeta('restrictedEditing', { allow: true }).setContent(html).run()`
 — otherwise the restriction blocks the change once the document is not empty.
 
+A document stored as several CKEditor wrappers side by side (sections joined after CKEditor saved them) loads
+as one document. `wrapperClass` is the first wrapper's class; the block that opens each later section records
+its wrapper (and the whitespace stored before it), and `toCkHtml` splits the document there again. Deleting that
+block merges its section into the one before; a section whose content is all deleted loses its wrapper, so when
+that is the first section the saved document starts with the next section's wrapper class. A pasted or dropped
+copy of an opening block does not open a section. A section that opens with a numbered list cannot be split
+again, so such a document keeps the wrappers it had (and does not round-trip).
+
 On a backend (no DOM) pass a parser. `createCkDomParser()` uses happy-dom, which `@tiptap/html` already installs:
 
 ```typescript
