@@ -14,7 +14,7 @@ description: >-
 
 This skill owns the **whole release of the two `@phuong-tran-redoc/document-engine-*` packages** so the user
 only has to express intent ("release", "/publish"). It is the single source of truth for the runbook — it does
-not depend on any `.context/ops/*` file existing. Everything you need is below.
+not depend on any `docs/ops/*` file existing. Everything you need is below.
 
 The user explicitly built this skill because they don't want to memorize the commands. So **drive the process
 for them**: run the steps, explain what each one did in one line, and stop at the two human gates. Never make

@@ -48,7 +48,7 @@ libs/
     features/{breakpoint-observer,theme-system}
   document-engine/             # internal demo-app feature libs
     util/
-    features/{layout,home,demo,test-bench,template,contact,http-error}
+    features/{layout,home,demo,test-bench,template,http-error}
 apps/
   document-engine/             # Angular demo/showcase app (port 4200)
   document-engine-e2e/         # Playwright e2e for the demo app
@@ -110,7 +110,7 @@ Cut a release (summary — full detail in [`RELEASING.md`](./RELEASING.md)):
 
 ## Context & Task Tracking
 
-`.context/` holds vision, architecture, techstack, domain, decisions, epic plans, and task files. **It is gitignored (local-only, personal)** — do not rely on it being present for other contributors or in CI. Durable, shareable guidance belongs in this `CLAUDE.md` or the package READMEs; `.context/` is for planning and task tracking.
+Shareable reference docs live in `docs/`: ADRs in `docs/decisions.md`, domain rules in `docs/domain.md`, operational runbooks (release, rollback, security gate, Dependabot) in `docs/ops/`, theming contract in `docs/THEMING.md`. Start with [`HANDOVER.md`](./HANDOVER.md). `.context/` (if present) is a gitignored, local-only planning folder — never rely on it.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->

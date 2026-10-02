@@ -1,7 +1,7 @@
 version: 2
 updates:
   # npm dependencies — weekly, with a cooldown so brand-new releases aren't pulled immediately
-  # (cheapest defense against the npm supply-chain worm class; see .context/ops/security-legal-gate.md).
+  # (cheapest defense against the npm supply-chain worm class; see docs/ops/security-legal-gate.md).
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:

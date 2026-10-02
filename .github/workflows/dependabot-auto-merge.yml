@@ -15,7 +15,7 @@ name: dependabot-triage
 #   AUTO  : dev-dependency (patch OR minor)  |  github-actions non-major
 #   MANUAL: ANY production/peer dep (patch/minor/major)  |  framework-spine build tools
 #           (nx, swc, ng-packagr — dev-typed but workspace-wide blast radius)  |  every major
-# Playbook for the manual track: .context/ops/dependabot-auto-merge.md
+# Playbook for the manual track: docs/ops/dependabot-auto-merge.md
 
 on: pull_request
 
@@ -75,7 +75,7 @@ jobs:
           if [ "$DECISION" = auto ]; then
             VERDICT="✅ SAFE per policy → auto-merge queued (lands ONLY after validate + e2e pass)"
           else
-            VERDICT="⛔ NOT auto-safe per policy → held for manual review (verify per .context/ops/dependabot-auto-merge.md before merging)"
+            VERDICT="⛔ NOT auto-safe per policy → held for manual review (verify per docs/ops/dependabot-auto-merge.md before merging)"
           fi
 
           # Emit the verdict to BOTH the job log and the PR check summary so it is unmissable.

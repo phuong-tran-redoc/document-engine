@@ -4,7 +4,7 @@ packages:
 
 autoInstallPeers: true
 
-# --- Supply-chain hardening (see .context/ops/security-legal-gate.md) ---
+# --- Supply-chain hardening (see docs/ops/security-legal-gate.md) ---
 # pnpm >= 10 refuses to silently run dependency install/build scripts (default-deny).
 # `allowBuilds` is the per-package allowlist: only packages set to `true` may run their
 # install/build scripts; everything else stays blocked. All entries below are build tooling

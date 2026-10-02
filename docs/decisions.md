@@ -37,12 +37,12 @@ release (`v{version}`). One no-op version bump on the package that didn't change
 ### [2026-06-10] ADR-002 — IP ownership / copyright holder: the company (Realestatedoc / Redoc)
 
 **Context:** `LICENSE.md` (root + both libs) reads `Copyright 2025 Realestatedoc (Redoc)` (a company),
-but the package `author` field reads `Duc Phuong (Jack)` (an individual). This contradiction was never
+but the package `author` field named the original author (an individual). This contradiction was never
 resolved and is fundamentally a "who owns the IP" question.
 
 **Decision:** The **company (Realestatedoc / Redoc)** is the copyright holder. This is an in-house library;
-under typical work-for-hire terms the employer owns the copyright. `author` becomes the company; Duc Phuong
-is credited as a `contributor`.
+under typical work-for-hire terms the employer owns the copyright. `author` becomes the company; the original author
+is credited as a `contributor` (see `AUTHORS.md`).
 
 **Rationale:** Built on company time/resources and related to the company's business → work-for-hire →
 company owns it. Making the holder and `author` consistent removes the contradiction that downstream
@@ -50,7 +50,7 @@ consumers and license scanners would flag.
 
 **Consequences (applied 2026-06-10 via de-007):**
 - Root `LICENSE.md` normalized to `Copyright (c) 2025 Realestatedoc (Redoc).` (per-lib files already had `(c)`).
-- Both lib `package.json`: `"author": "Realestatedoc (Redoc)"` + `"contributors": ["Duc Phuong (Jack) …"]`.
+- Both lib `package.json`: `"author": "Realestatedoc (Redoc)"` + `"contributors"` (the original author; see `AUTHORS.md`).
 - Root `package.json` stays `UNLICENSED` + `private: true` (correct for the unpublished monorepo root).
 - **Still open:** confirm the exact **registered legal entity name** — "Realestatedoc (Redoc)" is informal;
   swap in the registered name across the three `LICENSE.md` + both `author` fields if it differs.

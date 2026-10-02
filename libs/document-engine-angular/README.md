@@ -245,13 +245,9 @@ nx lint @phuong-tran-redoc/document-engine-angular    # lint
 
 ---
 
-## 👤 Author
+## 👤 Authors
 
-Developed by **Duc Phuong (Jack)**
-
-- 💼 [LinkedIn](https://www.linkedin.com/in/tdp1999/)
-- 🐙 [GitHub](https://github.com/tdp1999)
-- 📧 [Email](mailto:tdp99.business@gmail.com)
+See [AUTHORS.md](https://github.com/phuong-tran-redoc/document-engine/blob/main/AUTHORS.md).
 
 ---
 

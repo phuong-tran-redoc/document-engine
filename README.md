@@ -204,15 +204,9 @@ npx nx list
 
 ---
 
-## 👤 About the Author
+## 👤 Authors
 
-Developed by **Duc Phuong (Jack)** - Senior Frontend Engineer with 4+ years of experience, specializing in Angular and TypeScript.
-
-**Learn more about me:**
-
-- 💼 [LinkedIn](https://www.linkedin.com/in/tdp1999/)
-- 🐙 [GitHub](https://github.com/tdp1999)
-- 📧 [Email](mailto:tdp99.business@gmail.com)
+See [AUTHORS.md](./AUTHORS.md).
 
 ---
 

@@ -2,7 +2,7 @@ name: security-gate
 
 # Reusable pre-publish gate. Called by publish.yml as a required job, and runnable on PRs.
 # Blocking steps fail the job; advisory steps use continue-on-error and report only.
-# Spec + thresholds: .context/ops/security-legal-gate.md
+# Spec + thresholds: docs/ops/security-legal-gate.md
 on:
   workflow_call:
   pull_request:
