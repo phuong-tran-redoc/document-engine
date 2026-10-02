@@ -17,8 +17,11 @@
 //   Neither tool loads the JS under bare Node, so the runtime crash went unseen until a
 //   Node consumer (the portfolio API) hit it. This check closes that gap.
 //
+// It also runs the CKEditor compatibility layer headlessly (createCkDomParser + happy-dom), the way
+// a backend would, when the package exports it.
+//
 // Usage: node tools/security/verify-esm-load.mjs <built-package-dir>
-// Spec: .context/tasks/de-014-core-esm-packaging-fix.md
+// Background: docs/decisions.md (ADR-007) and the core ESM packaging fix released in 0.1.2.
 
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -32,6 +35,28 @@ if (!dir) {
 }
 
 const name = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8')).name;
+
+const CK_PROBE = `
+const core = await import(__NAME__);
+if (!core.createCkDomParser) process.exit(0);
+const { generateJSON } = await import('@tiptap/html/server');
+const source =
+  '<div class="ck ck-content ck-print"><p style="text-align:center;margin-left:36pt;line-height:14.0pt;">Dear ' +
+  '<span class="red-dynamic-field inline-field redr-handlebar-field red-dynamic-field--has-value" id="red-dynamic-field__name" ' +
+  'name="Name" background="false" dynamicfieldname="Name" value="Name" type="textbox:text">{{name}}</span>,</p>' +
+  '<figure class="table" style="width:100%;"><table class="ck-table-resized"><colgroup><col style="width:40%;"><col style="width:60%;">' +
+  '</colgroup><tbody><tr><td style="border:1px solid hsl(0, 0%, 0%);">a</td><td>&nbsp;</td></tr></tbody></table></figure>' +
+  '<p><i>b</i></p></div>';
+const extensions = [...core.defaultExtensions, core.Indent, core.CkCompat];
+const domParser = await core.createCkDomParser();
+const { html, wrapperClass } = core.fromCkHtml(source, { domParser });
+const saved = core.toCkHtml(await core.generateHTML(generateJSON(html, extensions), extensions), { wrapperClass, domParser });
+if (saved !== source) {
+  console.error('CKEditor round-trip differs under Node:\\n  expected ' + source + '\\n  actual   ' + saved);
+  process.exit(1);
+}
+console.log('CKEditor round-trip OK under Node');
+`;
 const tmp = mkdtempSync(join(tmpdir(), 'esm-load-'));
 
 try {
@@ -51,8 +76,14 @@ try {
   execFileSync(
     process.execPath,
     ['--input-type=module', '-e', `await import(${JSON.stringify(name)}); console.log('ok');`],
-    { cwd: tmp, stdio: 'inherit' },
+    { cwd: tmp, stdio: 'inherit' }
   );
+
+  // Backend use of the CKEditor compatibility layer: no global DOM, the parser comes from
+  // createCkDomParser() (happy-dom, installed alongside @tiptap/html). HTML -> editor JSON -> HTML
+  // must come back byte-identical, which exercises happy-dom's parsing, serialization and CSS.
+  writeFileSync(join(tmp, 'ck-probe.mjs'), CK_PROBE.replace('__NAME__', JSON.stringify(name)));
+  execFileSync(process.execPath, ['ck-probe.mjs'], { cwd: tmp, stdio: 'inherit' });
 
   console.log(`[${name}] Node-ESM load OK`);
 } catch (err) {

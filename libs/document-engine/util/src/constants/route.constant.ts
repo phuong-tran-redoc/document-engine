@@ -3,7 +3,6 @@ export const ROUTE = {
   EDITOR: 'editor',
   PLAYGROUND: 'playground',
   TEMPLATE: 'template',
-  CONTACT: 'contact',
 
   // Auth routes
   LOGIN: 'login',

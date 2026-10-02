@@ -314,6 +314,7 @@ export interface DocumentEngineConfig {
     blockquote: Partial<BlockquoteOptions> | boolean;
     bold: Partial<BoldOptions> | boolean;
     characterCount?: Partial<CharacterCountOptions> | boolean;
+    ckCompat?: boolean;
     clearContent?: boolean;
     code: Partial<CodeOptions> | boolean;
     codeBlock: Partial<CodeBlockOptions> | boolean;

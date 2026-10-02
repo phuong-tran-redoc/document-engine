@@ -1,3 +1,4 @@
+export * from './compat';
 export * from './constants';
 export * from './extensions';
 export * from './kit';

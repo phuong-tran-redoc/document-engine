@@ -17,8 +17,8 @@
 
 ## 0.x semver policy
 
-- `0.MINOR` = breaking changes **and** notable new features (minor is the de-facto "major" pre-1.0).
-- `0.x.PATCH` = bug fixes / internal only.
+- nx downgrades the inferred bump one level while `< 1.0.0`: `0.x.PATCH` = **both `fix` and `feat`**;
+  `0.MINOR` = only a breaking change (`feat!` / `BREAKING CHANGE`). See `RELEASING.md` § Versioning policy.
 - Go `1.0.0` only when both packages' public API is stable and we'll commit to a deprecation cycle before breaking it.
 - First intentional release: **`0.0.41 → 0.1.0`**.
 

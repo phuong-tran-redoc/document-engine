@@ -18,7 +18,7 @@ Report privately via one of:
 
 - GitHub **Private vulnerability reporting** (Security tab → "Report a vulnerability") on
   <https://github.com/phuong-tran-redoc/document-engine>, or
-- Email **tdp99.business@gmail.com** with subject `SECURITY: document-engine`.
+- Email the current maintainer listed in [AUTHORS.md](./AUTHORS.md) with subject `SECURITY: document-engine`.
 
 Please include: affected package(s) and version(s), a description of the issue, reproduction steps or a
 proof-of-concept, and the impact you foresee.

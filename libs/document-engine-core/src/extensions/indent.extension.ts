@@ -1,5 +1,6 @@
 import { Extension } from '@tiptap/core';
 import { INDENT_DEFAULT } from '../constants';
+import { absoluteLengthToPx } from '../internal/css-length';
 
 export interface IndentOptions {
   types: string[];
@@ -30,7 +31,12 @@ export const Indent = Extension.create<IndentOptions>({
         attributes: {
           indent: {
             parseHTML: (element) => {
-              return Number(element.style.marginLeft.replace('px', ''));
+              const marginLeft = element.style.marginLeft;
+              if (!marginLeft) return 0;
+              // Content pasted from Word / CKEditor often indents in pt or cm. Relative values (`em`, `%`)
+              // cannot be expressed in px and are left unset.
+              const px = absoluteLengthToPx(marginLeft);
+              return px === null ? null : Math.round(px * 100) / 100;
             },
 
             renderHTML: (attributes) => {

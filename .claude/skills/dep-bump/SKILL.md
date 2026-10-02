@@ -27,7 +27,7 @@ silently degrades **HTML output**, breaks **types**, splits the dependency tree 
 only at **demo-app build** time. This skill is the checklist that makes every one of those visible.
 
 This skill is the **manual tier** of the safe-Dependabot-auto-merge policy
-([`.context/ops/dependabot-auto-merge.md`](../../../.context/ops/dependabot-auto-merge.md)): Dependabot/CI
+([`docs/ops/dependabot-auto-merge.md`](../../../docs/ops/dependabot-auto-merge.md)): Dependabot/CI
 auto-merges *tooling/dev* non-major deps; any *shipped/runtime* dep (a published lib's `dependencies` or
 `peerDependencies`), any *framework-spine build tool* (nx, swc, ng-packagr), and every *major* lands on the
 manual track and gets the full process below. It feeds the `security-gate` that [`/publish`](../publish/SKILL.md)

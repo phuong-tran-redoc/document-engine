@@ -79,7 +79,7 @@ Socket.dev App (behavioral malware detection), OpenSSF Scorecard + badge, CodeQL
 - All three `LICENSE.md` (root + both libs): `Copyright (c) 2025 <full registered legal entity> (Redoc)`.
   Normalize punctuation (root currently `Copyright 2025`, libs `Copyright (c) 2025`).
 - Both lib `package.json`: `"author": "Realestatedoc (Redoc)"`,
-  `"contributors": ["Duc Phuong (Jack) <tdp99.business@gmail.com>"]`.
+  `"contributors"` = the original author (details in `AUTHORS.md`).
 - Root `package.json` stays `UNLICENSED` + `private: true` (correct).
 
 ### LICENSE in every tarball

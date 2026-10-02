@@ -251,6 +251,14 @@ export interface DocumentEngineConfig {
   dynamicFieldsCategories?: DynamicFieldCategory[];
 
   /**
+   * Keep HTML produced by the legacy CKEditor 5 build round-trippable: registers the core
+   * `CkCompat` extension so `fromCkHtml()` / `toCkHtml()` can restore the original markup on save.
+   * Pair it with those two functions on the way in and out (see the core README).
+   * @default false
+   */
+  ckCompat?: boolean;
+
+  /**
    * Cấu hình cho RestrictedEditing (custom)
    * @default { initialMode: 'standard' }
    */

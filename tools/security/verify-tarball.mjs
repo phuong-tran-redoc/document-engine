@@ -4,7 +4,7 @@
 // LICENSE. This is the hard guarantee that secrets/junk never reach npm.
 //
 // Usage: node tools/security/verify-tarball.mjs <package-dir>
-// Spec: .context/ops/security-legal-gate.md
+// Spec: docs/ops/security-legal-gate.md
 
 import { execFileSync } from 'node:child_process';
 

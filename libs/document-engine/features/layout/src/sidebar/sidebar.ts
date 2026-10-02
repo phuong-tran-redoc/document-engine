@@ -168,7 +168,6 @@ export class DocumentEngineSidebarComponent {
           },
         ],
       },
-      { id: 'contact', name: 'About', url: ROUTE.CONTACT, icon: 'person', type: 'normal' },
       // { id: 'playground', name: 'Playground', url: ROUTE.PLAYGROUND, icon: 'code', type: 'normal' },
     ];
   }

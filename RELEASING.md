@@ -26,9 +26,12 @@ approval — the actual `npm publish` still waits for a reviewer.
 
 ## Versioning policy
 
-- Driven by **Conventional Commits** (`feat:` → minor, `fix:` → patch, `feat!` / `BREAKING CHANGE:` → major).
-- While `0.x`: a **minor** bump may carry breaking changes (minor is the de-facto "major" pre-1.0); **patch**
-  is bug-fix only. We go `1.0.0` only when the public API is stable.
+- Driven by **Conventional Commits**. At `>=1.0`: `feat:` → minor, `fix:` → patch, `feat!` / `BREAKING CHANGE:` → major.
+- **While `0.x` (today), nx downgrades every inferred bump one level:** `feat:` *and* `fix:` → **patch**,
+  `feat!` / `BREAKING CHANGE:` → **minor**. This is nx's default pre-1.0 behavior, not something configured
+  here (verified: a `feat` release went `0.1.2 → 0.1.3`, not `0.2.0`). To force a minor for a notable feature,
+  run the cut manually with an explicit specifier (`pnpm nx release minor --skip-publish`).
+- We go `1.0.0` only when the public API is stable; from then on the standard rules apply.
 - `latest` dist-tag = current stable. `next` = pre-releases (`npm i <pkg>@next`).
 - The public API is **additive-only** — it is whatever each lib's `src/index.ts` exports. Removing or
   changing an export is a breaking change and must be called out in the changelog with a migration note.
