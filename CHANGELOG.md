@@ -1,3 +1,9 @@
+## 0.1.8 (2026-10-02)
+
+### 🚀 Features
+
+- **core:** load CKEditor restricted-editing exceptions as editable regions ([48796a1](https://github.com/phuong-tran-redoc/document-engine/commit/48796a1))
+
 ## 0.1.7 (2026-10-02)
 
 ### 🚀 Features
