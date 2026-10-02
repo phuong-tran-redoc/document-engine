@@ -1,3 +1,9 @@
+## 0.1.7 (2026-10-02)
+
+### 🚀 Features
+
+- **core:** add CKEditor 5 HTML compatibility layer ([ebf4f31](https://github.com/phuong-tran-redoc/document-engine/commit/ebf4f31))
+
 ## 0.1.6 (2026-08-13)
 
 ### 🚀 Features
