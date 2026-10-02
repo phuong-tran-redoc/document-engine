@@ -17,6 +17,7 @@ export const CK_COMPAT_TYPES: readonly string[] = [
   'link',
   'dynamicField',
   'pageBreak',
+  'editableRegion',
 ];
 
 const ckOrigin = (fallback?: (element: HTMLElement) => string | null) => ({
