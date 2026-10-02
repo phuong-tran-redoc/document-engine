@@ -334,6 +334,166 @@ describe('restricted-editing exceptions', () => {
   });
 });
 
+describe('several wrappers side by side', () => {
+  const W = 'ck ck-content ck-print';
+
+  // jsdom has no ClipboardEvent, which EditorView.pasteHTML() creates.
+  beforeAll(() => {
+    const g = globalThis as { ClipboardEvent?: unknown };
+    g.ClipboardEvent ??= class extends Event {
+      clipboardData = null;
+    };
+  });
+  const SECTIONS =
+    `<div class="${W}"><p style="text-align:justify;">Header</p><p>Ref</p></div>` +
+    `<div class="${W} lo-terms"><figure class="table"><table><tbody><tr><td>Rate</td></tr></tbody></table></figure><p>Terms</p></div>` +
+    `<div class="${W}"><h2>Acceptance</h2><p>Signed</p></div>`;
+
+  function load(html: string) {
+    const { html: loaded, wrapperClass } = fromCkHtml(html);
+    const editor = new Editor({ extensions: kitExtensions });
+    editor.commands.setContent(loaded, { emitUpdate: false });
+    const save = (cls: string | false = wrapperClass ?? false) => toCkHtml(editor.getHTML(), { wrapperClass: cls });
+    return { editor, save, wrapperClass };
+  }
+
+  /** Position just inside the first textblock whose text is `text`. */
+  function inside(editor: Editor, text: string): number {
+    let found = -1;
+    editor.state.doc.descendants((node, pos) => {
+      if (found < 0 && node.isTextblock && node.textContent === text) found = pos + 1;
+    });
+    return found;
+  }
+
+  it('loads them as one document and saves byte-identical HTML', () => {
+    const { editor, wrapperClass, save } = load(SECTIONS);
+    expect(wrapperClass).toBe(W);
+    expect(editor.getHTML()).not.toContain('<div');
+    expect(save()).toBe(SECTIONS);
+  });
+
+  it('keeps an edit in the section it was made in', () => {
+    const { editor, save } = load(SECTIONS);
+    editor.chain().setTextSelection(inside(editor, 'Terms')).insertContent('Fee ').run();
+    expect(save()).toBe(SECTIONS.replace('<p>Terms</p>', '<p>Fee Terms</p>'));
+  });
+
+  it('keeps a paragraph added at the end of a section in that section', () => {
+    const { editor, save } = load(SECTIONS);
+    const end = inside(editor, 'Ref') + 'Ref'.length;
+    editor.chain().setTextSelection(end).splitBlock().insertContent('New').run();
+    expect(save()).toBe(SECTIONS.replace('<p>Ref</p>', '<p>Ref</p><p>New</p>'));
+  });
+
+  it('merges a section into the one before when its opening block is deleted', () => {
+    const { editor, save } = load(SECTIONS);
+    const from = inside(editor, 'Acceptance') - 1;
+    editor.commands.deleteRange({ from, to: from + 'Acceptance'.length + 2 });
+    expect(save()).toBe(SECTIONS.replace(`</div><div class="${W}"><h2>Acceptance</h2>`, ''));
+  });
+
+  it('writes no wrapper and no section marker when asked for none', () => {
+    const { save } = load(SECTIONS);
+    const out = save(false);
+    expect(out).not.toContain('ck-content');
+    expect(out).not.toContain('<!--');
+  });
+
+  it('opens a section with a page break', () => {
+    const html = `<div class="${W}"><p>One</p></div><div class="${W}"><div class="page-break" style="page-break-after:always;"><span style="display:none;">&nbsp;</span></div><p>Two</p></div>`;
+    expect(load(html).save()).toBe(html);
+  });
+
+  it.each([
+    ['text between the wrappers', `<div class="${W}"><p>a</p></div>x<div class="${W}"><p>b</p></div>`],
+    ['a non-breaking space between the wrappers', `<div class="${W}"><p>a</p></div>&nbsp;<div class="${W}"><p>b</p></div>`],
+    ['a wrapper opening with text', `<div class="${W}"><p>a</p></div><div class="${W}">b<p>c</p></div>`],
+    ['an empty wrapper', `<div class="${W}"><p>a</p></div><div class="${W}"></div>`],
+    // The numbered list does not keep its record (it rewrites its markup), so it cannot carry a boundary.
+    ['a wrapper opening with a numbered list', `<div class="${W}"><p>a</p></div><div class="${W}"><ol><li>b</li></ol></div>`],
+    ['a block that is not a wrapper', `<div class="${W}"><p>a</p></div><p>b</p>`],
+  ])('leaves %s as before (not unwrapped)', (_name, html) => {
+    const { html: loaded, wrapperClass } = fromCkHtml(html);
+    expect(wrapperClass).toBeNull();
+    expect(loaded).toContain('ck-content');
+  });
+
+  it('keeps the whitespace stored between the wrappers', () => {
+    const html = SECTIONS.split('</div><div').join('</div>\n<div');
+    const { save } = load(html);
+    expect(save()).toBe(html);
+    expect(verifyCkRoundTrip(html, save()).identical).toBe(true);
+  });
+
+  it('loads wrappers with whitespace around them or before their first block', () => {
+    const { wrapperClass, editor } = load(`\n<div class="${W}">\n<p>a</p></div>\n<div class="${W}"> <p>b</p></div>\n`);
+    expect(wrapperClass).toBe(W);
+    expect(editor.getHTML()).not.toContain('<div');
+  });
+
+  it.each([
+    ['a bullet list', '<ul><li>Item</li></ul>'],
+    ['a quote', '<blockquote><p>Quoted</p></blockquote>'],
+  ])('opens a section with %s', (_name, block) => {
+    const html = `<div class="${W}"><p>One</p></div><div class="${W}">${block}<p>Two</p></div>`;
+    expect(load(html).save()).toBe(html);
+  });
+
+  it('keeps the section when a block is split at the start of its opening block', () => {
+    const { editor, save } = load(SECTIONS);
+    editor.chain().setTextSelection(inside(editor, 'Acceptance')).splitBlock().run();
+    // The record stays on the block that still holds the text, so the new empty block ends the section before.
+    expect(save()).toBe(SECTIONS.replace('<p>Terms</p>', '<p>Terms</p><p>&nbsp;</p>'));
+  });
+
+  it('keeps the section when its opening block changes type', () => {
+    const { editor, save } = load(SECTIONS);
+    editor.chain().setTextSelection(inside(editor, 'Acceptance')).setParagraph().run();
+    expect(save()).toBe(SECTIONS.replace('<h2>Acceptance</h2>', '<p>Acceptance</p>'));
+  });
+
+  it('does not open a section where a copy of an opening block is pasted', () => {
+    const { editor, save } = load(SECTIONS);
+    const copied = /<h2[^>]*>Acceptance<\/h2>/.exec(editor.getHTML())?.[0] as string;
+    expect(copied).toContain('&quot;w&quot;');
+    const end = inside(editor, 'Header') + 'Header'.length;
+    editor.chain().setTextSelection(end).run();
+    editor.view.pasteHTML(copied);
+    const out = save();
+    expect(out.match(/<div class=/g)).toHaveLength(3);
+    expect(out.slice(0, out.indexOf('</div>'))).toContain('Acceptance');
+  });
+
+  it('does not open a section for a record in pasted HTML', () => {
+    const { editor, save } = load(SECTIONS);
+    editor.chain().setTextSelection(inside(editor, 'Ref') + 3).run();
+    editor.view.pasteHTML(`<p data-ck='{"a":[],"w":"evil","s":"\\n"}'>Pasted</p>`);
+    const out = save();
+    expect(out.match(/<div class=/g)).toHaveLength(3);
+    expect(out).not.toContain('evil');
+  });
+
+  it('drops the wrapper of a section whose content was all deleted', () => {
+    const { editor, save } = load(SECTIONS);
+    const to = inside(editor, 'Terms') + 'Terms'.length + 1;
+    editor.commands.deleteRange({ from: 0, to });
+    expect(save()).toBe(`<div class="${W}"><h2>Acceptance</h2><p>Signed</p></div>`);
+  });
+
+  it('ignores a malformed wrapper record and escapes a hostile one', () => {
+    const editor = new Editor({ extensions: kitExtensions });
+    editor.commands.setContent(
+      `<p>a</p><p data-ck='{"a":[],"w":1}'>b</p><p data-ck='{"a":[],"w":"x\\"><img src=x onerror=alert(1)>"}'>c</p>`
+    );
+    const out = toCkHtml(editor.getHTML(), { wrapperClass: W });
+    expect(out.match(/<div /g)).toHaveLength(2);
+    const body = new DOMParser().parseFromString(out, 'text/html').body;
+    expect(body.querySelector('img')).toBeNull();
+    expect(body.children[1].getAttribute('class')).toBe('x"><img src=x onerror=alert(1)>');
+  });
+});
+
 describe('records from untrusted HTML', () => {
   const save = (html: string) => {
     const editor = new Editor({ extensions, content: html });
@@ -387,6 +547,12 @@ describe('without a global DOMParser (e.g. on a backend)', () => {
 
   it('explains how to run without a DOM', () => {
     expect(() => toCkHtml('<p>a</p>')).toThrow(/pass `domParser`/);
+  });
+
+  it('loads and saves several wrappers with a given parser', () => {
+    const html = `<div class="ck ck-content ck-print"><p>a</p></div>\n<div class="ck ck-content ck-print x"><figure class="table"><table><tbody><tr><td>b</td></tr></tbody></table></figure></div>`;
+    const { html: loaded, wrapperClass } = fromCkHtml(html, { domParser });
+    expect(toCkHtml(loaded, { wrapperClass: wrapperClass ?? false, domParser })).toBe(html);
   });
 
   it('loads and saves CKEditor HTML with a given parser', () => {

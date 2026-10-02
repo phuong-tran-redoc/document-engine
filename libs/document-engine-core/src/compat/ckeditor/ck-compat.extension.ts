@@ -1,4 +1,6 @@
 import { Extension } from '@tiptap/core';
+import { Fragment, Node as PMNode, Slice } from '@tiptap/pm/model';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { CK_ORIGIN_ATTRIBUTE } from './ck-html';
 
 /** Node and mark types whose original CKEditor attributes are carried through editing. */
@@ -41,6 +43,36 @@ function recordPastedDynamicField(element: HTMLElement): string | null {
 }
 
 /**
+ * A pasted or dropped copy of the block that opens a stored section must not open another one: drop
+ * the section keys (`w`, `s`) from the records of pasted content. The block left in place keeps them.
+ */
+function withoutSectionRecords(fragment: Fragment): Fragment {
+  const nodes: PMNode[] = [];
+  fragment.forEach((node) => {
+    if (node.isText) {
+      nodes.push(node);
+      return;
+    }
+    const origin = node.attrs['ckOrigin'];
+    const attrs = typeof origin === 'string' ? { ...node.attrs, ckOrigin: dropSectionKeys(origin) } : node.attrs;
+    nodes.push(node.type.create(attrs, withoutSectionRecords(node.content), node.marks));
+  });
+  return Fragment.fromArray(nodes);
+}
+
+function dropSectionKeys(origin: string): string {
+  try {
+    const record = JSON.parse(origin);
+    if (!record || typeof record !== 'object' || (!('w' in record) && !('s' in record))) return origin;
+    delete record.w;
+    delete record.s;
+    return JSON.stringify(record);
+  } catch {
+    return origin;
+  }
+}
+
+/**
  * Keeps the `data-ck` record written by `fromCkHtml()` on every supported node and mark, so
  * `toCkHtml()` can restore the original CKEditor markup on save. Register it together with the
  * two functions; on its own it only round-trips the attribute.
@@ -52,6 +84,18 @@ export const CkCompat = Extension.create({
     return [
       { types: CK_COMPAT_TYPES.filter((t) => t !== 'dynamicField'), attributes: { ckOrigin: ckOrigin() } },
       { types: ['dynamicField'], attributes: { ckOrigin: ckOrigin(recordPastedDynamicField) } },
+    ];
+  },
+
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey('ckCompatPaste'),
+        props: {
+          transformPasted: (slice) =>
+            new Slice(withoutSectionRecords(slice.content), slice.openStart, slice.openEnd),
+        },
+      }),
     ];
   },
 });
