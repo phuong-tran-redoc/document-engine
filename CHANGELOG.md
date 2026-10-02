@@ -1,3 +1,9 @@
+## 0.1.9 (2026-10-02)
+
+### 🚀 Features
+
+- **core:** load CKEditor documents stored as several wrappers ([d9618a0](https://github.com/phuong-tran-redoc/document-engine/commit/d9618a0))
+
 ## 0.1.8 (2026-10-02)
 
 ### 🚀 Features
