@@ -2,16 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working in this repository.
 
-## ⛔ TOP RULE — never auto-commit; no AI credit outside `/cap`
+## Commits
 
-This is the **single most important rule of this project**. It overrides every other instruction here.
-
-1. **Never commit or push on your own initiative** — to *any* branch, ever. Edit the working tree, then
-   stop and let the user review. Only commit/push when the user **explicitly asks in that turn**, or when
-   they run the `/cap` skill. "I'll commit this for you" is not allowed unless they asked.
-2. **No AI credit outside `/cap`.** Any commit or push made *without* going through the `/cap` skill must
-   **not** contain the `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>` trailer (or
-   any variant of it) in the commit message — in any form. Only `/cap` may add attribution.
+Commit or push only when the user asks in that turn (or runs `/cap`), and never add AI credit (`Co-Authored-By`, "Generated with") to a commit, because commits on this published package go out under the user's name.
 
 ## Project Overview
 
